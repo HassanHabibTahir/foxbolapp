@@ -24,11 +24,9 @@ const DriverSection: React.FC<DriverSectionProps> = ({
   onUpdateDriver,
   onEnterPress 
 }) => {
-  // Create refs for components
   const driver2Ref = useRef<HTMLInputElement>(null);
   const statusSectionRef = useRef<HTMLDivElement>(null);
 
-  // Helper to focus the first input in status section
   const focusStatusSection = () => {
     const firstInput = statusSectionRef.current?.querySelector('input') as HTMLElement;
     if (firstInput) {
@@ -37,12 +35,12 @@ const DriverSection: React.FC<DriverSectionProps> = ({
   };
 
   return (
-    <FormSection title='Driver Information'>
-      <div className="flex flex-wrap gap-4">
+    <FormSection title="Driver Information">
+      <div className="flex flex-wrap items-center gap-x-1 ">
         <DriverCombobox 
           label="Driver 1" 
           title="master.driver"
-          size="lg"
+          size="md"
           value={driver.driver || ''}
           onChange={(value) => onUpdateDriver({ driver: value })}
           onEnterPress={() => driver2Ref.current?.focus()}
@@ -51,12 +49,12 @@ const DriverSection: React.FC<DriverSectionProps> = ({
           ref={driver2Ref}
           label="Driver 2" 
           title="master.driver2"
-          size="lg"
+          size="md"
           value={driver.driver2 || ''}
           onChange={(value) => onUpdateDriver({ driver2: value })}
           onEnterPress={focusStatusSection}
         />
-        <div ref={statusSectionRef}>
+        <div ref={statusSectionRef} className="flex-grow">
           <StatusSection 
             times={driver}
             onTimeChange={(field, value) => onUpdateDriver({ [field]: value })}

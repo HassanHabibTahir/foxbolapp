@@ -28,10 +28,12 @@ const StyledTimePicker = styled(TimePicker)({
     },
   },
   '& .MuiInputBase-input': {
-    padding: '8px 14px',
-    width: '120px',
+    padding: '4px 8px',  // Reduced padding
+    width: '70px', // Smaller width
+    fontSize: '0.875rem', // Smaller text
   },
 });
+
 
 const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
   label,
@@ -119,6 +121,7 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
           onChange={handleTimeChange}
           format="HH:mm"
           ampm={false}
+       
           slotProps={{
             textField: {
               size: "small",

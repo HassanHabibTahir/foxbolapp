@@ -26,7 +26,7 @@ const StatusSection: React.FC<StatusSectionProps> = ({
   const clearedRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex flex-wrap gap-4 mb-4">
+    <div className="flex gap-2">
       <MilitaryTimeInput
         label="Received"
         title="drivetran.timerec"

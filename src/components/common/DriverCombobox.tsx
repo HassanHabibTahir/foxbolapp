@@ -27,7 +27,7 @@ interface DriverComboboxProps {
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
   label,
   title,
-  size = 'md',
+  size = 'xs',
   value = '',
   onChange,
   onDriverSelect,
@@ -120,44 +120,45 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
         borderColor: state.isFocused ? '#3B82F6' : '#9CA3AF'
       },
       boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-      minHeight: '38px'
+      minHeight: '34px', // Reduce height
+      height: '34px', 
+      padding: '0px', 
     }),
-    option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
+    valueContainer: (provided: any) => ({
       ...provided,
-      backgroundColor: state.isSelected 
-        ? '#3B82F6' 
-        : state.isFocused 
-          ? '#F3F4F6' 
-          : 'white',
-      color: state.isSelected ? 'white' : '#111827',
-      cursor: 'pointer',
-      '&:active': {
-        backgroundColor: '#3B82F6',
-        color: 'white'
-      }
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-      borderRadius: '0.375rem',
-      zIndex: 1000
-    }),
-    menuList: (provided: any) => ({
-      ...provided,
-      padding: '4px'
+      padding: '0px 8px',
+      display: 'flex',
+      alignItems: 'center', // Center the text vertically
+      justifyContent: 'center', // Center the text horizontally
     }),
     input: (provided: any) => ({
       ...provided,
-      color: '#111827'
-    })
+      margin: '0px',
+      padding: '0px',
+      fontSize: '14px', // Make text small
+      textAlign: 'center', // Center text
+    }),
+    placeholder: (provided: any) => ({
+      ...provided,
+      fontSize: '14px', // Make placeholder text small
+      textAlign: 'center', // Center placeholder
+      color: '#9CA3AF', // Light gray color for placeholder
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      fontSize: '14px', // Make selected text small
+      textAlign: 'center', // Center selected text
+      color: '#111827', // Dark text color
+    }),
   };
+  
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-small text-gray-700 mb-1">
         {label}
       </label>
-      <div style={{ width: sizeClasses[size] }}>
+      <div style={{ width: sizeClasses[size],  }}>
         <Select
           ref={ref as any}
           value={selectedOption}
@@ -175,6 +176,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
           blurInputOnSelect={true}
           captureMenuScroll={true}
           closeMenuOnSelect={true}
+          
           components={{
             Option: ({ children, ...props }) => (
               <components.Option {...props}>
@@ -182,6 +184,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
               </components.Option>
             )
           }}
+         
           // title={title}
         />
       </div>
