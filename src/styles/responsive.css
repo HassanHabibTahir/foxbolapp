@@ -1,0 +1,30 @@
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  @media (max-width: 768px) {
+    .mobile-input {
+      @apply w-full;
+    }
+    
+    .mobile-grid {
+      @apply grid-cols-1;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .tablet-input {
+      @apply w-3/4;
+    }
+    
+    .tablet-grid {
+      @apply grid-cols-2;
+    }
+  }
+}

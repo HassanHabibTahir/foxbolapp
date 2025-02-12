@@ -1,0 +1,36 @@
+@layer utilities {
+  /* Mobile-specific text sizes */
+  .mobile-text-xs {
+    @apply text-[11px] leading-[16px];
+  }
+  
+  .mobile-text-sm {
+    @apply text-[13px] leading-[18px];
+  }
+  
+  .mobile-text-base {
+    @apply text-[14px] leading-[20px];
+  }
+  
+  /* Mobile-specific spacing */
+  .mobile-stack > * + * {
+    @apply mt-2;
+  }
+  
+  .mobile-compact-input {
+    @apply p-1.5 text-[13px];
+  }
+  
+  /* Mobile-specific layout */
+  .mobile-full {
+    @apply w-full;
+  }
+  
+  .mobile-grid {
+    @apply grid grid-cols-2 gap-2;
+  }
+  
+  .mobile-grid-3 {
+    @apply grid grid-cols-3 gap-2;
+  }
+}

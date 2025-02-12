@@ -1,0 +1,42 @@
+Legacy Table,Legacy Field,New Table,New Field,Data Type,Notes
+towinv,dispnum,dispatches,id,uuid,Primary key for dispatch
+towinv,invoicenum,invoices,invoice_number,text,Invoice number
+towinv,invdate,invoices,created_at,timestamptz,Invoice date
+towinv,itemgroup,invoice_items,item_group,text,Item grouping
+towinv,ponumber,invoices,po_number,text,Purchase order number
+# Billing Address (Top Section)
+towinv,billtoact,customers,account_number,text,Customer account
+towinv,billtoname,customers,name,text,Customer name
+towinv,billtoaddr,locations,address_line1,text,Billing address
+towinv,billtoadd2,locations,address_line2,text,Billing address line 2
+towinv,billtocity,locations,city,text,Billing city
+towinv,billtost,locations,state,text,Billing state
+towinv,billtozip,locations,zip,text,Billing zip
+towinv,billtophon,customers,phone,text,Customer phone
+towinv,billtocont,customers,contact_name,text,Customer contact
+# Additional Address (Bottom Section)
+towinv,radloc,invoices,radloc_number,text,RadLoc number
+towinv,radcity,invoices,radloc_city,text,RadLoc city
+towinv,radstate,invoices,radloc_state,text,RadLoc state
+towinv,radzip,invoices,radloc_zip,text,RadLoc zip
+# Financial Information
+towinv,total,invoices,total_amount,decimal(10,2),Invoice total
+towinv,totalpaid,invoices,paid_amount,decimal(10,2),Amount paid
+towinv,curbalance,invoices,balance,decimal(10,2),Current balance
+towinv,paytype,invoices,payment_type,text,Payment type
+towinv,salestax,invoices,tax_amount,decimal(10,2),Sales tax amount
+towinv,taxrate,invoices,tax_rate,decimal(10,2),Tax rate percentage
+# Line Items
+towtrans,dispnumtrs,invoice_items,id,uuid,Primary key for line item
+towtrans,descriptio,invoice_items,description,text,Line item description
+towtrans,quantity,invoice_items,quantity,decimal(10,2),Item quantity
+towtrans,price,invoice_items,unit_price,decimal(10,2),Unit price
+towtrans,compercent,invoice_items,commission_percent,decimal(10,2),Commission percentage
+towtrans,flatamount,invoice_items,flat_amount,decimal(10,2),Flat rate amount
+towtrans,comamount,invoice_items,commission_amount,decimal(10,2),Commission amount
+towtrans,glaccount,invoice_items,gl_account,text,GL account code
+towtrans,glsub,invoice_items,gl_subaccount,text,GL sub-account
+towtrans,taxable,invoice_items,taxable,boolean,Item is taxable
+towtrans,nodiscount,invoice_items,no_discount,boolean,Exclude from discounts
+towtrans,itemnum,invoice_items,item_number,text,Item number reference
+towtrans,itemgroup,invoice_items,item_group,text,Item grouping
