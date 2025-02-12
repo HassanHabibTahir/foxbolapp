@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -40,13 +40,13 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
   title,
   value,
   onChange,
-  onComplete,
+  // onComplete,
   onEnterPress,
   inputRef: externalInputRef
 }) => {
   const internalInputRef = useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef || internalInputRef;
-  const [isTimeComplete, setIsTimeComplete] = useState(false);
+  // const [isTimeComplete, setIsTimeComplete] = useState(false);
 
   const handleTimeChange = (newValue: dayjs.Dayjs | null) => {
     if (newValue && newValue.isValid()) {
@@ -59,14 +59,14 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
       const timePattern = /^([01][0-9]|2[0-3])[0-5][0-9]$/;
       
       if (timePattern.test(`${hour}${minute}`) && onEnterPress) {
-        setIsTimeComplete(true);
+        // setIsTimeComplete(true);
         onEnterPress()
       } else {
-        setIsTimeComplete(false);
+        // setIsTimeComplete(false);
       }
     } else {
       onChange('');
-      setIsTimeComplete(false);
+      // setIsTimeComplete(false);
     }
   };
 

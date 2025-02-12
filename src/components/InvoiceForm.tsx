@@ -1,4 +1,4 @@
-import { useDeviceType } from '../hooks/useDeviceType';
+// import { useDeviceType } from '../hooks/useDeviceType';
 import { useFormState } from '../hooks/useFormState';
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -10,7 +10,7 @@ import InvoiceSearch from './search/InvoiceSearch';
 import Header from './invoice/Header';
 import GeneralSection from './GeneralSection';
 import DriverSection from './DriverSection';
-import VehicleSection from './VehicleSection';
+// import VehicleSection from './VehicleSection';
 import VehicleDetailsSection from './VehicleDetailsSection';
 import LocationSection from './LocationSection';
 import NotesSection from './NotesSection';
