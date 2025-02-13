@@ -54,7 +54,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
           onChange={(value) => onUpdateDriver({ driver2: value })}
           onEnterPress={focusStatusSection}
         />
-        <div ref={statusSectionRef} className="flex-grow">
+        <div ref={statusSectionRef} className=" flex-grow">
           <StatusSection 
             times={driver}
             onTimeChange={(field, value) => onUpdateDriver({ [field]: value })}

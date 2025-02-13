@@ -22,7 +22,7 @@ const StorageSection: React.FC<StorageSectionProps> = ({
   const storageOutRef = useRef<HTMLInputElement>(null);
 
   return (
-    <FormSection title="Storage Information">
+    <FormSection title="H - Storage Information">
       <div className="flex flex-wrap gap-4">
         <DateInput 
           label="Storage In" 

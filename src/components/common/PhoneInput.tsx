@@ -81,7 +81,7 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(({
   return (
     <div className={size === 'full' ? 'w-full' : 'inline-block'}>
       <div className="flex items-center gap-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <label className="block text-sm font-medium text-gray-700 ">{label}</label>
       </div>
       <input
         ref={ref}

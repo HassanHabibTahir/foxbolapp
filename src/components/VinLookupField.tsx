@@ -98,7 +98,6 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
           <Search className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
-      
       {error && (
         <p className="text-sm text-red-600 mt-1" role="alert">
           {error}

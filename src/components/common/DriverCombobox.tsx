@@ -120,7 +120,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
         borderColor: state.isFocused ? '#3B82F6' : '#9CA3AF'
       },
       boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-      minHeight: '34px', // Reduce height
+      minHeight: '34px', 
       height: '34px', 
       padding: '0px', 
     }),
@@ -128,37 +128,37 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
       ...provided,
       padding: '0px 8px',
       display: 'flex',
-      alignItems: 'center', // Center the text vertically
-      justifyContent: 'center', // Center the text horizontally
+      alignItems: 'center', 
+      justifyContent: 'center',
     }),
     input: (provided: any) => ({
       ...provided,
       margin: '0px',
       padding: '0px',
-      fontSize: '14px', // Make text small
-      textAlign: 'center', // Center text
+      fontSize: '11px', 
+      textAlign: 'center', 
     }),
     placeholder: (provided: any) => ({
       ...provided,
-      fontSize: '14px', // Make placeholder text small
-      textAlign: 'center', // Center placeholder
-      color: '#9CA3AF', // Light gray color for placeholder
+      fontSize: '14px', 
+      textAlign: 'center', 
+      color: '#9CA3AF', 
     }),
     singleValue: (provided: any) => ({
       ...provided,
-      fontSize: '14px', // Make selected text small
-      textAlign: 'center', // Center selected text
-      color: '#111827', // Dark text color
+      fontSize: '11px', 
+      textAlign: 'center', 
+      color: '#111827',
     }),
   };
   
 
   return (
     <div>
-      <label className="block text-sm font-small text-gray-700 mb-1">
+      <label className="block text-sm font-small font-medium  text-gray-700 mb-1">
         {label}
       </label>
-      <div style={{ width: sizeClasses[size],  }}>
+      <div style={{ width: sizeClasses[size]}}>
         <Select
           ref={ref as any}
           value={selectedOption}

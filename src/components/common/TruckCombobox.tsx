@@ -145,6 +145,7 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
     control: (provided: any) => ({
       ...provided,
       borderColor: '#D1D5DB',
+      fontSize: '12px',
       '&:hover': {
         borderColor: '#9CA3AF'
       },
@@ -153,6 +154,7 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
     }),
     option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
       ...provided,
+      fontSize: '12px',
       backgroundColor: state.isSelected ? '#E5E7EB' : state.isFocused ? '#F3F4F6' : 'white',
       color: '#111827',
       cursor: 'pointer',

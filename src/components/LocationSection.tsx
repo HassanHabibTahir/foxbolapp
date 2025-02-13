@@ -46,23 +46,26 @@ const LocationSection: React.FC<LocationSectionProps> = ({
   };
 
   return (
-    <FormSection title="Location Information">
+    <FormSection title="D - Location Information">
       <div className="space-y-4">
         <div className="flex flex-col gap-4">
           <AddressAutocomplete
             label="Towed From"
+            
             value={dispatch.towedfrom || ''}
             onChange={handleAddressChange('towedfrom')}
             onEnterPress={() => towedToRef.current?.focus()}
-            className="w-full"
+            className='h-10 w-full text-[14px]'
+
           />
           <AddressAutocomplete
             ref={towedToRef}
+            
             label="Towed To"
             value={dispatch.towedto || ''}
             onChange={handleAddressChange('towedto')}
             onEnterPress={() => retowToRef.current?.focus()}
-            className="w-full"
+            className='h-10 w-full text-[14px]'
           />
           <AddressAutocomplete
             ref={retowToRef}
@@ -70,24 +73,28 @@ const LocationSection: React.FC<LocationSectionProps> = ({
             value={dispatch.retowto || ''}
             onChange={handleAddressChange('retowto')}
             onEnterPress={() => lotSectionRef.current?.focus()}
-            className="w-full"
+             className='h-10 w-full text-[14px]'
           />
         </div>
         
         <div className="flex flex-wrap gap-4">
           <FormInput
             ref={lotSectionRef}
+            size='address'
             label="Lot Section"
             title="master.lotsection"
             value={dispatch.lotsection || ''}
             onChange={(e) => onDispatchChange({ lotsection: e.target.value })}
             onEnterPress={() => callTypeRef.current?.focus()}
             placeholder="Enter lot section"
+             className='h-10 w-[15rem] text-[14px] '
+            
           />
           <FormInput
             ref={callTypeRef}
             label="Call Type"
             title="master.calltype"
+            className='h-10 w-[15rem] text-[14px] '
             value={dispatch.calltype || ''}
             onChange={(e) => onDispatchChange({ calltype: e.target.value })}
             onEnterPress={() => keysInfoRef.current?.focus()}
@@ -101,7 +108,8 @@ const LocationSection: React.FC<LocationSectionProps> = ({
             onChange={(e) => onDispatchChange({ keysinfo: e.target.value })}
             onEnterPress={() => holdNoteRef.current?.focus()}
             placeholder="Key information"
-          />
+            className='h-10 w-[15rem] text-[14px] '
+            />
           <FormInput
             ref={holdNoteRef}
             label="Hold Note"
@@ -110,7 +118,8 @@ const LocationSection: React.FC<LocationSectionProps> = ({
             onChange={(e) => onDispatchChange({ holdnote: e.target.value })}
             onEnterPress={onEnterPress}
             placeholder="Enter hold note"
-          />
+            className='h-10 w-[15rem] text-[14px]'
+            />
         </div>
       </div>
     </FormSection>

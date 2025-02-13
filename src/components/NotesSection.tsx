@@ -93,7 +93,7 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
   };
 
   return (
-    <FormSection title="Notes">
+    <FormSection title="E - Notes">
       <div className="relative">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Note
@@ -102,8 +102,9 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
           </span>
         </label>
         <textarea 
+         
           ref={ref}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 h-32
+          className="h-10 text-[14px] mt-1 block w-full rounded-md border border-gray-300 p-2 
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
             resize-y min-h-[8rem]"
           value={localValue}

@@ -41,7 +41,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   const zipRef = useRef<HTMLInputElement>(null);
 
   return (
-    <FormSection title="Registration Information">
+    <FormSection title="G - Registration Information">
       <div className="space-y-4">
         <div className="flex flex-wrap gap-4">
           <FormInput

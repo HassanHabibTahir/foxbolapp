@@ -24,6 +24,8 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       '@typescript-eslint/no-explicit-any': 'off', 
+      '@typescript-eslint/no-unused-vars': 'off', // Allow unused variables
+      'no-unused-vars': 'off' // Allow unused variables for plain JavaScript
     },
   }
 );

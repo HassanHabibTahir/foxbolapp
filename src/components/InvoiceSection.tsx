@@ -33,7 +33,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
   const contactRef = useRef<HTMLInputElement>(null);
 
   return (
-    <FormSection title="Invoice Information">
+    <FormSection title="F - Invoice Information">
       <div className="space-y-4">
         {/* Top row with invoice details */}
         <div className="flex flex-wrap gap-4">
@@ -44,8 +44,10 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             onChange={(e) => onInvoiceChange({ invoicenum: e.target.value })}
             onEnterPress={() => invDateRef.current?.focus()}
             placeholder="Invoice number"
+            className='h-10  text-[14px]'
           />
           <DateInput 
+            className='h-10  text-[14px]'
             ref={invDateRef}
             label="Date" 
             title="master.invdate" 
@@ -62,6 +64,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             onChange={(e) => onInvoiceChange({ itemgroup: e.target.value })}
             onEnterPress={() => reasonRef.current?.focus()}
             placeholder="Item group"
+            className='h-10  text-[14px]'
           />
           <FormInput
             ref={reasonRef}
@@ -71,19 +74,21 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             onChange={(e) => onInvoiceChange({ reason: e.target.value })}
             onEnterPress={() => nameRef.current?.focus()}
             placeholder="Reason"
+            className='h-10  text-[14px]'
           />
         </div>
 
         {/* Customer name and PO */}
-        <div className="flex gap-96">
+        <div className="flex flex-wrap gap-6">
           <FormInput
             ref={nameRef}
             label="Name"
+            
             title="master.billtoname"
             value={invoice.billtoname || ''}
             onChange={(e) => onInvoiceChange({ billtoname: e.target.value })}
             onEnterPress={() => poNumberRef.current?.focus()}
-            className="flex-1"
+            className="flex-1 h-10  text-[14px]"
             placeholder="Customer name"
           />
           <FormInput
@@ -93,14 +98,11 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             value={invoice.ponumber || ''}
             onChange={(e) => onInvoiceChange({ ponumber: e.target.value })}
             onEnterPress={() => addr1Ref.current?.focus()}
-            className="w-48"
+            className="flex-1 h-10 w-48  text-[14px]"
             placeholder="PO number"
+            
           />
-        </div>
-
-        {/* Address and license */}
-        <div className="flex gap-96">
-          <FormInput
+               <FormInput
             ref={addr1Ref}
             label="Address 1"
             title="master.billtoaddr1"
@@ -121,11 +123,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             className="w-48"
             placeholder="Release license"
           />
-        </div>
-
-        {/* Address 2 and phone */}
-        <div className="flex gap-96">
-          <FormInput
+             <FormInput
             ref={addr2Ref}
             label="Address 2"
             title="master.billtoaddr2"
@@ -145,11 +143,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             onChange={(value) => onInvoiceChange({ billtophone: value })}
             onEnterPress={() => cityRef.current?.focus()}
           />
-        </div>
-
-        {/* City, State, Zip and Contact */}
-        <div className="flex gap-40">
-          <div className="flex gap-2">
+           <div className="flex gap-2">
             <FormInput
               ref={cityRef}
               label="City"
@@ -188,6 +182,21 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             placeholder="Contact name"
           />
         </div>
+
+        {/* Address and license */}
+        {/* <div className="flex gap-96">
+     
+        </div> */}
+
+        {/* Address 2 and phone */}
+        {/* <div className="flex gap-96">
+       
+        </div> */}
+
+        {/* City, State, Zip and Contact */}
+        {/* <div className="flex gap-40">
+         
+        </div> */}
       </div>
     </FormSection>
   );

@@ -117,7 +117,7 @@ const InvoiceForm = () => {
       <DriverSection 
         driver={formState.driver}
         onUpdateDriver={updateDriver}
-        onEnterPress={() => focusSection(generalSectionRef)}
+        onEnterPress={() => focusSection(generalSectionRef)} 
       /> 
     </div>,
     <div ref={generalSectionRef} key="general-wrapper">

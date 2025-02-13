@@ -22,10 +22,11 @@ const VehicleDetailsSection: React.FC<VehicleDetailsProps> = ({
   const reasonRef = useRef<HTMLInputElement>(null);
 
   return (
-    <FormSection title="Vehicle Details">
-      <div className="flex gap-4 items-start">
+    <FormSection title="C - Vehicle Details" >
+      <div className="flex flex-wrap gap-4 items-start">
         <FormInput 
           label="Odometer" 
+          className="h-10 text-[14px]"
           title="master.odometer" 
           value={odometer}
           onChange={(e) => onChange('odometer', e.target.value)}
@@ -38,7 +39,7 @@ const VehicleDetailsSection: React.FC<VehicleDetailsProps> = ({
           <input
             ref={conditionRef}
             type="text"
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="h-10 text-[14px] mt-1 block w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             title="master.condition"
             value={condition}
             onChange={(e) => onChange('condition', e.target.value)}
@@ -55,6 +56,7 @@ const VehicleDetailsSection: React.FC<VehicleDetailsProps> = ({
         </div>
         <FormInput 
           ref={reasonRef}
+          className='h-10 text-[14px]'
           label="Reason" 
           title="master.reason" 
           value={reason}
