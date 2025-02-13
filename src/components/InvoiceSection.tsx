@@ -103,6 +103,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             
           />
                <FormInput
+               
             ref={addr1Ref}
             label="Address 1"
             title="master.billtoaddr1"
@@ -110,7 +111,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             value={invoice.billtoaddr1 || ''}
             onChange={(e) => onInvoiceChange({ billtoaddr1: e.target.value })}
             onEnterPress={() => releaseLicRef.current?.focus()}
-            className="flex-1"
+            className="flex-1 h-10  text-[14px]"
             placeholder="Street address"
           />
           <FormInput
@@ -120,7 +121,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             value={invoice.releaselic || ''}
             onChange={(e) => onInvoiceChange({ releaselic: e.target.value })}
             onEnterPress={() => addr2Ref.current?.focus()}
-            className="w-48"
+            className="w-48 h-10  text-[14px]"
             placeholder="Release license"
           />
              <FormInput
@@ -131,7 +132,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             value={invoice.billtoaddr2 || ''}
             onChange={(e) => onInvoiceChange({ billtoaddr2: e.target.value })}
             onEnterPress={() => phoneRef.current?.focus()}
-            className="flex-1"
+            className="flex-1 h-10  text-[14px]"
             placeholder="Apt, Suite, etc."
           />
           <PhoneInput
@@ -151,7 +152,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
               value={invoice.billtocity || ''}
               onChange={(e) => onInvoiceChange({ billtocity: e.target.value })}
               onEnterPress={() => stateRef.current?.focus()}
-              className="flex-1"
+              className="flex-1 h-10  text-[14px]"
               placeholder="City"
             />
             <StateInput
@@ -178,7 +179,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             value={invoice.billtocont || ''}
             onChange={(e) => onInvoiceChange({ billtocont: e.target.value })}
             onEnterPress={onEnterPress}
-            className="w-64"
+            className="w-64 h-10  text-[14px]"
             placeholder="Contact name"
           />
         </div>

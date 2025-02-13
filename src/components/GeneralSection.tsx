@@ -51,13 +51,13 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     const [selectedOption, setSelectedOption] = useState<any | null>(null);
     const [menuIsOpen, setMenuIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-
+    
     const sizeClasses = {
       xs: "5rem",
       sm: "8rem",
       md: "12rem",
       lg: "30ch",
-      xl: "39.5rem",
+      xl: "100%",
       full: "100%",
     };
 
@@ -317,7 +317,6 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
             onChange={(value) => onInvoiceChange({ dateStored: value })}
             onEnterPress={() => accountRef.current?.focus()}
           />
-        </div>
        
         <AccountName
           ref={accountRef}
@@ -328,6 +327,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
           onChange={(value) => onDispatchChange({ callname: value })}
           onEnterPress={() => whoCalledRef.current?.focus()}
         />
+        </div>
         <div className="flex flex-wrap gap-2">
           <FormInput
             ref={whoCalledRef}

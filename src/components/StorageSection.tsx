@@ -27,7 +27,8 @@ const StorageSection: React.FC<StorageSectionProps> = ({
         <DateInput 
           label="Storage In" 
           title="master.storagein"
-          size="sm"
+          size="md"
+          className='h-10  text-[14px]'
           value={dispatch.datein || ''}
           onChange={(value) => onDispatchChange({ datein: value })}
           onEnterPress={() => storageOutRef.current?.focus()}
@@ -36,7 +37,8 @@ const StorageSection: React.FC<StorageSectionProps> = ({
           ref={storageOutRef}
           label="Storage Out" 
           title="master.storageout"
-          size="sm"
+          size="md"
+          className='h-10  text-[14px]'
           value={dispatch.dateout || ''}
           onChange={(value) => onDispatchChange({ dateout: value })}
           onEnterPress={onEnterPress}

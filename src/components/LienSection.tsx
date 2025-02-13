@@ -140,20 +140,22 @@ const LienSection: React.FC<LienSectionProps> = ({
   const lienFeeRef = useRef<any>(null);
 
   return (
-    <FormSection title="Lien Information">
+    <FormSection title="I - Lien Information">
       <div className="flex flex-wrap gap-4">
         <BooleanSelect
+        className='h-10  text-[14px]'
           label="Commission"
           value={dispatch.commission || false}
           onChange={(value) => onDispatchChange({ commission: value })}
-          size="md"
+          size="lg"
           onEnterPress={() => lienStartRef.current?.focus()}
         />
         <DateInput 
           ref={lienStartRef}
+          className='h-10  text-[14px]'
           label="Lien Start" 
           title="master.liendin"
-          size="sm"
+          size="md"
           value={dispatch.liendin || ''}
           onChange={(value) => onDispatchChange({ liendin: value })}
           onEnterPress={() => lienClearRef.current?.focus()}
@@ -162,7 +164,8 @@ const LienSection: React.FC<LienSectionProps> = ({
           ref={lienClearRef}
           label="Lien Clear" 
           title="master.liendout"
-          size="sm"
+          size="md"
+          className='h-10  text-[14px]'
           value={dispatch.liendout || ''}
           onChange={(value) => onDispatchChange({ liendout: value })}
           onEnterPress={() => lienTypeRef.current?.focus()}
@@ -170,6 +173,7 @@ const LienSection: React.FC<LienSectionProps> = ({
         <LienTypeInput 
           ref={lienTypeRef}
           label="Lien Type" 
+          className=''
           title="master.lientype"
           value={dispatch.lientype || ''}
           onChange={(value) => onDispatchChange({ lientype: value })}
