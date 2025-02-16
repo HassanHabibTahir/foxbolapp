@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import FormSection from "./common/FormSection";
 import FormInput from "./common/FormInput";
 import DateInput from "./common/DateInput";
@@ -43,10 +43,11 @@ interface AccountNameProps {
   value?: string;
   onChange?: (value: string) => void;
   onEnterPress?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
-  ({ label, title, size = "md", value = "", onChange, onEnterPress }, ref) => {
+  ({ label, title, size = "md", value = "", onChange, onEnterPress ,onKeyDown}, ref) => {
     const [companies, setCompanies] = useState<any[]>([]);
     const [selectedOption, setSelectedOption] = useState<any | null>(null);
     const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -106,13 +107,17 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-      if (e.key === "Enter" && !menuIsOpen && onEnterPress) {
-        e.preventDefault();
-        onEnterPress();
-      }
-    };
-
+    // const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    //   if (e.key === "Enter" && !menuIsOpen && onEnterPress) {
+    //     e.preventDefault();
+    //     onEnterPress();
+    //   }
+    // };
+   const handleKeyDown = (e: any) => {
+     if (onKeyDown) {
+       onKeyDown(e);
+     }
+   };
     const handleInputChange = (inputValue: string) => {
       setSearchTerm(inputValue);
     };
@@ -196,179 +201,226 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
 
 AccountName.displayName = "AccountName";
 
-const GeneralSection: React.FC<GeneralSectionProps> = ({
-  dispatch,
-  invoice,
-  onDispatchChange,
-  onInvoiceChange,
-  onEnterPress,
-}) => {
-  const tagRef = useRef<HTMLInputElement>(null);
-  const truckRef = useRef<HTMLInputElement>(null);
-  const dispatcherRef = useRef<HTMLInputElement>(null);
-  const kitRef = useRef<HTMLInputElement>(null);
-  const memberNumRef = useRef<HTMLInputElement>(null);
-  const memberExpRef = useRef<HTMLInputElement>(null);
-  const valueRef = useRef<HTMLInputElement>(null);
-  const dateStoredRef = useRef<HTMLInputElement>(null);
-  const accountRef = useRef<HTMLInputElement>(null);
-  const whoCalledRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-  const refNumRef = useRef<HTMLInputElement>(null);
-  const vehicleSectionRef = useRef<HTMLDivElement>(null);
-
-  const focusVehicleSection = () => {
-    const firstInput = vehicleSectionRef.current?.querySelector(
-      "input"
-    ) as HTMLElement;
-    if (firstInput) {
-      firstInput.focus();
-    } else if (onEnterPress) {
-      onEnterPress();
+const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(
+  ({ dispatch, invoice, onDispatchChange, onInvoiceChange }, ref) => {
+    const inputRefs = {
+      date: useRef<HTMLInputElement>(null),
+      tag: useRef<HTMLInputElement>(null),
+      truck: useRef<HTMLInputElement>(null),
+      dispatcher: useRef<HTMLInputElement>(null),
+      kit: useRef<HTMLInputElement>(null),
+      memberNum: useRef<HTMLInputElement>(null),
+      memberExp: useRef<HTMLInputElement>(null),
+      value: useRef<HTMLInputElement>(null),
+      dateStored: useRef<HTMLInputElement>(null),
+      account: useRef<HTMLInputElement>(null),
+      whoCalled: useRef<HTMLInputElement>(null),
+      phone: useRef<HTMLInputElement>(null),
+      refNum: useRef<HTMLInputElement>(null),
+      vehicleSection: useRef<HTMLDivElement>(null),
     }
-  };
 
-  return (
-    <FormSection title="A - General Information">
-      <div className="space-y-0">
-        <div className="flex flex-wrap gap-2">
-          <DateInput
-            className="h-10 text-[14px]"
-            label="Date"
-            title="master.towdate"
-            size="sm"
-            value={dispatch.towdate || ""}
-            onChange={(value) => onDispatchChange({ towdate: value })}
-            onEnterPress={() => tagRef.current?.focus()}
-          />
-          <FormInput
-            ref={tagRef}
-            className="h-10 text-[14px]"
-            label="Tag #"
-            title="master.towtagnum"
-            value={dispatch.towtagnum || ""}
-            onChange={(e) => onDispatchChange({ towtagnum: e.target.value })}
-            onEnterPress={() => truckRef.current?.focus()}
-          />
-          <TruckCombobox
-            ref={truckRef}
-            label="Truck"
-            title="master.trucknum"
-            size="lg"
-            value={dispatch.trucknum || ""}
-            onChange={(value) => onDispatchChange({ trucknum: value })}
-            onEnterPress={() => dispatcherRef.current?.focus()}
-          />
-          <FormInput
-            ref={dispatcherRef}
-            label="Dispatcher"
-            className="h-10 text-[14px]"
-            title="master.dispatcher"
-            value={dispatch.dispatcher || ""}
-            onChange={(e) => onDispatchChange({ dispatcher: e.target.value })}
-            onEnterPress={() => kitRef.current?.focus()}
-          />
-          <KitCombobox
-            ref={kitRef}
-            label="Kit #"
-            title="master.kitnum"
-            size="md"
-            value={invoice.kitnum || ""}
-            onChange={(value) => onInvoiceChange({ kitnum: value })}
-            onEnterPress={() => memberNumRef.current?.focus()}
-          />
+    const inputOrder = [
+      "date",
+      "tag",
+      "truck",
+      "dispatcher",
+      "kit",
+      "memberNum",
+      "memberExp",
+      "value",
+      "dateStored",
+      "account",
+      "whoCalled",
+      "phone",
+      "refNum",
+      "vehicleSection",
+    ]
+
+    const focusNextInput = (currentIndex: number) => {
+      const nextIndex = (currentIndex + 1) % inputOrder.length
+      const nextRef = inputRefs[inputOrder[nextIndex] as keyof typeof inputRefs]
+      if (nextRef.current) {
+        nextRef.current.focus()
+      }
+    }
+
+    const focusPreviousInput = (currentIndex: number) => {
+      const previousIndex = (currentIndex - 1 + inputOrder.length) % inputOrder.length
+      const previousRef = inputRefs[inputOrder[previousIndex] as keyof typeof inputRefs]
+      if (previousRef.current) {
+        previousRef.current.focus()
+      }
+    }
+
+    // const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>, index: number) => {
+    //   console.log(index,"what is  the index")
+    //   if (e.key === "Enter") {
+    //     e.preventDefault()
+    //     focusNextInput(index)
+    //   } else if (e.key === "ArrowUp") {
+    //     e.preventDefault()
+    //     focusPreviousInput(index)
+    //   }
+    // }
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>, index: number) => {
+      console.log("Current index before timeout:", index);
+      if (e.key === "Enter") {
+        e.preventDefault();
+        setTimeout(() => {
+          console.log("Index after timeout:", index);
+          focusNextInput(index);
+        }, 0);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setTimeout(() => {
+          focusPreviousInput(index);
+        }, 0);
+      }
+    };
+
+    return (
+      <FormSection title="A - General Information" ref={ref}>
+        <div className="space-y-0">
+          <div className="flex flex-wrap gap-2">
+            <DateInput
+              ref={inputRefs.date}
+              className="h-10 text-[14px]"
+              label="Date"
+              title="master.towdate"
+              size="sm"
+              value={dispatch.towdate || ""}
+              onChange={(value) => onDispatchChange({ towdate: value })}
+              onKeyDown={(e) => handleKeyDown(e, 0)}
+            />
+            <FormInput
+              ref={inputRefs.tag}
+              className="h-10 text-[14px]"
+              label="Tag #"
+              title="master.towtagnum"
+              value={dispatch.towtagnum || ""}
+              onChange={(e) => onDispatchChange({ towtagnum: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 1)}
+            />
+            <TruckCombobox
+              ref={inputRefs.truck}
+              label="Truck"
+              title="master.trucknum"
+              size="lg"
+              value={dispatch.trucknum || ""}
+              onChange={(value) => onDispatchChange({ trucknum: value })}
+              onKeyDown={(e) => handleKeyDown(e, 2)}
+            />
+            <FormInput
+              ref={inputRefs.dispatcher}
+              label="Dispatcher"
+              className="h-10 text-[14px]"
+              title="master.dispatcher"
+              value={dispatch.dispatcher || ""}
+              onChange={(e) => onDispatchChange({ dispatcher: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 3)}
+            />
+            <KitCombobox
+              ref={inputRefs.kit}
+              label="Kit #"
+              title="master.kitnum"
+              size="md"
+              value={invoice.kitnum || ""}
+              onChange={(value) => onInvoiceChange({ kitnum: value })}
+              onKeyDown={(e) => handleKeyDown(e, 4)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <FormInput
+              ref={inputRefs.memberNum}
+              className="h-10 text-[14px]"
+              label="Member #"
+              title="master.membernum"
+              value={invoice.membernum || ""}
+              onChange={(e) => onInvoiceChange({ membernum: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 5)}
+            />
+            <DateInput
+              ref={inputRefs.memberExp}
+              className="h-10 text-[14px]"
+              label="Expires"
+              title="master.memberexp"
+              size="sm"
+              value={invoice.memberexp || ""}
+              onChange={(value) => onInvoiceChange({ memberexp: value })}
+              onKeyDown={(e) => handleKeyDown(e, 6)}
+            />
+            <FormInput
+              ref={inputRefs.value}
+              className="h-10 text-[14px]"
+              label="Value"
+              title="master.value"
+              value={dispatch.value || ""}
+              onChange={(e) => onDispatchChange({ value: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 7)}
+            />
+            <DateInput
+              ref={inputRefs.dateStored}
+              className="h-10 text-[14px]"
+              label="Date Stored"
+              title="master.dateStored"
+              size="sm"
+              value={invoice.dateStored || ""}
+              onChange={(value) => onInvoiceChange({ dateStored: value })}
+              onKeyDown={(e) => handleKeyDown(e, 8)}
+            />
+            <AccountName
+              ref={inputRefs.account}
+              label="Account Name"
+              title="master.account"
+              size="xl"
+              value={dispatch.callname || ""}
+              onChange={(value) => onDispatchChange({ callname: value })}
+              onKeyDown={(e) => handleKeyDown(e, 9)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <FormInput
+              ref={inputRefs.whoCalled}
+              label="Who Called"
+              className="h-10 text-[14px]"
+              title="master.whocalled"
+              value={dispatch.whocalled || ""}
+              onChange={(e) => onDispatchChange({ whocalled: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 10)}
+            />
+            <PhoneInput
+              ref={inputRefs.phone}
+              label="Phone #"
+              title="master.phone"
+              className="h-10 text-[14px]"
+              size="lg"
+              value={dispatch.callphone || ""}
+              onChange={(value) => onDispatchChange({ callphone: value })}
+              onKeyDown={(e) => handleKeyDown(e, 11)}
+            />
+            <FormInput
+              ref={inputRefs.refNum}
+              className="h-10 text-[14px]"
+              label="Reference #"
+              title="master.refnum"
+              value={dispatch.refnumber || ""}
+              onChange={(e) => onDispatchChange({ refnumber: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, 12)}
+            />
+          </div>
+
+          {/* <div ref={inputRefs.vehicleSection} className="">
+            <VehicleSection
+              dispatch={dispatch}
+              onDispatchChange={onDispatchChange}
+              // onKeyDown={(e) => handleKeyDown(e, 13)}
+            />
+          </div> */}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <FormInput
-            ref={memberNumRef}
-            className="h-10 text-[14px]"
-            label="Member #"
-            title="master.membernum"
-            value={invoice.membernum || ""}
-            onChange={(e) => onInvoiceChange({ membernum: e.target.value })}
-            onEnterPress={() => memberExpRef.current?.focus()}
-          />
-          <DateInput
-            ref={memberExpRef}
-            className="h-10 text-[14px]"
-            label="Expires"
-            title="master.memberexp"
-            size="sm"
-            value={invoice.memberexp || ""}
-            onChange={(value) => onInvoiceChange({ memberexp: value })}
-            onEnterPress={() => valueRef.current?.focus()}
-          />
-          <FormInput
-            ref={valueRef}
-            className="h-10 text-[14px]"
-            label="Value"
-            title="master.value"
-            value={dispatch.value || ""}
-            onChange={(e) => onDispatchChange({ value: e.target.value })}
-            onEnterPress={() => dateStoredRef.current?.focus()}
-          />
-          <DateInput
-            ref={dateStoredRef}
-            className="h-10 text-[14px]"
-            label="Date Stored"
-            title="master.dateStored"
-            size="sm"
-            value={invoice.dateStored || ""}
-            onChange={(value) => onInvoiceChange({ dateStored: value })}
-            onEnterPress={() => accountRef.current?.focus()}
-          />
-       
-        <AccountName
-          ref={accountRef}
-          label="Account Name"
-          title="master.account"
-          size="xl"
-          value={dispatch.callname || ""}
-          onChange={(value) => onDispatchChange({ callname: value })}
-          onEnterPress={() => whoCalledRef.current?.focus()}
-        />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <FormInput
-            ref={whoCalledRef}
-            label="Who Called"
-            className="h-10 text-[14px]"
-            title="master.whocalled"
-            value={dispatch.whocalled || ""}
-            onChange={(e) => onDispatchChange({ whocalled: e.target.value })}
-            onEnterPress={() => phoneRef.current?.focus()}
-          />
-          <PhoneInput
-            ref={phoneRef}
-            label="Phone #"
-            title="master.phone"
-            className="h-10 text-[14px]"
-            size="lg"
-            value={dispatch.callphone || ""}
-            onChange={(value) => onDispatchChange({ callphone: value })}
-            onEnterPress={() => refNumRef.current?.focus()}
-          />
-          <FormInput
-            ref={refNumRef}
-            className="h-10 text-[14px]"
-            label="Reference #"
-            title="master.refnum"
-            value={dispatch.refnumber || ""}
-            onChange={(e) => onDispatchChange({ refnumber: e.target.value })}
-            onEnterPress={focusVehicleSection}
-          />
-        </div>
-        
-        <div ref={vehicleSectionRef} className="">
-          <VehicleSection
-            dispatch={dispatch} 
-            onDispatchChange={onDispatchChange}
-            onEnterPress={onEnterPress}
-          />
-        </div>
-      </div>
-    </FormSection>
-  );
-};
+      </FormSection>
+    )
+  },
+)
 
 export default GeneralSection;

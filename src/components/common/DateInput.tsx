@@ -7,7 +7,7 @@ interface DateInputProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
   value?: string;
   onChange?: (value: string) => void;
-  onEnterPress?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const DateInput = forwardRef<HTMLInputElement, DateInputProps>(({ 
@@ -17,16 +17,15 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(({
   size = 'sm',
   value = '',
   onChange = () => {},
-  onEnterPress
+  onKeyDown
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
+    if (onKeyDown) {
+      onKeyDown(e);
     }
   };
 

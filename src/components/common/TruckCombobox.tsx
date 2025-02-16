@@ -19,6 +19,8 @@ interface TruckComboboxProps {
   value?: string;
   onChange?: (value: string) => void;
   onEnterPress?: () => void;
+      onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  
 }
 
 const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
@@ -27,7 +29,8 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
   size = 'lg',
   value = '',
   onChange,
-  onEnterPress
+  onEnterPress,
+  onKeyDown
 }, ref) => {
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [selectedOption, setSelectedOption] = useState<TruckOption | null>(null);
@@ -99,48 +102,89 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (!menuIsOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-      e.preventDefault();
-      setMenuIsOpen(true);
-      setHighlightedIndex(e.key === 'ArrowDown' ? 0 : options.length - 1);
-      return;
-    }
-
-    if (menuIsOpen) {
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          setHighlightedIndex(prev => 
-            prev < options.length - 1 ? prev + 1 : 0
-          );
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          setHighlightedIndex(prev => 
-            prev > 0 ? prev - 1 : options.length - 1
-          );
-          break;
-        case 'Enter':
-          e.preventDefault();
-          if (highlightedIndex >= 0) {
-            handleChange(options[highlightedIndex]);
-            setMenuIsOpen(false);
-          } else if (onEnterPress) {
-            onEnterPress();
-          }
-          break;
-        case 'Escape':
-          setMenuIsOpen(false);
-          setHighlightedIndex(-1);
-          break;
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (onKeyDown) {
+        onKeyDown(e)
       }
-    } else if (e.key === 'Enter' && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
     }
-  };
+  // const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+  //   if (!menuIsOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+  //     e.preventDefault();
+  //     setMenuIsOpen(true);
+  //     setHighlightedIndex(e.key === 'ArrowDown' ? 0 : options.length - 1);
+  //     return;
+  //   }
 
+  //   if (menuIsOpen) {
+  //     switch (e.key) {
+  //       case 'ArrowDown':
+  //         e.preventDefault();
+  //         setHighlightedIndex(prev => 
+  //           prev < options.length - 1 ? prev + 1 : 0
+  //         );
+  //         break;
+  //       case 'ArrowUp':
+  //         e.preventDefault();
+  //         setHighlightedIndex(prev => 
+  //           prev > 0 ? prev - 1 : options.length - 1
+  //         );
+  //         break;
+  //       case 'Enter':
+  //         e.preventDefault();
+  //         if (highlightedIndex >= 0) {
+  //           handleChange(options[highlightedIndex]);
+  //           setMenuIsOpen(false);
+  //         } else if (onEnterPress) {
+  //           onEnterPress();
+  //         }
+  //         break;
+  //       case 'Escape':
+  //         setMenuIsOpen(false);
+  //         setHighlightedIndex(-1);
+  //         break;
+  //     }
+  //   } else if (e.key === 'Enter' && onEnterPress) {
+  //     e.preventDefault();
+  //     onEnterPress();
+  //   }
+  // };
+  // const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+  //   if (!menuIsOpen && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+  //     e.preventDefault()
+  //     setMenuIsOpen(true)
+  //     setHighlightedIndex(e.key === "ArrowDown" ? 0 : options.length - 1)
+  //     return
+  //   }
+
+  //   if (menuIsOpen) {
+  //     switch (e.key) {
+  //       case "ArrowDown":
+  //         e.preventDefault()
+  //         setHighlightedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0))
+  //         break
+  //       case "ArrowUp":
+  //         e.preventDefault()
+  //         setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1))
+  //         break
+  //       case "Enter":
+  //         e.preventDefault()
+  //         if (highlightedIndex >= 0) {
+  //           handleChange(options[highlightedIndex])
+  //           setMenuIsOpen(false)
+  //         } else if (onEnterPress) {
+  //           onEnterPress()
+  //         }
+  //         break
+  //       case "Escape":
+  //         setMenuIsOpen(false)
+  //         setHighlightedIndex(-1)
+  //         break
+  //     }
+  //   } else if (e.key === "Enter" && onEnterPress) {
+  //     e.preventDefault()
+  //     onEnterPress()
+  //   }
+  // }
   const customStyles = {
     control: (provided: any) => ({
       ...provided,

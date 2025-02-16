@@ -14,6 +14,8 @@ interface FormInputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEnterPress?: () => void;
   disabled?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  
 }
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({ 
@@ -27,19 +29,24 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({
   height = '',
   onChange,
   onEnterPress,
-  disabled = false
+  disabled = false,
+  onKeyDown
 }, ref) => {
   const deviceType = useDeviceType();
   const isMobile = deviceType === 'mobile';
   const width = isMobile ? '100%' : fieldSizes[size];
 
+  // const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+  //     e.preventDefault();
+  //     onEnterPress();
+  //   }
+  // };
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
+    if (onKeyDown) {
+      onKeyDown(e)
     }
-  };
-
+  }
   return (
     <div className={isMobile ? 'w-full' : ''}>
       <label className="block text-sm font-medium text-gray-700 mobile-text-sm mb-1">
