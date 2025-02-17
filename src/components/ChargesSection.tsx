@@ -46,7 +46,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   const [amountReceived, setAmountReceived] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
-  const [taxAmount, setTaxAmount] = useState(0);
+  const [taxAmount, setTaxAmount] = useState(0);  
 
   // Create refs for keyboard navigation
   const itemRefs = useRef<(HTMLInputElement | null)[]>([]);

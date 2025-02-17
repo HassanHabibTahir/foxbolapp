@@ -26,6 +26,8 @@ interface KitComboboxProps {
   onChange?: (value: string) => void;
   onKitSelect?: (kit: Kit) => void;
   onEnterPress?: () => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  
 }
 
 const KitCombobox = forwardRef<HTMLInputElement, KitComboboxProps>(
@@ -38,6 +40,7 @@ const KitCombobox = forwardRef<HTMLInputElement, KitComboboxProps>(
       onChange,
       onKitSelect,
       onEnterPress,
+      onKeyDown,
     },
     ref
   ) => {
@@ -110,55 +113,59 @@ const KitCombobox = forwardRef<HTMLInputElement, KitComboboxProps>(
         setTimeout(onEnterPress, 0);
       }
     };
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (onKeyDown) {
+      onKeyDown(e)
+    }
+  }
+    // const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    //   if (
+    //     !isOpen &&
+    //     (e.key === "ArrowDown" || e.key === "ArrowUp") &&
+    //     kits.length > 0
+    //   ) {
+    //     e.preventDefault();
+    //     setIsOpen(true);
+    //     setHighlightedIndex(e.key === "ArrowDown" ? 0 : kits.length - 1);
+    //     return;
+    //   }
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-      if (
-        !isOpen &&
-        (e.key === "ArrowDown" || e.key === "ArrowUp") &&
-        kits.length > 0
-      ) {
-        e.preventDefault();
-        setIsOpen(true);
-        setHighlightedIndex(e.key === "ArrowDown" ? 0 : kits.length - 1);
-        return;
-      }
-
-      if (isOpen && kits.length > 0) {
-        switch (e.key) {
-          case "ArrowDown":
-            e.preventDefault();
-            setHighlightedIndex((prev) =>
-              prev < kits.length - 1 ? prev + 1 : 0
-            );
-            break;
-          case "ArrowUp":
-            e.preventDefault();
-            setHighlightedIndex((prev) =>
-              prev > 0 ? prev - 1 : kits.length - 1
-            );
-            break;
-          case "Enter":
-            e.preventDefault();
-            if (highlightedIndex >= 0) {
-              handleSelect(kits[highlightedIndex]);
-            } else if (onEnterPress) {
-              onEnterPress();
-            }
-            break;
-          case "Escape":
-            setIsOpen(false);
-            setHighlightedIndex(-1);
-            break;
-          case "Tab":
-            setIsOpen(false);
-            setHighlightedIndex(-1);
-            break;
-        }
-      } else if (e.key === "Enter" && onEnterPress) {
-        e.preventDefault();
-        onEnterPress();
-      }
-    };
+    //   if (isOpen && kits.length > 0) {
+    //     switch (e.key) {
+    //       case "ArrowDown":
+    //         e.preventDefault();
+    //         setHighlightedIndex((prev) =>
+    //           prev < kits.length - 1 ? prev + 1 : 0
+    //         );
+    //         break;
+    //       case "ArrowUp":
+    //         e.preventDefault();
+    //         setHighlightedIndex((prev) =>
+    //           prev > 0 ? prev - 1 : kits.length - 1
+    //         );
+    //         break;
+    //       case "Enter":
+    //         e.preventDefault();
+    //         if (highlightedIndex >= 0) {
+    //           handleSelect(kits[highlightedIndex]);
+    //         } else if (onEnterPress) {
+    //           onEnterPress();
+    //         }
+    //         break;
+    //       case "Escape":
+    //         setIsOpen(false);
+    //         setHighlightedIndex(-1);
+    //         break;
+    //       case "Tab":
+    //         setIsOpen(false);
+    //         setHighlightedIndex(-1);
+    //         break;
+    //     }
+    //   } else if (e.key === "Enter" && onEnterPress) {
+    //     e.preventDefault();
+    //     onEnterPress();
+    //   }
+    // };
 
     const handleBlur = (e: React.FocusEvent) => {
       // Check if the related target is within the component

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, KeyboardEvent } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import Select, { components } from 'react-select';
 import { supabase } from '../../lib/supabase';
 
@@ -21,17 +21,20 @@ interface DriverComboboxProps {
   value?: string;
   onChange?: (value: string) => void;
   onDriverSelect?: (driver: Driver) => void;
-  onEnterPress?: () => void;
+  tabIndex?: number;
+  onKeyDown?:any
+  inputRefs?:any;
 }
 
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
   label,
-  // title,
   size = 'xs',
   value = '',
   onChange,
   onDriverSelect,
-  onEnterPress
+  tabIndex,
+  inputRefs,
+  onKeyDown
 }, ref) => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedOption, setSelectedOption] = useState<DriverOption | null>(null);
@@ -92,25 +95,24 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
     driver
   }));
 
-  const handleChange = (option: DriverOption | null, actionMeta: any) => {
+  const handleChange = (option: DriverOption | null) => {
     setSelectedOption(option);
     if (option) {
       onChange?.(option.value);
       onDriverSelect?.(option.driver);
-      if (actionMeta.action === 'select-option' && onEnterPress) {
-        setTimeout(onEnterPress, 0);
-      }
+      // Close menu and allow focus to move to next element
+      setMenuIsOpen(false);
     } else {
       onChange?.('');
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Enter' && !menuIsOpen && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent) => {
+  //   if (e.key === 'Enter' && !menuIsOpen) {
+  //     e.preventDefault();
+  //     // Let the global handler take care of focus movement
+  //   }
+  // };
 
   const customStyles = {
     control: (provided: any, state: { isFocused: boolean }) => ({
@@ -120,46 +122,46 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
         borderColor: state.isFocused ? '#3B82F6' : '#9CA3AF'
       },
       boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-      minHeight: '34px', 
-      height: '34px', 
-      padding: '0px', 
+      minHeight: '34px',
+      height: '34px',
+      padding: '0px',
     }),
     valueContainer: (provided: any) => ({
       ...provided,
       padding: '0px 8px',
       display: 'flex',
-      alignItems: 'center', 
+      alignItems: 'center',
       justifyContent: 'center',
     }),
     input: (provided: any) => ({
       ...provided,
       margin: '0px',
       padding: '0px',
-      fontSize: '11px', 
-      textAlign: 'center', 
+      fontSize: '11px',
+      textAlign: 'center',
     }),
     placeholder: (provided: any) => ({
       ...provided,
-      fontSize: '14px', 
-      textAlign: 'center', 
-      color: '#9CA3AF', 
+      fontSize: '14px',
+      textAlign: 'center',
+      color: '#9CA3AF',
     }),
     singleValue: (provided: any) => ({
       ...provided,
-      fontSize: '11px', 
-      textAlign: 'center', 
+      fontSize: '11px',
+      textAlign: 'center',
       color: '#111827',
     }),
   };
-  
 
   return (
     <div>
-      <label className="block text-sm font-small font-medium  text-gray-700 mb-1">
+      <label className="block text-sm font-small font-medium text-gray-700 mb-1">
         {label}
       </label>
-      <div style={{ width: sizeClasses[size]}}>
+      <div style={{ width: sizeClasses[size] }}>
         <Select
+          onKeyDown={onKeyDown}
           ref={ref as any}
           value={selectedOption}
           onChange={handleChange}
@@ -168,7 +170,6 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
           placeholder="Select a driver"
           isClearable
           isSearchable
-          onKeyDown={handleKeyDown}
           menuIsOpen={menuIsOpen}
           onMenuOpen={() => setMenuIsOpen(true)}
           onMenuClose={() => setMenuIsOpen(false)}
@@ -176,7 +177,8 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
           blurInputOnSelect={true}
           captureMenuScroll={true}
           closeMenuOnSelect={true}
-          
+          tabIndex={tabIndex}
+          // onKeyDown={handleKeyDown}
           components={{
             Option: ({ children, ...props }) => (
               <components.Option {...props}>
@@ -184,8 +186,6 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
               </components.Option>
             )
           }}
-         
-          // title={title}
         />
       </div>
     </div>

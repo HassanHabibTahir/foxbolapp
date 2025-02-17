@@ -12,6 +12,7 @@ interface MilitaryTimeInputProps {
   onChange: (value: string) => void;
   onComplete?: () => void;
   onEnterPress?: () => void;
+  onKeyDown:any,
   inputRef?: React.RefObject<HTMLInputElement>;
 }
 
@@ -41,6 +42,7 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
   value,
   onChange,
   // onComplete,
+  onKeyDown,
   onEnterPress,
   inputRef: externalInputRef
 }) => {
@@ -103,7 +105,7 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
       e.preventDefault();
       input.setSelectionRange(2, 2);
     }
-
+    onKeyDown(e)
   };
 
   const timeValue = value ? 
