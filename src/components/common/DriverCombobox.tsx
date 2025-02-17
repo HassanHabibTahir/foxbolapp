@@ -22,6 +22,8 @@ interface DriverComboboxProps {
   onChange?: (value: string) => void;
   onDriverSelect?: (driver: Driver) => void;
   tabIndex?: number;
+  onKeyDown?:any
+  inputRefs?:any;
 }
 
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
@@ -31,6 +33,8 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
   onChange,
   onDriverSelect,
   tabIndex,
+  inputRefs,
+  onKeyDown
 }, ref) => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedOption, setSelectedOption] = useState<DriverOption | null>(null);
@@ -103,12 +107,12 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !menuIsOpen) {
-      e.preventDefault();
-      // Let the global handler take care of focus movement
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent) => {
+  //   if (e.key === 'Enter' && !menuIsOpen) {
+  //     e.preventDefault();
+  //     // Let the global handler take care of focus movement
+  //   }
+  // };
 
   const customStyles = {
     control: (provided: any, state: { isFocused: boolean }) => ({
@@ -157,6 +161,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
       </label>
       <div style={{ width: sizeClasses[size] }}>
         <Select
+          onKeyDown={onKeyDown}
           ref={ref as any}
           value={selectedOption}
           onChange={handleChange}
@@ -173,7 +178,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(({
           captureMenuScroll={true}
           closeMenuOnSelect={true}
           tabIndex={tabIndex}
-          onKeyDown={handleKeyDown}
+          // onKeyDown={handleKeyDown}
           components={{
             Option: ({ children, ...props }) => (
               <components.Option {...props}>

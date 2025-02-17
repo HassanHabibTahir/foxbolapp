@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { forwardRef } from 'react';
 import MilitaryTimeInput from './common/MilitaryTimeInput';
 
 interface StatusSectionProps {
@@ -11,53 +11,51 @@ interface StatusSectionProps {
   };
   onTimeChange: (field: string, value: string) => void;
   onEnterPress?: () => void;
+  inputRefs: any;
+  handleKeyDown:any
 }
 
-const StatusSection: React.FC<StatusSectionProps> = ({ 
+const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({ 
   times, 
   onTimeChange,
-  onEnterPress 
-}) => {
-  // Create refs for each input
-  const receivedRef = useRef<HTMLInputElement>(null);
-  const enRouteRef = useRef<HTMLInputElement>(null);
-  const arrivedRef = useRef<HTMLInputElement>(null);
-  const loadedRef = useRef<HTMLInputElement>(null);
-  const clearedRef = useRef<HTMLInputElement>(null);
-
+  onEnterPress,
+  inputRefs,
+  handleKeyDown
+}: StatusSectionProps, ref) => {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div ref={ref} className="flex flex-wrap gap-2">
       <MilitaryTimeInput
         label="Received"
         title="drivetran.timerec"
         value={times.timerec || ''}
         onChange={(value) => onTimeChange('timerec', value)}
-        onEnterPress={() => enRouteRef.current?.focus()}
-        inputRef={receivedRef}
+        inputRef={inputRefs.receivedRef}
+        onKeyDown={(e:any) => handleKeyDown(e, 2)}
       />
       <MilitaryTimeInput
         label="En route"
         title="drivetran.timeinrt"
         value={times.timeinrt || ''}
         onChange={(value) => onTimeChange('timeinrt', value)}
-        onEnterPress={() => arrivedRef.current?.focus()}
-        inputRef={enRouteRef}
+        inputRef={inputRefs.enRouteRef}
+        onKeyDown={(e:any)=>handleKeyDown(e,3)}
       />
+      
       <MilitaryTimeInput
         label="Arrived"
         title="drivetran.timearrive"
         value={times.timearrive || ''}
         onChange={(value) => onTimeChange('timearrive', value)}
-        onEnterPress={() => loadedRef.current?.focus()}
-        inputRef={arrivedRef}
+        inputRef={inputRefs.arrivedRef}
+        onKeyDown={(e:any)=>handleKeyDown(e,4)}
+
       />
-      <MilitaryTimeInput
+      {/* <MilitaryTimeInput
         label="Loaded"
         title="drivetran.timeintow"
         value={times.timeintow || ''}
         onChange={(value) => onTimeChange('timeintow', value)}
-        onEnterPress={() => clearedRef.current?.focus()}
-        inputRef={loadedRef}
+        inputRef={inputRefs.loadedRef}
       />
       <MilitaryTimeInput
         label="Cleared"
@@ -65,10 +63,10 @@ const StatusSection: React.FC<StatusSectionProps> = ({
         value={times.timeclear || ''}
         onChange={(value) => onTimeChange('timeclear', value)}
         onEnterPress={onEnterPress}
-        inputRef={clearedRef}
-      />
+        inputRef={inputRefs.clearedRef}
+      /> */}
     </div>
   );
-};
+});
 
 export default StatusSection;

@@ -34,6 +34,9 @@ interface GeneralSectionProps {
   onDispatchChange: (updates: Partial<Dispatch>) => void;
   onInvoiceChange: (updates: Partial<Invoice>) => void;
   onEnterPress?: () => void;
+  // inputRefs?:any;
+  // handleKeyDown?:any;
+  
 }
 
 interface AccountNameProps {
