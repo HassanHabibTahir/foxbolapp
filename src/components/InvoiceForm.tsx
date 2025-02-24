@@ -391,7 +391,7 @@ const InvoiceForm = () => {
 
 
 
-  const FIELD_INDEXES = {
+  const FIELD_INDEXES:any = {
     driver: 0,
     driver2: 1,
     timerec: 2,
@@ -402,9 +402,9 @@ const InvoiceForm = () => {
     // state: 7,
     // zip: 8,
     // contact: 9,
-  };
+  };  
  
-  const inputRefs = {
+  const inputRefs:any = {
     driver: useRef(null),
     driver2: useRef(null),
     timerec: useRef(null),
@@ -417,7 +417,7 @@ const InvoiceForm = () => {
     // contact: useRef(null),
   };
 
-  const fieldOrder = [
+  const fieldOrder:any = [
     "driver",
     "driver2",
     "timerec",
@@ -432,7 +432,74 @@ const InvoiceForm = () => {
 
 
 
+  const handleKeyDown = (e:any, fieldName:any) => {
+    const currentIndex = FIELD_INDEXES[fieldName];
+    console.log(currentIndex, fieldName, "currentIndex");
 
+    if (e.key === "Enter") {
+      if (fieldName === "textBox" && e.shiftKey) {
+        // Allow Shift+Enter to create a new line in the textarea
+        return;
+      }
+
+      e.preventDefault();
+      // const isLastField =
+      //   currentIndex === Object.keys(FIELD_INDEXES).length - 1;
+
+      // if (isLastField) {
+      //   console.log("Last field reached, triggering submit button click...");
+      //   document.getElementById("submitButton").click();
+      //   return;
+      // }
+      // if (fieldName === "select") {
+      //   console.log("slect this is select");
+      //   const selectElement = document.querySelector(".react-select__menu");
+      //   if (selectElement) {
+      //     window._keyboardNavigation = true;
+      //     const selectInstance = inputRefs[fieldName]?.current;
+      //     if (selectInstance) {
+      //       const selectedOption = selectInstance.props.options.find(
+      //         (opt) =>
+      //           opt.label ===
+      //           document.querySelector(".react-select__option--is-focused")
+      //             ?.innerText
+      //       );
+      //       if (selectedOption) {
+      //         console.log("Selected Value:", selectedOption.value);
+      //       }
+      //       if (selectedOption) {
+      //         setFormData((prevState) => ({
+      //           ...prevState,
+      //           select: {
+      //             label: selectedOption.label,
+      //             value: selectedOption.value,
+      //           },
+      //         }));
+      //       }
+      //     }
+      //     setTimeout(() => {
+      //       if (formData.select) {
+      //         const nextField = Object.keys(FIELD_INDEXES).find(
+      //           (key) => FIELD_INDEXES[key] === currentIndex + 1
+      //         );
+      //         if (nextField) inputRefs[nextField].current?.focus();
+      //       }
+      //     }, 100);
+      //     return;
+      //   }
+      // }
+      const nextField = Object.keys(FIELD_INDEXES).find(
+        (key) => FIELD_INDEXES[key] === currentIndex + 1
+      );
+      if (nextField) inputRefs[nextField].current?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevField = Object.keys(FIELD_INDEXES).find(
+        (key) => FIELD_INDEXES[key] === currentIndex - 1
+      );
+      if (prevField) inputRefs[prevField].current?.focus();
+    }
+  };
 
   const sections = [
     // Top actions and header
@@ -468,6 +535,8 @@ const InvoiceForm = () => {
             size="md"
             value={formState.driver.driver || ""}
             onChange={(value) => updateDriver({ driver: value })}
+            onKeyDown={(e:any) => handleKeyDown(e, "driver")}
+            ref={inputRefs.driver}
             // onKeyDown={(e:any) => handleKeyDown(e, 0)}
             // ref={inputRefs.driver1}
           />
@@ -477,6 +546,8 @@ const InvoiceForm = () => {
             size="md"
             value={formState.driver.driver2 || ""}
             onChange={(value) => updateDriver({ driver2: value })}
+            onKeyDown={(e:any) => handleKeyDown(e, "driver2")}
+            ref={inputRefs.driver2}
             // onKeyDown={(e:any) => handleKeyDown(e, 1)}
             // ref={inputRefs.driver2}
           />
@@ -486,6 +557,8 @@ const InvoiceForm = () => {
               title="drivetran.timerec"
               value={formState?.driver?.timerec || ""}
               onChange={(value) => updateDriver({ timerec: value })}
+              // onKeyDown={(e:any) => handleKeyDown(e, "timerec")}
+            // ref={inputRefs.timerec}
               // onChange={(field:any, value:any) => updateDriver({ [field]: value })}
 
               // inputRef={inputRefs.receivedRef}

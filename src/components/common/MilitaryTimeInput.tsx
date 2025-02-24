@@ -12,8 +12,8 @@ interface MilitaryTimeInputProps {
   onChange: (value: string) => void;
   onComplete?: () => void;
   onEnterPress?: () => void;
-  onKeyDown:any,
-  inputRef?: React.RefObject<HTMLInputElement>;
+  // onKeyDown:any,
+  // inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const StyledTimePicker = styled(TimePicker)({
@@ -42,12 +42,12 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
   value,
   onChange,
   // onComplete,
-  onKeyDown,
+  // onKeyDown,
   onEnterPress,
-  inputRef: externalInputRef
+  // inputRef: externalInputRef
 }) => {
   const internalInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = externalInputRef || internalInputRef;
+  // const inputRef = externalInputRef || internalInputRef;
   // const [isTimeComplete, setIsTimeComplete] = useState(false);
 
   const handleTimeChange = (newValue: dayjs.Dayjs | null) => {
@@ -105,7 +105,7 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
       e.preventDefault();
       input.setSelectionRange(2, 2);
     }
-    onKeyDown(e)
+    // onKeyDown(e)
   };
 
   const timeValue = value ? 
@@ -128,7 +128,7 @@ const MilitaryTimeInput: React.FC<MilitaryTimeInputProps> = ({
             textField: {
               size: "small",
               title: title,
-              inputRef: inputRef,
+              // inputRef: inputRef,
               onKeyDown: handleKeyDown,
               inputProps: {
                 maxLength: 5
