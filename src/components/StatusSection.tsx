@@ -29,16 +29,16 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         title="drivetran.timerec"
         value={times.timerec || ''}
         onChange={(value) => onTimeChange('timerec', value)}
-        inputRef={inputRefs.receivedRef}
-        onKeyDown={(e:any) => handleKeyDown(e, 2)}
+        // inputRef={inputRefs.receivedRef}
+        // onKeyDown={(e:any) => handleKeyDown(e, 2)}
       />
       <MilitaryTimeInput
         label="En route"
         title="drivetran.timeinrt"
         value={times.timeinrt || ''}
         onChange={(value) => onTimeChange('timeinrt', value)}
-        inputRef={inputRefs.enRouteRef}
-        onKeyDown={(e:any)=>handleKeyDown(e,3)}
+        // inputRef={inputRefs.enRouteRef}
+        // onKeyDown={(e:any)=>handleKeyDown(e,3)}
       />
       
       <MilitaryTimeInput
@@ -46,12 +46,10 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         title="drivetran.timearrive"
         value={times.timearrive || ''}
         onChange={(value) => onTimeChange('timearrive', value)}
-        inputRef={inputRefs.arrivedRef}
-        onKeyDown={(e:any)=>handleKeyDown(e,4)}
+        // inputRef={inputRefs.arrivedRef}
+        // onKeyDown={(e:any)=>handleKeyDown(e,4)}
 
       />
-
-
       {/* <MilitaryTimeInput
         label="Loaded"
         title="drivetran.timeintow"
