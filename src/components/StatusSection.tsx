@@ -50,6 +50,8 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         onKeyDown={(e:any)=>handleKeyDown(e,4)}
 
       />
+
+
       {/* <MilitaryTimeInput
         label="Loaded"
         title="drivetran.timeintow"
