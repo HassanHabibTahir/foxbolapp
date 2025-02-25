@@ -9,6 +9,7 @@ interface StateInputProps {
   onChange: (value: string) => void;
   onEnterPress?: () => void;
   disabled?: boolean;
+  onKeyDown?:any
 }
 
 const StateInput = forwardRef<HTMLInputElement, StateInputProps>(({ 
@@ -19,17 +20,19 @@ const StateInput = forwardRef<HTMLInputElement, StateInputProps>(({
   value,
   onChange,
   onEnterPress,
-  disabled = false
+  disabled = false,
+  onKeyDown
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
+    const newValue = e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
     onChange(newValue);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    
+    if (onkeydown) {
       e.preventDefault();
-      onEnterPress();
+      onKeyDown(e);
     }
   };
 
@@ -62,8 +65,8 @@ const StateInput = forwardRef<HTMLInputElement, StateInputProps>(({
         placeholder="XX"
         value={value}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
+        onKeyDown={onKeyDown}
+        // disabled={disabled}
       />
     </div>
   );
