@@ -154,10 +154,14 @@ interface MilitaryTimeInputProps {
   onComplete?: () => void;
   onEnterPress?: () => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  fieldName:any
+  FIELD_INDEXES:any
+  inputRefs:any
+
 }
 
 const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
-  ({ label, title, value, onChange, onEnterPress, onKeyDown }, ref) => {
+  ({ label, title, value, onChange, onEnterPress, onKeyDown,fieldName,FIELD_INDEXES,inputRefs }, ref) => {
     const internalInputRef = useRef<HTMLInputElement>(null);
     const inputRef = (ref || internalInputRef) as React.RefObject<HTMLInputElement>;
     
@@ -246,6 +250,30 @@ const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
     //   onKeyDown(e);
     // };
     
+
+   
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const currentIndex = FIELD_INDEXES[fieldName];
+      console.log(FIELD_INDEXES,fieldName,"fieldName==>")
+      const input = e.target as HTMLInputElement
+      const currentValue = input.value.replace(":", "")
+      console.log(currentValue,"curerent")
+      
+      if (e.key === "Backspace") {
+        // Allow backspace to remove characters without moving focus
+        return
+      }
+      if (currentValue.length === 4) {
+        const nextField = Object.keys(FIELD_INDEXES).find(
+          (key) => FIELD_INDEXES[key] === currentIndex + 1
+        );
+        if (nextField) inputRefs[nextField].current?.focus();
+      }
+
+      onKeyDown(e)
+    }
+
+
     return (
       <div className="inline-block">
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -257,7 +285,9 @@ const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
           value={displayValue}
           onChange={handleChange}
           // onBlur={handleBlur}
-          onKeyDown={onKeyDown}
+          onKeyDown={handleKeyDown}
+
+          // onKeyDown={onKeyDown}
           title={title}
           className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           style={{ width: '120px', fontSize: '0.875rem' }}

@@ -15,7 +15,7 @@ import FormInput from "./common/FormInput"
 import PhoneInput from "./common/PhoneInput"
 import DriverCombobox from "./common/DriverCombobox"
 import MilitaryTimeInput from "./common/MilitaryTimeInput"
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { fetchTowData } from "../lib/saveHandlers"
 import PrintButton from "./invoices/PrintButton"
 import { printInvoice } from "../utils/printInvoice"
@@ -93,13 +93,13 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }
     }, [value, companies]);
 
-    const handleChange = (option: any | null, actionMeta: any) => {
+    const handleChange = (option: any | null) => {
       setSelectedOption(option);
       if (option) {
         onChange?.(option.value);
-        if (actionMeta.action === "select-option" && onEnterPress) {
-          setTimeout(onEnterPress, 0);
-        }
+        // if (actionMeta.action === "select-option" && onEnterPress) {
+        //   setTimeout(onEnterPress, 0);
+        // }
       } else {
         onChange?.("");
       }
@@ -112,9 +112,22 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     //   }
     // };
     const handleKeyDown = (e: any) => {
-      if (onKeyDown) {
-        onKeyDown(e);
+      if (e.key === "Enter" || e.key === " ") {
+        const focusedOption = document.querySelector(".react-select__option--is-focused");
+        if (focusedOption) {
+          e.preventDefault();
+          const selectedOptionText = focusedOption.textContent;
+          const _selectedOption = companies?.find((opt: { label: string | null }) => opt.label === selectedOptionText);
+          console.log(_selectedOption,"selectedOptions-->",selectedOptionText)
+  
+          if (_selectedOption) {
+            handleChange(_selectedOption);
+            setMenuIsOpen(false);
+          }
+        }
       }
+      onKeyDown?.(e);
+    
     };
     const handleInputChange = (inputValue: string) => {
       setSearchTerm(inputValue);
@@ -164,6 +177,23 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }),
     };
 
+
+    const selectProps = {
+      id: "select",
+      name: "select",
+      options: companies,
+      value: selectedOption,
+      onChange: handleChange,
+      onKeyDown: handleKeyDown,
+      className: "react-select-container",
+      classNamePrefix: "react-select",
+      menuPortalTarget: document.body,
+      blurInputOnSelect: true,
+      menuIsOpen: menuIsOpen,
+      onMenuOpen: () => setMenuIsOpen(true),
+      onMenuClose: () => setMenuIsOpen(false),
+      openMenuOnFocus: true,
+    };
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -171,25 +201,36 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
         </label>
         <div style={{ width: sizeClasses[size] }}>
           <Select
-            ref={ref as any}
-            value={selectedOption}
-            onChange={handleChange}
-            options={companies}
-            styles={customStyles}
-            placeholder="Select a company"
-            isClearable
-            isSearchable
-            onKeyDown={handleKeyDown}
-            menuIsOpen={menuIsOpen}
-            onInputChange={handleInputChange}
-            onMenuOpen={() => setMenuIsOpen(true)}
-            onMenuClose={() => setMenuIsOpen(false)}
-            backspaceRemovesValue={true}
-            blurInputOnSelect={true}
-            captureMenuScroll={true}
-            closeMenuOnSelect={true}
-            filterOption={null}
-            noOptionsMessage={() => "No companies found"}
+             {...selectProps}
+                    ref={ref as any}
+                    styles={customStyles}
+                    placeholder="Select a truck"
+                    isClearable
+                    isSearchable
+                    components={{
+                      Option: ({ children, ...props }) => (
+                        <components.Option {...props}>{children}</components.Option>
+                      ),
+                    }}
+            // ref={ref as any}
+            // value={selectedOption}
+            // onChange={handleChange}
+            // options={companies}
+            // styles={customStyles}
+            // placeholder="Select a company"
+            // isClearable
+            // isSearchable
+            // onKeyDown={handleKeyDown}
+            // menuIsOpen={menuIsOpen}
+            // onInputChange={handleInputChange}
+            // onMenuOpen={() => setMenuIsOpen(true)}
+            // onMenuClose={() => setMenuIsOpen(false)}
+            // backspaceRemovesValue={true}
+            // blurInputOnSelect={true}
+            // captureMenuScroll={true}
+            // closeMenuOnSelect={true}
+            // filterOption={null}
+            // noOptionsMessage={() => "No companies found"}
           />
         </div>
       </div>
@@ -377,6 +418,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timerec: value })}
               onKeyDown={(e) => handleKeyDown(e, "timerec")}
               ref={inputRefs.timerec}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              inputRefs = {inputRefs}
+              fieldName="timerec"
             />
             <MilitaryTimeInput
               label="En route"
@@ -385,6 +429,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeinrt: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeinrt")}
               ref={inputRefs.timeinrt}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="timeinrt"
+              inputRefs = {inputRefs}
             />
             <MilitaryTimeInput
               label="Arrived"
@@ -393,6 +440,10 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timearrive: value })}
               onKeyDown={(e) => handleKeyDown(e, "timearrive")}
               ref={inputRefs.timearrive}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="timearrive"
+              inputRefs = {inputRefs}
+
             />
             <MilitaryTimeInput
               label="Loaded"
@@ -401,6 +452,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeintow: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeintow")}
               ref={inputRefs.timeintow}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="timeintow"
+              inputRefs = {inputRefs}
             />
             <MilitaryTimeInput
               label="Cleared"
@@ -409,12 +463,15 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeclear: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeclear")}
               ref={inputRefs.timeclear}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="timeclear"
+              inputRefs = {inputRefs}
             />
           </div>
         </div>
       </FormSection>
 
-      {/* <FormSection title="A - General Information">
+      <FormSection title="A - General Information">
         <div className="space-y-0">
           <div className="flex flex-wrap gap-2">
             <DateInput
@@ -426,6 +483,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDispatch({ towdate: value })}
               onKeyDown={(e) => handleKeyDown(e, "towdate")}
               ref={inputRefs.towdate}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="towdate"
+              inputRefs = {inputRefs}
             />
             <FormInput
               className="h-10 text-[14px]"
@@ -435,6 +495,9 @@ const InvoiceForm = () => {
               onChange={(e) => updateDispatch({ towtagnum: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e, "towtagnum")}
               ref={inputRefs.towtagnum}
+              // FIELD_INDEXES ={FIELD_INDEXES}
+              // fieldName="towtagnum"
+              // inputRefs = {inputRefs}
             />
             <TruckCombobox
               label="Truck"
@@ -444,6 +507,8 @@ const InvoiceForm = () => {
               onChange={(value) => updateDispatch({ trucknum: value })}
               onKeyDown={(e) => handleKeyDown(e, "trucknum")}
               ref={inputRefs.trucknum}
+              inputRefs = {inputRefs.trucknum}
+
             />
             <FormInput
               label="Dispatcher"
@@ -474,7 +539,7 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "membernum")}
               ref={inputRefs.membernum}
             />
-            <DateInput
+             <DateInput
               className="h-10 text-[14px]"
               label="Expires"
               title="master.memberexp"
@@ -482,7 +547,11 @@ const InvoiceForm = () => {
               value={formState.invoice.memberexp || ""}
               onChange={(value) => updateInvoice({ memberexp: value })}
               onKeyDown={(e) => handleKeyDown(e, "memberexp")}
+             
               ref={inputRefs.memberexp}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="memberexp"
+              inputRefs = {inputRefs}
             />
             <FormInput
               className="h-10 text-[14px]"
@@ -492,8 +561,9 @@ const InvoiceForm = () => {
               onChange={(e) => updateDispatch({ value: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e, "value")}
               ref={inputRefs.value}
-            />
-            <DateInput
+            /> 
+         
+         <DateInput
               className="h-10 text-[14px]"
               label="Date Stored"
               title="master.dateStored"
@@ -502,7 +572,11 @@ const InvoiceForm = () => {
               onChange={(value) => updateInvoice({ dateStored: value })}
               onKeyDown={(e) => handleKeyDown(e, "dateStored")}
               ref={inputRefs.dateStored}
+              FIELD_INDEXES ={FIELD_INDEXES}
+              fieldName="dateStored"
+              inputRefs = {inputRefs}
             />
+           
             <AccountName
               label="Account Name"
               title="master.account"
@@ -511,9 +585,9 @@ const InvoiceForm = () => {
               onChange={(value:any) => updateDispatch({ callname: value })}
               onKeyDown={(e:any) => handleKeyDown(e, "callname")}
               ref={inputRefs.callname}
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
+            /> 
+          </div> 
+          {/* <div className="flex flex-wrap gap-2">
             <FormInput
               label="Who Called"
               className="h-10 text-[14px]"
@@ -542,9 +616,9 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "refnumber")}
               ref={inputRefs.refnumber}
             />
-          </div>
+          </div> */}
         </div>
-      </FormSection> */}
+      </FormSection>
     </div>,
   ]
 

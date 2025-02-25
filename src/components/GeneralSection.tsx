@@ -305,7 +305,7 @@ const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(
               onChange={(e) => onDispatchChange({ towtagnum: e.target.value })}
               // onKeyDown={(e) => handleKeyDown(e, 1)}
             />
-            <TruckCombobox
+            {/* <TruckCombobox
               // ref={inputRefs.truck}
               label="Truck"
               title="master.trucknum"
@@ -313,7 +313,7 @@ const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(
               value={dispatch.trucknum || ""}
               onChange={(value) => onDispatchChange({ trucknum: value })}
               // onKeyDown={(e) => handleKeyDown(e, 2)}
-            />
+            /> */}
             <FormInput
               // ref={inputRefs.dispatcher}
               label="Dispatcher"
