@@ -586,6 +586,34 @@ const InvoiceForm = () => {
               onKeyDown={(e:any) => handleKeyDown(e, "callname")}
               ref={inputRefs.callname}
             /> 
+              <FormInput
+              label="Who Called"
+              className="h-10 text-[14px]"
+              title="master.whocalled"
+              value={formState.dispatch.whocalled || ""}
+              onChange={(e) => updateDispatch({ whocalled: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, "whocalled")}
+              ref={inputRefs.whocalled}
+            />
+             <PhoneInput
+              label="Phone #"
+              title="master.phone"
+              className="h-10 text-[14px]"
+              size="lg"
+              value={formState.dispatch.callphone || ""}
+              onChange={(value) => updateDispatch({ callphone: value })}
+              onKeyDown={(e) => handleKeyDown(e, "callphone")}
+              ref={inputRefs.callphone}
+            />
+            <FormInput
+              className="h-10 text-[14px]"
+              label="Reference #"
+              title="master.refnum"
+              value={formState.dispatch.refnumber || ""}
+              onChange={(e) => updateDispatch({ refnumber: e.target.value })}
+              onKeyDown={(e) => handleKeyDown(e, "refnumber")}
+              ref={inputRefs.refnumber}
+            />
           </div> 
           {/* <div className="flex flex-wrap gap-2">
             <FormInput
