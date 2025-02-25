@@ -158,7 +158,7 @@ const LienSection: React.FC<LienSectionProps> = ({
           size="md"
           value={dispatch.liendin || ''}
           onChange={(value) => onDispatchChange({ liendin: value })}
-          onEnterPress={() => lienClearRef.current?.focus()}
+          // onEnterPress={() => lienClearRef.current?.focus()}
         />
         <DateInput 
           ref={lienClearRef}
@@ -168,7 +168,7 @@ const LienSection: React.FC<LienSectionProps> = ({
           className='h-10  text-[14px]'
           value={dispatch.liendout || ''}
           onChange={(value) => onDispatchChange({ liendout: value })}
-          onEnterPress={() => lienTypeRef.current?.focus()}
+          // onEnterPress={() => lienTypeRef.current?.focus()}
         />
         <LienTypeInput 
           ref={lienTypeRef}

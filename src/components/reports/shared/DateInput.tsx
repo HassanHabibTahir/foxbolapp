@@ -3,6 +3,7 @@ import React from 'react';
 interface DateInputProps {
   label: string;
   onChange?: (date: string) => void;
+  
 }
 
 export default function DateInput({ label }: DateInputProps) {

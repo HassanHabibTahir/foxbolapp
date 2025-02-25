@@ -54,7 +54,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
             size="md"
             value={invoice.invdate || ''}
             onChange={(value) => onInvoiceChange({ invdate: value })}
-            onEnterPress={() => itemGroupRef.current?.focus()}
+            // onEnterPress={() => itemGroupRef.current?.focus()}
           />
           <FormInput
             ref={itemGroupRef}

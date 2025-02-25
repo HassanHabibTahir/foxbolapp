@@ -17,8 +17,8 @@ interface Driver {
 interface DriverSectionProps {
   driver: Driver
   onUpdateDriver: (data: Partial<Driver>) => void
-  handleKeyDown: (e: React.KeyboardEvent<HTMLElement>, index: number) => void
-  inputRefs: {
+  handleKeyDown?: (e: React.KeyboardEvent<HTMLElement>, index: number) => void
+  inputRefs?: {
     driver1: React.RefObject<HTMLInputElement>
     driver2: React.RefObject<HTMLInputElement>
     receivedRef: React.RefObject<HTMLInputElement>
@@ -40,8 +40,8 @@ const DriverSection = forwardRef<HTMLDivElement, DriverSectionProps>(
             size="md"
             value={driver.driver || ""}
             onChange={(value) => onUpdateDriver({ driver: value })}
-            onKeyDown={(e:any) => handleKeyDown(e, 0)}
-            ref={inputRefs.driver1}
+            // onKeyDown={(e:any) => handleKeyDown(e, 0)}
+            // ref={inputRefs.driver1}
           />
           <DriverCombobox
             label="Driver 2"
@@ -49,10 +49,12 @@ const DriverSection = forwardRef<HTMLDivElement, DriverSectionProps>(
             size="md"
             value={driver.driver2 || ""}
             onChange={(value) => onUpdateDriver({ driver2: value })}
-            onKeyDown={(e:any) => handleKeyDown(e, 1)}
-            ref={inputRefs.driver2}
+            // onKeyDown={(e:any) => handleKeyDown(e, 1)}
+            // ref={inputRefs.driver2}
           />
           <div className="flex-grow">
+            
+
             <StatusSection
               handleKeyDown={handleKeyDown}
               inputRefs={inputRefs}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, KeyboardEvent } from 'react';
-import Select from 'react-select';
+import Select, { components } from "react-select";
 import { supabase } from '../../lib/supabase';
 
 interface Truck {
@@ -19,8 +19,8 @@ interface TruckComboboxProps {
   value?: string;
   onChange?: (value: string) => void;
   onEnterPress?: () => void;
-      onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  inputRefs: any;
 }
 
 const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
@@ -30,12 +30,12 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
   value = '',
   onChange,
   onEnterPress,
-  onKeyDown
+  onKeyDown,
+  inputRefs
 }, ref) => {
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [selectedOption, setSelectedOption] = useState<TruckOption | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   const sizeClasses = {
     xs: '5rem',
@@ -100,91 +100,26 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
     } else {
       onChange?.('');
     }
+    setMenuIsOpen(false); // Close the menu after selection
   };
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-      if (onKeyDown) {
-        onKeyDown(e)
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      const focusedOption = document.querySelector(".react-select__option--is-focused");
+      if (focusedOption) {
+        e.preventDefault();
+        const selectedOptionText = focusedOption.textContent;
+        const selectedOption = options.find(opt => opt.label === selectedOptionText);
+        
+        if (selectedOption) {
+          handleChange(selectedOption);
+          setMenuIsOpen(false);
+        }
       }
     }
-  // const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-  //   if (!menuIsOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-  //     e.preventDefault();
-  //     setMenuIsOpen(true);
-  //     setHighlightedIndex(e.key === 'ArrowDown' ? 0 : options.length - 1);
-  //     return;
-  //   }
+    onKeyDown?.(e);
+  };
 
-  //   if (menuIsOpen) {
-  //     switch (e.key) {
-  //       case 'ArrowDown':
-  //         e.preventDefault();
-  //         setHighlightedIndex(prev => 
-  //           prev < options.length - 1 ? prev + 1 : 0
-  //         );
-  //         break;
-  //       case 'ArrowUp':
-  //         e.preventDefault();
-  //         setHighlightedIndex(prev => 
-  //           prev > 0 ? prev - 1 : options.length - 1
-  //         );
-  //         break;
-  //       case 'Enter':
-  //         e.preventDefault();
-  //         if (highlightedIndex >= 0) {
-  //           handleChange(options[highlightedIndex]);
-  //           setMenuIsOpen(false);
-  //         } else if (onEnterPress) {
-  //           onEnterPress();
-  //         }
-  //         break;
-  //       case 'Escape':
-  //         setMenuIsOpen(false);
-  //         setHighlightedIndex(-1);
-  //         break;
-  //     }
-  //   } else if (e.key === 'Enter' && onEnterPress) {
-  //     e.preventDefault();
-  //     onEnterPress();
-  //   }
-  // };
-  // const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-  //   if (!menuIsOpen && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
-  //     e.preventDefault()
-  //     setMenuIsOpen(true)
-  //     setHighlightedIndex(e.key === "ArrowDown" ? 0 : options.length - 1)
-  //     return
-  //   }
-
-  //   if (menuIsOpen) {
-  //     switch (e.key) {
-  //       case "ArrowDown":
-  //         e.preventDefault()
-  //         setHighlightedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0))
-  //         break
-  //       case "ArrowUp":
-  //         e.preventDefault()
-  //         setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1))
-  //         break
-  //       case "Enter":
-  //         e.preventDefault()
-  //         if (highlightedIndex >= 0) {
-  //           handleChange(options[highlightedIndex])
-  //           setMenuIsOpen(false)
-  //         } else if (onEnterPress) {
-  //           onEnterPress()
-  //         }
-  //         break
-  //       case "Escape":
-  //         setMenuIsOpen(false)
-  //         setHighlightedIndex(-1)
-  //         break
-  //     }
-  //   } else if (e.key === "Enter" && onEnterPress) {
-  //     e.preventDefault()
-  //     onEnterPress()
-  //   }
-  // }
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -213,6 +148,23 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
     })
   };
 
+  const selectProps = {
+    id: "select",
+    name: "select",
+    options: options,
+    value: selectedOption,
+    onChange: handleChange,
+    onKeyDown: handleKeyDown,
+    className: "react-select-container",
+    classNamePrefix: "react-select",
+    menuPortalTarget: document.body,
+    blurInputOnSelect: true,
+    menuIsOpen: menuIsOpen,
+    onMenuOpen: () => setMenuIsOpen(true),
+    onMenuClose: () => setMenuIsOpen(false),
+    openMenuOnFocus: true,
+  };
+
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -220,24 +172,16 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
       </label>
       <div style={{ width: sizeClasses[size] }}>
         <Select
+          {...selectProps}
           ref={ref as any}
-          value={selectedOption}
-          onChange={handleChange}
-          options={options}
           styles={customStyles}
           placeholder="Select a truck"
           isClearable
           isSearchable
-          // title={title}
-          onKeyDown={handleKeyDown}
-          menuIsOpen={menuIsOpen}
-          onMenuOpen={() => {
-            setMenuIsOpen(true);
-            setHighlightedIndex(0);
-          }}
-          onMenuClose={() => {
-            setMenuIsOpen(false);
-            setHighlightedIndex(-1);
+          components={{
+            Option: ({ children, ...props }) => (
+              <components.Option {...props}>{children}</components.Option>
+            ),
           }}
         />
       </div>

@@ -29,7 +29,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         title="drivetran.timerec"
         value={times.timerec || ''}
         onChange={(value) => onTimeChange('timerec', value)}
-        inputRef={inputRefs.receivedRef}
+        // inputRef={inputRefs.receivedRef}
         onKeyDown={(e:any) => handleKeyDown(e, 2)}
       />
       <MilitaryTimeInput
@@ -37,7 +37,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         title="drivetran.timeinrt"
         value={times.timeinrt || ''}
         onChange={(value) => onTimeChange('timeinrt', value)}
-        inputRef={inputRefs.enRouteRef}
+        // inputRef={inputRefs.enRouteRef}
         onKeyDown={(e:any)=>handleKeyDown(e,3)}
       />
       
@@ -46,7 +46,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         title="drivetran.timearrive"
         value={times.timearrive || ''}
         onChange={(value) => onTimeChange('timearrive', value)}
-        inputRef={inputRefs.arrivedRef}
+        // inputRef={inputRefs.arrivedRef}
         onKeyDown={(e:any)=>handleKeyDown(e,4)}
 
       />
