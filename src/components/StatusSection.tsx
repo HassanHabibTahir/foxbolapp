@@ -30,7 +30,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         value={times.timerec || ''}
         onChange={(value) => onTimeChange('timerec', value)}
         // inputRef={inputRefs.receivedRef}
-        // onKeyDown={(e:any) => handleKeyDown(e, 2)}
+        onKeyDown={(e:any) => handleKeyDown(e, 2)}
       />
       <MilitaryTimeInput
         label="En route"
@@ -38,7 +38,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         value={times.timeinrt || ''}
         onChange={(value) => onTimeChange('timeinrt', value)}
         // inputRef={inputRefs.enRouteRef}
-        // onKeyDown={(e:any)=>handleKeyDown(e,3)}
+        onKeyDown={(e:any)=>handleKeyDown(e,3)}
       />
       
       <MilitaryTimeInput
@@ -47,7 +47,7 @@ const StatusSection = forwardRef<HTMLDivElement, StatusSectionProps>(({
         value={times.timearrive || ''}
         onChange={(value) => onTimeChange('timearrive', value)}
         // inputRef={inputRefs.arrivedRef}
-        // onKeyDown={(e:any)=>handleKeyDown(e,4)}
+        onKeyDown={(e:any)=>handleKeyDown(e,4)}
 
       />
       {/* <MilitaryTimeInput
