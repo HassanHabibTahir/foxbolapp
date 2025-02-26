@@ -283,7 +283,12 @@ const FIELD_INDEXES: any = {
   condition:31,
   reason:32,
   towedfrom:33,
-  towedto:34
+  towedto:34,
+  retowto:35,
+  lotsection:36,
+  calltype:37,
+  keysinfo:38,
+  holdnote:39,        
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -334,7 +339,13 @@ const InvoiceForm = () => {
   const conditionRef = useRef(null);
   const reasonRef = useRef(null);
   const towedfromRef = useRef(null);
-  const towedtoRef = useRef(null)
+  const towedtoRef = useRef(null);
+  const retowtoRef = useRef(null);
+  const lotsectionRef = useRef(null);
+  const calltypeRef = useRef(null);
+  const keysinfoRef = useRef(null);
+  const holdnoteRef = useRef(null);
+          
 
   const inputRefs: any = {
     driver: driverRef,
@@ -371,7 +382,12 @@ const InvoiceForm = () => {
     condition:conditionRef,
     reason:reasonRef,
     towedfrom:towedfromRef,
-    towedto:towdateRef
+    towedto:towedtoRef,
+    retowto:retowtoRef,
+    lotsection: lotsectionRef ,
+    calltype: calltypeRef,
+    keysinfo: keysinfoRef,
+    holdnote: holdnoteRef,
     
   };
 
@@ -926,61 +942,61 @@ const InvoiceForm = () => {
             onKeyDown={(e: any) => handleKeyDown(e, "towedto")}
             ref={inputRefs.towedto}
           />
-          {/* 
+          
           <AddressAutocomplete
-            ref={retowToRef}
+            ref={inputRefs?.retowto}
             label="Retow To"
-            value={dispatch.retowto || ''}
-            onChange={handleAddressChange('retowto')}
-            onEnterPress={() => lotSectionRef.current?.focus()}
+            value={formState?.dispatch.retowto || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ retowto: newValue })} 
              className='h-10 w-full text-[14px]'
-          /> */}
+             onKeyDown={(e: any) => handleKeyDown(e, "retowto")}
+          />
         </div>
         
-        {/* <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4">
           <FormInput
-            ref={lotSectionRef}
+              ref={inputRefs?.lotsection}
             size='address'
             label="Lot Section"
             title="master.lotsection"
-            value={dispatch.lotsection || ''}
-            onChange={(e) => onDispatchChange({ lotsection: e.target.value })}
-            onEnterPress={() => callTypeRef.current?.focus()}
+            value={formState.dispatch.lotsection || ''}
+            onChange={(e) => updateDispatch({ lotsection: e.target.value })}
             placeholder="Enter lot section"
              className='h-10 w-[15rem] text-[14px] '
+             onKeyDown={(e: any) => handleKeyDown(e, "lotsection")}
             
           />
           <FormInput
-            ref={callTypeRef}
+              ref={inputRefs?.calltype}
             label="Call Type"
             title="master.calltype"
             className='h-10 w-[15rem] text-[14px] '
-            value={dispatch.calltype || ''}
-            onChange={(e) => onDispatchChange({ calltype: e.target.value })}
-            onEnterPress={() => keysInfoRef.current?.focus()}
+            value={formState.dispatch.calltype || ''}
+            onChange={(e) => updateDispatch({ calltype: e.target.value })}
             placeholder="Enter call type"
+            onKeyDown={(e: any) => handleKeyDown(e, "calltype")}
           />
-          <FormInput
-            ref={keysInfoRef}
+            <FormInput
+              ref={inputRefs?.keysinfo}
             label="Have Key?"
             title="master.keyinfo"
-            value={dispatch.keysinfo || ''}
-            onChange={(e) => onDispatchChange({ keysinfo: e.target.value })}
-            onEnterPress={() => holdNoteRef.current?.focus()}
+            value={formState.dispatch.keysinfo || ''}
+            onChange={(e) => updateDispatch({ keysinfo: e.target.value })}
             placeholder="Key information"
             className='h-10 w-[15rem] text-[14px] '
+            onKeyDown={(e: any) => handleKeyDown(e, "keysinfo")}
             />
           <FormInput
-            ref={holdNoteRef}
+           ref={inputRefs?.holdnote}
             label="Hold Note"
             title="master.holdnote"
-            value={dispatch.holdnote || ''}
-            onChange={(e) => onDispatchChange({ holdnote: e.target.value })}
-            onEnterPress={onEnterPress}
+            value={formState.dispatch.holdnote || ''}
+            onChange={(e) => updateDispatch({ holdnote: e.target.value })}
             placeholder="Enter hold note"
             className='h-10 w-[15rem] text-[14px]'
+            onKeyDown={(e: any) => handleKeyDown(e, "holdnote")}
             />
-        </div> */}
+        </div>
       </div>
     </FormSection>
           {/* <div className="flex flex-wrap gap-4">
