@@ -7,13 +7,15 @@ interface VinLookupFieldProps {
   onChange: (value: string) => void;
   onVinDetails?: (details: VinDetails) => void;
   onEnterPress?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
   value,
   onChange,
   onVinDetails,
-  onEnterPress
+  onEnterPress,
+  onKeyDown
 }, ref) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,16 +52,29 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (e.shiftKey) {
-        handleLookup();
-      } else if (onEnterPress) {
-        onEnterPress();
-      }
+    console.log(e,"e-->")
+    // if (e.key === 'Enter') {
+    //   e.preventDefault();
+    //   if (e.shiftKey) {
+    //     handleLookup();
+    //   } else if (onEnterPress) {
+    //     onEnterPress();
+    //   }
+    // }
+    if(onKeyDown){
+      onKeyDown(e)
     }
   };
 
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setError(null);
+    }, 5000);
+  
+    return () => clearTimeout(timeout); 
+  }, [error]); 
+  
   return (
     <div className="space-y-1">
       <div className="flex gap-2">

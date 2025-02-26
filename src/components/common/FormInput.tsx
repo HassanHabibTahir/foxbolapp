@@ -44,6 +44,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({
   // };
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (onKeyDown) {
+      console.log(e,onkeydown,"onkeydow")
       onKeyDown(e)
     }
   }

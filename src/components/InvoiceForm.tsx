@@ -1,26 +1,30 @@
-import React, { useRef, useEffect, useState } from "react"
-import { useFormState } from "../hooks/useFormState"
-import { useLocation } from "react-router-dom"
-import { supabase } from "../lib/supabase"
-import DesktopLayout from "./layouts/DesktopLayout"
-import SaveButton from "./SaveButton"
-import NewButton from "./NewButton"
-import InvoiceSearch from "./search/InvoiceSearch"
-import Header from "./invoice/Header"
-import FormSection from "./common/FormSection"
-import TruckCombobox from "./common/TruckCombobox"
-import KitCombobox from "./common/KitCombobox"
-import DateInput from "./common/DateInput"
-import FormInput from "./common/FormInput"
-import PhoneInput from "./common/PhoneInput"
-import DriverCombobox from "./common/DriverCombobox"
-import MilitaryTimeInput from "./common/MilitaryTimeInput"
+import React, { useRef, useEffect, useState } from "react";
+import { useFormState } from "../hooks/useFormState";
+import { useLocation } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import DesktopLayout from "./layouts/DesktopLayout";
+import SaveButton from "./SaveButton";
+import NewButton from "./NewButton";
+import InvoiceSearch from "./search/InvoiceSearch";
+import Header from "./invoice/Header";
+import FormSection from "./common/FormSection";
+import TruckCombobox from "./common/TruckCombobox";
+import KitCombobox from "./common/KitCombobox";
+import DateInput from "./common/DateInput";
+import FormInput from "./common/FormInput";
+import PhoneInput from "./common/PhoneInput";
+import DriverCombobox from "./common/DriverCombobox";
+import MilitaryTimeInput from "./common/MilitaryTimeInput";
 import Select, { components } from "react-select";
-import { fetchTowData } from "../lib/saveHandlers"
-import PrintButton from "./invoices/PrintButton"
-import { printInvoice } from "../utils/printInvoice"
-
-
+import { fetchTowData } from "../lib/saveHandlers";
+import PrintButton from "./invoices/PrintButton";
+import { printInvoice } from "../utils/printInvoice";
+import StateInput from "./common/StateInput";
+import { Search } from "lucide-react";
+import { lookupLicensePlate } from "../lib/licenseLookup";
+import VinLookupField from "./VinLookupField";
+import AddressAutocomplete from "./common/AddressAutocomplete";
+// import VehicleDetailsSection from "./VehicleDetailsSection";
 
 interface AccountNameProps {
   label: string;
@@ -113,13 +117,21 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     // };
     const handleKeyDown = (e: any) => {
       if (e.key === "Enter" || e.key === " ") {
-        const focusedOption = document.querySelector(".react-select__option--is-focused");
+        const focusedOption = document.querySelector(
+          ".react-select__option--is-focused"
+        );
         if (focusedOption) {
           e.preventDefault();
           const selectedOptionText = focusedOption.textContent;
-          const _selectedOption = companies?.find((opt: { label: string | null }) => opt.label === selectedOptionText);
-          console.log(_selectedOption,"selectedOptions-->",selectedOptionText)
-  
+          const _selectedOption = companies?.find(
+            (opt: { label: string | null }) => opt.label === selectedOptionText
+          );
+          console.log(
+            _selectedOption,
+            "selectedOptions-->",
+            selectedOptionText
+          );
+
           if (_selectedOption) {
             handleChange(_selectedOption);
             setMenuIsOpen(false);
@@ -127,7 +139,6 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
         }
       }
       onKeyDown?.(e);
-    
     };
     const handleInputChange = (inputValue: string) => {
       setSearchTerm(inputValue);
@@ -177,7 +188,6 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }),
     };
 
-
     const selectProps = {
       id: "select",
       name: "select",
@@ -201,17 +211,17 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
         </label>
         <div style={{ width: sizeClasses[size] }}>
           <Select
-             {...selectProps}
-                    ref={ref as any}
-                    styles={customStyles}
-                    placeholder="Select a truck"
-                    isClearable
-                    isSearchable
-                    components={{
-                      Option: ({ children, ...props }) => (
-                        <components.Option {...props}>{children}</components.Option>
-                      ),
-                    }}
+            {...selectProps}
+            ref={ref as any}
+            styles={customStyles}
+            placeholder="Select a truck"
+            isClearable
+            isSearchable
+            components={{
+              Option: ({ children, ...props }) => (
+                <components.Option {...props}>{children}</components.Option>
+              ),
+            }}
             // ref={ref as any}
             // value={selectedOption}
             // onChange={handleChange}
@@ -238,10 +248,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
   }
 );
 
-
-
-
-const FIELD_INDEXES:any = {
+const FIELD_INDEXES: any = {
   driver: 0,
   driver2: 1,
   timerec: 2,
@@ -262,37 +269,85 @@ const FIELD_INDEXES:any = {
   whocalled: 17,
   callphone: 18,
   refnumber: 19,
-}
+  type: 20,
+  yearcar: 21,
+  makecar: 22,
+  modelcar: 23,
+  colorcar: 24,
+  bodytype: 25,
+  licensest: 26,
+  licensenum: 27,
+  tagmonthyear: 28,
+  vin: 29,
+  odometer:30,
+  condition:31,
+  reason:32,
+  towedfrom:33,
+  towedto:34,
+  retowto:35,
+  lotsection:36,
+  calltype:37,
+  keysinfo:38,
+  holdnote:39,        
+};
 
-const fieldOrder = Object.keys(FIELD_INDEXES)
+const fieldOrder = Object.keys(FIELD_INDEXES);
 
 const InvoiceForm = () => {
-  const { formState, updateDispatch, updateInvoice, updateItems, resetForm, updateDriver } = useFormState()
-  const location = useLocation()
-  const { dispatchNum } = location.state
+  const {
+    formState,
+    updateDispatch,
+    updateInvoice,
+    updateItems,
+    resetForm,
+    updateDriver,
+  } = useFormState();
+  const location = useLocation();
+  const { dispatchNum } = location.state;
 
-  const driverRef = useRef(null)
-  const driver2Ref = useRef(null)
-  const timerecRef = useRef(null)
-  const timeinrtRef = useRef(null)
-  const timearriveRef = useRef(null)
-  const timeintowRef = useRef(null)
-  const timeclearRef = useRef(null)
-  const towdateRef = useRef(null)
-  const towtagnumRef = useRef(null)
-  const trucknumRef = useRef(null)
-  const dispatcherRef = useRef(null)
-  const kitnumRef = useRef(null)
-  const membernumRef = useRef(null)
-  const memberexpRef = useRef(null)
-  const valueRef = useRef(null)
-  const dateStoredRef = useRef(null)
-  const callnameRef = useRef(null)
-  const whocalledRef = useRef(null)
-  const callphoneRef = useRef(null)
-  const refnumberRef = useRef(null)
+  const driverRef = useRef(null);
+  const driver2Ref = useRef(null);
+  const timerecRef = useRef(null);
+  const timeinrtRef = useRef(null);
+  const timearriveRef = useRef(null);
+  const timeintowRef = useRef(null);
+  const timeclearRef = useRef(null);
+  const towdateRef = useRef(null);
+  const towtagnumRef = useRef(null);
+  const trucknumRef = useRef(null);
+  const dispatcherRef = useRef(null);
+  const kitnumRef = useRef(null);
+  const membernumRef = useRef(null);
+  const memberexpRef = useRef(null);
+  const valueRef = useRef(null);
+  const dateStoredRef = useRef(null);
+  const callnameRef = useRef(null);
+  const whocalledRef = useRef(null);
+  const callphoneRef = useRef(null);
+  const refnumberRef = useRef(null);
+  const typeRef = useRef(null);
+  const yearcarRef = useRef(null);
+  const makecarRef = useRef(null);
+  const modelcarRef = useRef(null);
+  const colorcarRef = useRef(null);
+  const bodytypeRef = useRef(null);
+  const licensestRef = useRef(null);
+  const licensenumRef = useRef(null);
+  const tagmonthyearRef = useRef(null);
+  const vinRef = useRef(null);
+  const odometerRef = useRef(null);
+  const conditionRef = useRef(null);
+  const reasonRef = useRef(null);
+  const towedfromRef = useRef(null);
+  const towedtoRef = useRef(null);
+  const retowtoRef = useRef(null);
+  const lotsectionRef = useRef(null);
+  const calltypeRef = useRef(null);
+  const keysinfoRef = useRef(null);
+  const holdnoteRef = useRef(null);
+          
 
-  const inputRefs:any = {
+  const inputRefs: any = {
     driver: driverRef,
     driver2: driver2Ref,
     timerec: timerecRef,
@@ -313,19 +368,44 @@ const InvoiceForm = () => {
     whocalled: whocalledRef,
     callphone: callphoneRef,
     refnumber: refnumberRef,
-  }
+    type: typeRef,
+    yearcar: yearcarRef,
+    makecar: makecarRef,
+    modelcar: modelcarRef,
+    colorcar: colorcarRef,
+    bodytype: bodytypeRef,
+    licensest: licensestRef,
+    licensenum: licensenumRef,
+    tagmonthyear: tagmonthyearRef,
+    vin: vinRef,
+    odometer:odometerRef,
+    condition:conditionRef,
+    reason:reasonRef,
+    towedfrom:towedfromRef,
+    towedto:towedtoRef,
+    retowto:retowtoRef,
+    lotsection: lotsectionRef ,
+    calltype: calltypeRef,
+    keysinfo: keysinfoRef,
+    holdnote: holdnoteRef,
+    
+  };
 
   useEffect(() => {
-    const foxtow_id = localStorage.getItem("foxtow_id") || ""
+    const foxtow_id = localStorage.getItem("foxtow_id") || "";
     const getDispatchNum = async () => {
-      const { data, error } = await supabase.from("towmast").select().eq("dispnum", dispatchNum).maybeSingle()
+      const { data, error } = await supabase
+        .from("towmast")
+        .select()
+        .eq("dispnum", dispatchNum)
+        .maybeSingle();
 
       if (!error && data) {
-        handleInvoiceFound(data.dispnum, foxtow_id)
+        handleInvoiceFound(data.dispnum, foxtow_id);
       }
-    }
-    getDispatchNum()
-  }, [dispatchNum])
+    };
+    getDispatchNum();
+  }, [dispatchNum]);
 
   const handleSave = () => {
     return {
@@ -333,22 +413,25 @@ const InvoiceForm = () => {
       invoice: formState.invoice,
       items: formState.items,
       driver: formState.driver,
-    }
-  }
+    };
+  };
 
-  const handleNew = (invoiceNumber:any) => {
-    resetForm()
-    updateDispatch({ dispnum: invoiceNumber })
-  }
+  const handleNew = (invoiceNumber: any) => {
+    resetForm();
+    updateDispatch({ dispnum: invoiceNumber });
+  };
 
-  const handleInvoiceFound = async (dispatchNumber:any, foxtow_id:any) => {
-    resetForm()
-    const { invoice, driver, dispatch, items } = await fetchTowData(dispatchNumber, foxtow_id)
-    updateDispatch(dispatch)
-    updateInvoice(invoice)
-    updateDriver(driver)
-    updateItems(items)
-  }
+  const handleInvoiceFound = async (dispatchNumber: any, foxtow_id: any) => {
+    resetForm();
+    const { invoice, driver, dispatch, items } = await fetchTowData(
+      dispatchNumber,
+      foxtow_id
+    );
+    updateDispatch(dispatch);
+    updateInvoice(invoice);
+    updateDriver(driver);
+    updateItems(items);
+  };
 
   const handlePrint = () => {
     printInvoice({
@@ -356,30 +439,96 @@ const InvoiceForm = () => {
       invoice: formState.invoice,
       items: formState.items,
       driver: formState.driver,
-    })
-  }
+    });
+  };
 
-  const handleKeyDown = (e:any, fieldName:any) => {
-    const currentIndex = FIELD_INDEXES[fieldName] 
-
+  const handleKeyDown = (e: any, fieldName: any) => {
+    const currentIndex = FIELD_INDEXES[fieldName];
+    console.log(currentIndex, "currentIndex");
     if (e.key === "Enter") {
-      e.preventDefault()
-      const nextField = fieldOrder[currentIndex + 1]
+      e.preventDefault();
+      const nextField = fieldOrder[currentIndex + 1];
       if (nextField) {
-        inputRefs[nextField].current?.focus()
+        inputRefs[nextField].current?.focus();
       }
     } else if (e.key === "ArrowUp") {
-      e.preventDefault()
-      const prevField = fieldOrder[currentIndex - 1]
+      e.preventDefault();
+      const prevField = fieldOrder[currentIndex - 1];
       if (prevField) {
-        inputRefs[prevField].current?.focus()
+        inputRefs[prevField].current?.focus();
       }
     }
-  }
+  };
+
+  //checkLiscense Section Update
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const expiresRef = useRef<HTMLInputElement>(null);
+  const handleLookup = async () => {
+    if (!formState.dispatch.licensenum || !formState.dispatch.licensest) {
+      setError("Please enter both license plate and state");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const details = await lookupLicensePlate(
+        formState.dispatch.licensenum,
+        formState.dispatch.licensest
+      );
+      if (details) {
+        console.log(details, "details");
+        // onPlateDetails(details);
+        updateDispatch((prev: any) => ({
+          ...prev,
+          vin: details.vin,
+          yearcar: details.year,
+          makecar: details.make,
+          modelcar: details.model,
+          colorcar: details.color,
+        }));
+      } else {
+        setError("License plate not found");
+      }
+    } catch (err) {
+      setError("Error looking up license plate");
+      console.error("License plate lookup error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVinDetails = (details: any) => {
+    try {
+      updateDispatch((prev: any) => ({
+        ...prev,
+        yearcar: details.year,
+        makecar: details.make,
+        modelcar: details.model,
+        bodytype: details.bodyType,
+      }));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setError(null);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [error]);
 
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
-      <InvoiceSearch onInvoiceFound={handleInvoiceFound} className="flex-1 min-w-[200px]" />
+      <InvoiceSearch
+        onInvoiceFound={handleInvoiceFound}
+        className="flex-1 min-w-[200px]"
+      />
       <NewButton onNew={handleNew} />
       <SaveButton onSave={handleSave} />
       <PrintButton onPrint={handlePrint} />
@@ -394,10 +543,9 @@ const InvoiceForm = () => {
             size="md"
             value={formState.driver.driver || ""}
             onChange={(value) => updateDriver({ driver: value })}
-            onKeyDown={(e:any) => handleKeyDown(e, "driver")}
+            onKeyDown={(e: any) => handleKeyDown(e, "driver")}
             ref={inputRefs.driver}
             inputRefs={inputRefs.driver}
-            
           />
           <DriverCombobox
             label="Driver 2"
@@ -405,10 +553,9 @@ const InvoiceForm = () => {
             size="md"
             value={formState.driver.driver2 || ""}
             onChange={(value) => updateDriver({ driver2: value })}
-            onKeyDown={(e:any) => handleKeyDown(e, "driver2")}
+            onKeyDown={(e: any) => handleKeyDown(e, "driver2")}
             ref={inputRefs.driver2}
             inputRefs={inputRefs.driver2}
-
           />
           <div className="flex flex-wrap gap-2">
             <MilitaryTimeInput
@@ -418,8 +565,8 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timerec: value })}
               onKeyDown={(e) => handleKeyDown(e, "timerec")}
               ref={inputRefs.timerec}
-              FIELD_INDEXES ={FIELD_INDEXES}
-              inputRefs = {inputRefs}
+              FIELD_INDEXES={FIELD_INDEXES}
+              inputRefs={inputRefs}
               fieldName="timerec"
             />
             <MilitaryTimeInput
@@ -429,9 +576,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeinrt: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeinrt")}
               ref={inputRefs.timeinrt}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="timeinrt"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
             <MilitaryTimeInput
               label="Arrived"
@@ -440,10 +587,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timearrive: value })}
               onKeyDown={(e) => handleKeyDown(e, "timearrive")}
               ref={inputRefs.timearrive}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="timearrive"
-              inputRefs = {inputRefs}
-
+              inputRefs={inputRefs}
             />
             <MilitaryTimeInput
               label="Loaded"
@@ -452,9 +598,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeintow: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeintow")}
               ref={inputRefs.timeintow}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="timeintow"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
             <MilitaryTimeInput
               label="Cleared"
@@ -463,9 +609,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDriver({ timeclear: value })}
               onKeyDown={(e) => handleKeyDown(e, "timeclear")}
               ref={inputRefs.timeclear}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="timeclear"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
           </div>
         </div>
@@ -483,9 +629,9 @@ const InvoiceForm = () => {
               onChange={(value) => updateDispatch({ towdate: value })}
               onKeyDown={(e) => handleKeyDown(e, "towdate")}
               ref={inputRefs.towdate}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="towdate"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
             <FormInput
               className="h-10 text-[14px]"
@@ -507,8 +653,7 @@ const InvoiceForm = () => {
               onChange={(value) => updateDispatch({ trucknum: value })}
               onKeyDown={(e) => handleKeyDown(e, "trucknum")}
               ref={inputRefs.trucknum}
-              inputRefs = {inputRefs.trucknum}
-
+              inputRefs={inputRefs.trucknum}
             />
             <FormInput
               label="Dispatcher"
@@ -539,7 +684,7 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "membernum")}
               ref={inputRefs.membernum}
             />
-             <DateInput
+            <DateInput
               className="h-10 text-[14px]"
               label="Expires"
               title="master.memberexp"
@@ -547,11 +692,10 @@ const InvoiceForm = () => {
               value={formState.invoice.memberexp || ""}
               onChange={(value) => updateInvoice({ memberexp: value })}
               onKeyDown={(e) => handleKeyDown(e, "memberexp")}
-             
               ref={inputRefs.memberexp}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="memberexp"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
             <FormInput
               className="h-10 text-[14px]"
@@ -561,9 +705,9 @@ const InvoiceForm = () => {
               onChange={(e) => updateDispatch({ value: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e, "value")}
               ref={inputRefs.value}
-            /> 
-         
-         <DateInput
+            />
+
+            <DateInput
               className="h-10 text-[14px]"
               label="Date Stored"
               title="master.dateStored"
@@ -572,50 +716,20 @@ const InvoiceForm = () => {
               onChange={(value) => updateInvoice({ dateStored: value })}
               onKeyDown={(e) => handleKeyDown(e, "dateStored")}
               ref={inputRefs.dateStored}
-              FIELD_INDEXES ={FIELD_INDEXES}
+              FIELD_INDEXES={FIELD_INDEXES}
               fieldName="dateStored"
-              inputRefs = {inputRefs}
+              inputRefs={inputRefs}
             />
-           
+
             <AccountName
               label="Account Name"
               title="master.account"
               size="xl"
               value={formState.dispatch.callname || ""}
-              onChange={(value:any) => updateDispatch({ callname: value })}
-              onKeyDown={(e:any) => handleKeyDown(e, "callname")}
+              onChange={(value: any) => updateDispatch({ callname: value })}
+              onKeyDown={(e: any) => handleKeyDown(e, "callname")}
               ref={inputRefs.callname}
-            /> 
-              <FormInput
-              label="Who Called"
-              className="h-10 text-[14px]"
-              title="master.whocalled"
-              value={formState.dispatch.whocalled || ""}
-              onChange={(e) => updateDispatch({ whocalled: e.target.value })}
-              onKeyDown={(e) => handleKeyDown(e, "whocalled")}
-              ref={inputRefs.whocalled}
             />
-             <PhoneInput
-              label="Phone #"
-              title="master.phone"
-              className="h-10 text-[14px]"
-              size="lg"
-              value={formState.dispatch.callphone || ""}
-              onChange={(value) => updateDispatch({ callphone: value })}
-              onKeyDown={(e) => handleKeyDown(e, "callphone")}
-              ref={inputRefs.callphone}
-            />
-            <FormInput
-              className="h-10 text-[14px]"
-              label="Reference #"
-              title="master.refnum"
-              value={formState.dispatch.refnumber || ""}
-              onChange={(e) => updateDispatch({ refnumber: e.target.value })}
-              onKeyDown={(e) => handleKeyDown(e, "refnumber")}
-              ref={inputRefs.refnumber}
-            />
-          </div> 
-          {/* <div className="flex flex-wrap gap-2">
             <FormInput
               label="Who Called"
               className="h-10 text-[14px]"
@@ -644,36 +758,274 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "refnumber")}
               ref={inputRefs.refnumber}
             />
-          </div> */}
+          </div>
+        </div>
+      </FormSection>
+      <FormSection title="B - Vehicle Information" className="mt-4">
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <FormInput
+              label="Type"
+              title="master.type"
+              value={formState.dispatch.type || ""}
+              onChange={(e) => updateDispatch({ type: e.target.value })}
+              className="uppercase w-[7ch] h-10 text-[14px]"
+              placeholder="Type"
+              onKeyDown={(e) => handleKeyDown(e, "type")}
+              ref={inputRefs.type}
+            />
+            <FormInput
+              label="Year"
+              className="h-10 text-[14px]"
+              title="master.yearcar"
+              value={formState.dispatch.yearcar || ""}
+              onChange={(e) => updateDispatch({ yearcar: e.target.value })}
+              placeholder="YYYY"
+              onKeyDown={(e) => handleKeyDown(e, "yearcar")}
+              ref={inputRefs.yearcar}
+            />
+            <FormInput
+              className="h-10 text-[14px]"
+              label="Make"
+              title="master.makecar"
+              value={formState.dispatch.makecar || ""}
+              onChange={(e) => updateDispatch({ makecar: e.target.value })}
+              placeholder="Make"
+              onKeyDown={(e) => handleKeyDown(e, "makecar")}
+              ref={inputRefs.makecar}
+            />
+            <FormInput
+              className="h-10 text-[14px]"
+              label="Model"
+              title="master.modelcar"
+              value={formState.dispatch.modelcar || ""}
+              onChange={(e) => updateDispatch({ modelcar: e.target.value })}
+              placeholder="Model"
+              onKeyDown={(e) => handleKeyDown(e, "modelcar")}
+              ref={inputRefs.modelcar}
+            />
+            <FormInput
+              label="Color"
+              title="master.colorcar"
+              className="h-10 text-[14px]"
+              value={formState.dispatch.colorcar || ""}
+              onChange={(e) => updateDispatch({ colorcar: e.target.value })}
+              placeholder="Color"
+              ref={inputRefs.colorcar}
+              onKeyDown={(e) => handleKeyDown(e, "colorcar")}
+            />
+            <FormInput
+              label="Body"
+              title="master.bodytype"
+              className="h-10 text-[14px]"
+              value={formState?.dispatch.bodytype || ""}
+              onChange={(e) => updateDispatch({ bodytype: e.target.value })}
+              placeholder="Body type"
+              ref={inputRefs.bodytype}
+              onKeyDown={(e) => handleKeyDown(e, "bodytype")}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex gap-2 items-end">
+              <StateInput
+                className="h-10 text-[14px]"
+                label="State"
+                title="master.licensest"
+                size="xs"
+                value={formState?.dispatch?.licensest || ""}
+                onChange={(value) => updateDispatch({ licensest: value })}
+                ref={inputRefs.licensest}
+                maxLength={2}
+                placeholder="XX"
+                onKeyDown={(e: any) => handleKeyDown(e, "licensest")}
+              />
+              <StateInput
+                maxLength={7}
+                label="License Plate"
+                title="master.licensenum"
+                value={formState.dispatch.licensenum || ""}
+                onChange={(value) => updateDispatch({ licensenum: value })}
+                placeholder="ABC1234"
+                size="md"
+                ref={inputRefs.licensenum}
+                onKeyDown={(e: any) => handleKeyDown(e, "licensenum")}
+              />
+              <FormInput
+                label="Expires"
+                title="master.tagmonthyear"
+                value={formState.dispatch.tagmonthyear || ""}
+                onChange={(e) =>
+                  updateDispatch({ tagmonthyear: e.target.value })
+                }
+                placeholder="MM/YY"
+                ref={inputRefs.tagmonthyear}
+                onKeyDown={(e: any) => handleKeyDown(e, "tagmonthyear")}
+              />
+              <button
+                onClick={handleLookup}
+                disabled={
+                  loading ||
+                  !formState.dispatch.licensenum ||
+                  !formState.dispatch.licensest
+                }
+                className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+                disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none 
+                focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                title="Look up license plate information"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <VinLookupField
+                ref={inputRefs.vin}
+                value={formState.dispatch.vin || ""}
+                onChange={(value) => updateDispatch({ vin: value })}
+                onKeyDown={(e: any) => handleKeyDown(e, "vin")}
+                onVinDetails={handleVinDetails}
+              />
+            </div>
+            {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+          </div>
+          <FormSection title="C - Vehicle Details" >
+      <div className="flex flex-wrap gap-4 items-start">
+   
+        <FormInput 
+          label="Odometer" 
+          className="h-10 text-[14px]"
+          title="master.odometer" 
+          value={formState.dispatch.odometer}
+          onChange={(e) => updateDispatch({odometer: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "odometer")}
+          ref={inputRefs.odometer}
+        />
+            <FormInput 
+            size="full"
+          label="Condition" 
+          className="h-10 text-[14px] min-w-[600px]"
+          title="master.condition" 
+          value={formState.dispatch.condition}
+          onChange={(e) => updateDispatch({condition: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "condition")}
+          ref={inputRefs.condition}
+
+          
+        />
+         <FormInput 
+          className='h-10 text-[14px]'
+          label="Reason" 
+          title="master.reason" 
+          value={formState.dispatch.reason}
+          onChange={(e) => updateDispatch({reason: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "reason")}
+          placeholder="Enter reason"
+          ref={inputRefs.reason}
+        />
+      </div>
+    </FormSection>
+    <FormSection title="D - Location Information">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4">
+          <AddressAutocomplete
+            label="Towed From"
+            // onChange={(e) => updateDispatch({towedfrom: e.target.value})}
+            value={formState.dispatch.towedfrom || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ towedfrom: newValue })} 
+            onKeyDown={(e: any) => handleKeyDown(e, "towedfrom")}
+            ref={inputRefs.towedfrom}
+            className='h-10 w-full text-[14px]'
+
+          />
+          <AddressAutocomplete
+            label="Towed To"
+            value={formState?.dispatch.towedto || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ towedto: newValue })} 
+            className='h-10 w-full text-[14px]'
+            onKeyDown={(e: any) => handleKeyDown(e, "towedto")}
+            ref={inputRefs.towedto}
+          />
+          
+          <AddressAutocomplete
+            ref={inputRefs?.retowto}
+            label="Retow To"
+            value={formState?.dispatch.retowto || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ retowto: newValue })} 
+             className='h-10 w-full text-[14px]'
+             onKeyDown={(e: any) => handleKeyDown(e, "retowto")}
+          />
+        </div>
+        
+        <div className="flex flex-wrap gap-4">
+          <FormInput
+              ref={inputRefs?.lotsection}
+            size='address'
+            label="Lot Section"
+            title="master.lotsection"
+            value={formState.dispatch.lotsection || ''}
+            onChange={(e) => updateDispatch({ lotsection: e.target.value })}
+            placeholder="Enter lot section"
+             className='h-10 w-[15rem] text-[14px] '
+             onKeyDown={(e: any) => handleKeyDown(e, "lotsection")}
+            
+          />
+          <FormInput
+              ref={inputRefs?.calltype}
+            label="Call Type"
+            title="master.calltype"
+            className='h-10 w-[15rem] text-[14px] '
+            value={formState.dispatch.calltype || ''}
+            onChange={(e) => updateDispatch({ calltype: e.target.value })}
+            placeholder="Enter call type"
+            onKeyDown={(e: any) => handleKeyDown(e, "calltype")}
+          />
+            <FormInput
+              ref={inputRefs?.keysinfo}
+            label="Have Key?"
+            title="master.keyinfo"
+            value={formState.dispatch.keysinfo || ''}
+            onChange={(e) => updateDispatch({ keysinfo: e.target.value })}
+            placeholder="Key information"
+            className='h-10 w-[15rem] text-[14px] '
+            onKeyDown={(e: any) => handleKeyDown(e, "keysinfo")}
+            />
+          <FormInput
+           ref={inputRefs?.holdnote}
+            label="Hold Note"
+            title="master.holdnote"
+            value={formState.dispatch.holdnote || ''}
+            onChange={(e) => updateDispatch({ holdnote: e.target.value })}
+            placeholder="Enter hold note"
+            className='h-10 w-[15rem] text-[14px]'
+            onKeyDown={(e: any) => handleKeyDown(e, "holdnote")}
+            />
+        </div>
+      </div>
+    </FormSection>
+          {/* <div className="flex flex-wrap gap-4">
+          <LicensePlateLookup
+            ref={plateRef}
+            stateRef={stateRef}
+            onPlateDetails={handlePlateDetails}
+            maxLength={7}
+            onDispatchChange={onDispatchChange}
+            dispatch={dispatch}
+            onEnterPress={() => vinRef.current?.focus()}
+          />
+          <VinLookupField
+            ref={vinRef}
+            value={dispatch.vin || ''}
+            onChange={(value) => onDispatchChange({ vin: value })}
+            onVinDetails={handleVinDetails}
+            onEnterPress={onEnterPress}
+          />
+        </div> */}
         </div>
       </FormSection>
     </div>,
-  ]
+  ];
 
-  return <DesktopLayout sections={sections} />
-}
+  return <DesktopLayout sections={sections} />;
+};
 
-export default InvoiceForm
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default InvoiceForm;
 
 // // import { useDeviceType } from '../hooks/useDeviceType';
 // import { useFormState } from "../hooks/useFormState";
@@ -1064,10 +1416,6 @@ export default InvoiceForm
 //   //       }
 //   //     };
 
-  
-
-
-
 //   const FIELD_INDEXES:any = {
 //     driver: 0,
 //     driver2: 1,
@@ -1079,8 +1427,8 @@ export default InvoiceForm
 //     // state: 7,
 //     // zip: 8,
 //     // contact: 9,
-//   };  
- 
+//   };
+
 //   const inputRefs:any = {
 //     driver: useRef(null),
 //     driver2: useRef(null),
@@ -1106,8 +1454,6 @@ export default InvoiceForm
 //     // "zip",
 //     // "contact",
 //   ];
-
-
 
 //   const handleKeyDown = (e:any, fieldName:any) => {
 //     const currentIndex = FIELD_INDEXES[fieldName];
@@ -1431,7 +1777,7 @@ export default InvoiceForm
 //           </div> */}
 //         </div>
 //       </FormSection>
-//       {/* <GeneralSection 
+//       {/* <GeneralSection
 //          key="general"
 //         dispatch={formState.dispatch}
 //         onDispatchChange={updateDispatch}
@@ -1444,15 +1790,15 @@ export default InvoiceForm
 //       /> */}
 //     </div>,
 //     // <div ref={vehicleDetailsSectionRef} key="vehicle-details-wrapper">
-//     //   <VehicleDetailsSection
-//     //   key="vehicle-details"
-//     //   // ref={vehicleDetailsSectionRef}
-//     //     odometer={formState.dispatch.odometer}
-//     //     condition={formState.dispatch.condition}
-//     //     reason={formState.dispatch.reason}
-//     //     onChange={(field, value) => updateDispatch({ [field]: value })}
-//     //     // onEnterPress={() => focusSection(locationSectionRef)}
-//     //   />
+//   <VehicleDetailsSection
+//   key="vehicle-details"
+//   // ref={vehicleDetailsSectionRef}
+//     odometer={formState.dispatch.odometer}
+//     condition={formState.dispatch.condition}
+//     reason={formState.dispatch.reason}
+//     onChange={(field, value) => updateDispatch({ [field]: value })}
+//     // onEnterPress={() => focusSection(locationSectionRef)}
+//   />
 //     // </div>,
 //     // <div ref={locationSectionRef} key="location-wrapper">
 //     //   <LocationSection
