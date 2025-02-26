@@ -14,8 +14,8 @@ interface Dispatch {
 }
 
 interface LienSectionProps {
-  dispatch: Dispatch;
-  onDispatchChange: (updates: Partial<Dispatch>) => void;
+  dispatch?: Dispatch;
+  onDispatchChange?: (updates: Partial<Dispatch>) => void;
   onEnterPress?: () => void;
 }
 

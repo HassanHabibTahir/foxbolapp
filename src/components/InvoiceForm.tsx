@@ -24,6 +24,9 @@ import { Search } from "lucide-react";
 import { lookupLicensePlate } from "../lib/licenseLookup";
 import VinLookupField from "./VinLookupField";
 import AddressAutocomplete from "./common/AddressAutocomplete";
+import NotesSection from "./NotesSection";
+import ZipInput from "./common/ZipInput";
+import LienSection from "./LienSection";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 interface AccountNameProps {
@@ -288,7 +291,31 @@ const FIELD_INDEXES: any = {
   lotsection:36,
   calltype:37,
   keysinfo:38,
-  holdnote:39,        
+  holdnote:39,   
+  notes:40,
+  invoicenum:41,
+  invdate:42,
+  itemgroup:43,
+  inreason:44,
+  billtoname:45,
+  ponumber:46,
+  billtoaddr1:47,
+  releaselic:48,
+  billtoaddr2:49,
+  billtophone:50,
+  billtocity:51,
+  billtost:52,
+  billtozip:53,
+  billtocont:54,
+  regname:55,
+  rtype:56,
+  auct_num:57,
+  regaddr1:58,
+  regcity:59,
+  regstate:60,
+  regzip:61,
+  datein:62,
+  dateout:63
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -345,7 +372,31 @@ const InvoiceForm = () => {
   const calltypeRef = useRef(null);
   const keysinfoRef = useRef(null);
   const holdnoteRef = useRef(null);
-          
+  const notesRef=useRef(null);
+  const invoicenumRef = useRef(null);
+  const  invdateRef = useRef(null);
+  const itemgroupRef = useRef(null);
+  const inreasonRef = useRef(null);
+  const billtonameRef= useRef(null);
+  const ponumberRef = useRef(null);
+  const billtoaddr1Ref = useRef(null)
+  const releaselicRef = useRef(null);
+  const billtoaddr2Ref = useRef(null);
+  const billtophoneRef = useRef(null);
+  const billtocityRef = useRef(null);
+  const billtostRef = useRef(null);
+  const billtozipRef = useRef(null);
+  const billtocontRef = useRef(null);
+  const regnameRef = useRef(null);
+  const rtypeRef = useRef(null);
+  const auct_numRef = useRef(null);
+  const regaddr1Ref = useRef(null);
+  const regcityRef = useRef(null);
+  const regstateRef = useRef(null);
+  const regzipRef = useRef(null);
+  const dateinRef = useRef(null);
+  const dateoutRef = useRef(null);
+
 
   const inputRefs: any = {
     driver: driverRef,
@@ -388,6 +439,33 @@ const InvoiceForm = () => {
     calltype: calltypeRef,
     keysinfo: keysinfoRef,
     holdnote: holdnoteRef,
+    notes:notesRef,
+    invoicenum : invoicenumRef,
+    invdate : invdateRef,
+   itemgroup : itemgroupRef,
+   inreason : inreasonRef,
+    billtoname : billtonameRef,
+    ponumber : ponumberRef,
+    billtoaddr1 : billtoaddr1Ref,
+    releaselic : releaselicRef,
+    billtoaddr2 : billtoaddr2Ref,
+    billtophone : billtophoneRef,
+    billtocity : billtocityRef,
+    billtost : billtostRef,
+    billtozip : billtozipRef,
+    billtocont : billtocontRef,
+    regname : regnameRef,
+    rtype : rtypeRef,
+    auct_num : auct_numRef,
+    regaddr1 : regaddr1Ref,
+    regcity : regcityRef,
+    regstate : regstateRef,
+    regzip : regzipRef,
+    datein:dateinRef,
+    dateout:dateoutRef,
+  
+   
+
     
   };
 
@@ -522,6 +600,8 @@ const InvoiceForm = () => {
 
     return () => clearTimeout(timeout);
   }, [error]);
+
+
 
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
@@ -999,6 +1079,285 @@ const InvoiceForm = () => {
         </div>
       </div>
     </FormSection>
+    <NotesSection 
+         ref={inputRefs?.notes}
+         value={formState.dispatch.callremark || ''}
+        onChange={(notes) => updateDispatch({ 'callremark': notes })}
+        onKeyDown={(e: any) => handleKeyDown(e, "notes")}
+        // onEnterPress={() => focusSection(invoiceSectionRef)}
+      />
+
+<FormSection title="Invoice Information">
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <FormInput
+          ref={inputRefs?.invoicenum}
+            label="Inv #"
+            title="master.invoicenum"
+            value={formState.invoice.invoicenum || ''}
+            onChange={(e) => updateInvoice({ invoicenum: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "invoicenum")}
+            placeholder="Invoice number"
+          />
+          <DateInput 
+            ref={inputRefs?.invdate}
+            label="Date" 
+            title="master.invdate" 
+            size="md"
+            value={formState.invoice.invdate || ''}
+            onChange={(value) => updateInvoice({ invdate: value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "invdate")}
+            FIELD_INDEXES={FIELD_INDEXES}
+            fieldName="invdate"
+            inputRefs={inputRefs}
+          />
+      
+          <FormInput
+            ref={inputRefs?.itemgroup}
+            label="Group"
+            title="master.group"
+            value={formState.invoice.itemgroup || ''}
+            onChange={(e) => updateInvoice({ itemgroup: e.target.value })}
+            placeholder="Item group"
+            onKeyDown={(e: any) => handleKeyDown(e, "itemgroup")}
+          />
+         
+          <FormInput
+          ref={inputRefs?.inreason}
+            label="Reason"
+            title="master.reason"
+            value={formState.invoice.reason || ''}
+            onChange={(e) => updateInvoice({ reason: e.target.value })}
+            placeholder="Reason"
+            onKeyDown={(e: any) => handleKeyDown(e, "inreason")}
+          />
+        </div>
+        <div  className="flex flex-wrap gap-4">
+          <FormInput
+              ref={inputRefs?.billtoname}
+            label="Name"
+            title="master.billtoname"
+            value={formState.invoice.billtoname || ''}
+            onChange={(e) => updateInvoice({ billtoname: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "billtoname")}
+            className=""
+            placeholder="Customer name"
+
+          />
+          
+          <FormInput
+           ref={inputRefs?.ponumber}
+            label="PO#"
+            title="master.ponumber"
+            value={formState.invoice.ponumber || ''}
+            onChange={(e) => updateInvoice({ ponumber: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "ponumber")}
+            className="w-48"
+            placeholder="PO number"
+          />
+            <FormInput
+            ref={inputRefs?.billtoaddr1}
+            label="Address 1"
+            title="master.billtoaddr1"
+            size="full"
+            value={formState.invoice.billtoaddr1 || ''}
+            onChange={(e) => updateInvoice({ billtoaddr1: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "billtoaddr1")}
+            className="flex-1"
+            placeholder="Street address"
+          />
+         
+          <FormInput
+          ref={inputRefs?.releaselic}
+            label="RelLic#"
+            title="master.releaselic"
+            value={formState.invoice.releaselic || ''}
+            onChange={(e) => updateInvoice({ releaselic: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "releaselic")}
+            className="w-48"
+            placeholder="Release license"
+          />
+          
+        </div>
+           <div className="flex flex-wrap gap-4">
+           <FormInput
+              ref={inputRefs?.billtoaddr2}
+            label="Address 2"
+            title="master.billtoaddr2"
+            size="full"
+            value={formState.invoice.billtoaddr2 || ''}
+            onChange={(e) => updateInvoice({ billtoaddr2: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "billtoaddr2")}
+            className="flex-1"
+            placeholder="Apt, Suite, etc."
+          /> 
+          <PhoneInput
+              ref={inputRefs?.billtophone}
+            label="Phone"
+            title="master.billtophone"
+            size="md"
+            value={ formState.invoice.billtophone || ''}
+            onChange={(value) => updateInvoice({ billtophone: value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "billtophone")}
+          /> 
+         
+            <FormInput
+              ref={inputRefs?.billtocity}
+              label="City"
+              title="master.billtocity"
+              value={formState.invoice.billtocity || ''}
+              onChange={(e) => updateInvoice({ billtocity: e.target.value })}
+              onKeyDown={(e: any) => handleKeyDown(e, "billtocity")}
+              className="flex-1"
+              placeholder="City"
+            />
+        </div> 
+
+       
+        <div className="flex gap-2">
+          
+            <StateInput
+            ref={inputRefs?.billtost}
+              label="State"
+              title="master.billtost"
+              value={formState.invoice.billtost || ''}
+              onChange={(value) => updateInvoice({ billtost: value })}
+              onKeyDown={(e: any) => handleKeyDown(e, "billtost")}
+            />
+            <ZipInput
+              ref={inputRefs?.billtozip}
+              label="Zip"
+              title="master.billtozip"
+              value={formState.invoice.billtozip || ''}
+              onChange={(value) => updateInvoice({ billtozip: value })}
+              onKeyDown={(e: any) => handleKeyDown(e, "billtozip")}              
+            />
+          <FormInput
+             ref={inputRefs?.billtocont}
+            label="Contact"
+            title="master.billtocont"
+            value={formState.invoice.billtocont || ''}
+            onChange={(e) => updateInvoice({ billtocont: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "billtocont")}
+            className="w-64"
+            placeholder="Contact name"
+          />
+          </div>
+  
+      </div>
+      
+    </FormSection>
+    <FormSection title="G - Registration Information">
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <FormInput
+            ref={inputRefs?.regname}
+            label="Registered Owner"
+            title="master.regname"
+            value={formState.invoice.regname || ''}
+            onChange={(e) => updateInvoice({ regname: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "regname")}
+            className="flex-1"
+            placeholder="Enter registered owner name"
+          />
+         
+          <FormInput
+            ref={inputRefs?.rtype}
+            label="R-Type"
+            title="master.rtype"
+            value={formState.invoice.rtype || ''}
+            onChange={(e) => updateInvoice({ rtype: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "rtype")}
+            className="w-32"
+            placeholder="Type"
+          />
+          <FormInput
+            ref={inputRefs?.auct_num}
+            label="Auction #"
+            title="master.auctionnum"
+            value={formState.dispatch.auct_num || ''}
+            onChange={(e) => updateDispatch({ auct_num: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "auct_num")}
+            className="w-48"
+            placeholder="Enter auction number"
+          />
+        </div>
+      
+        <div className="flex flex-wrap gap-4">
+          <FormInput
+           ref={inputRefs?.regaddr1}
+            label="Address"
+            title="master.regaddr1"
+            value={formState.invoice.regaddr1 || ''}
+            onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
+            className="flex-1"
+            placeholder="Enter registration address"
+          />
+           
+          <FormInput
+          ref={inputRefs?.regcity}
+            label="City"
+            title="master.regcity"
+            value={formState.invoice.regcity || ''}
+            onChange={(e) => updateInvoice({ regcity: e.target.value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
+            className="w-48"
+            placeholder="Enter city"
+          />
+           
+          <StateInput
+           ref={inputRefs?.regstate}
+            label="State"
+            title="master.regstate"
+            value={formState.invoice.regstate || ''}
+            onChange={(value) => updateInvoice({ regstate: value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
+          />
+          
+          <ZipInput
+           ref={inputRefs?.regzip}
+            label="Zip"
+            title="master.regzip"
+            value={formState.invoice.regzip || ''}
+            onChange={(value) => updateInvoice({ regzip: value })}
+            onKeyDown={(e: any) => handleKeyDown(e, "regzip")}
+          />
+        </div>
+      </div>
+    </FormSection>
+    <FormSection title="Storage Information">
+      <div className="flex flex-wrap gap-4">
+        <DateInput 
+          label="Storage In" 
+          title="master.storagein"
+          size="sm"
+          value={formState.dispatch.datein || ''}
+          onChange={(value) => updateDispatch({ datein: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "datein")}
+          ref={inputRefs.datein}
+          FIELD_INDEXES={FIELD_INDEXES}
+          fieldName="datein"
+          inputRefs={inputRefs}
+        />
+        <DateInput 
+        ref={inputRefs?.dateout}
+          label="Storage Out" 
+          title="master.storageout"
+          size="sm"
+          value={formState.dispatch.dateout || ''}
+          onChange={(value) => updateDispatch({ dateout: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "dateout")}
+           FIELD_INDEXES={FIELD_INDEXES}
+          fieldName="dateout"
+          inputRefs={inputRefs}
+        />
+      </div>
+    </FormSection>
+    {/* <LienSection
+    dispatch={formState.dispatch}
+    onDispatchChange={updateDispatch}
+    /> */}
           {/* <div className="flex flex-wrap gap-4">
           <LicensePlateLookup
             ref={plateRef}
@@ -1016,7 +1375,9 @@ const InvoiceForm = () => {
             onVinDetails={handleVinDetails}
             onEnterPress={onEnterPress}
           />
-        </div> */}
+          */}
+          {/* </div> */}
+          {/* </div> */}
         </div>
       </FormSection>
     </div>,
@@ -1046,7 +1407,7 @@ export default InvoiceForm;
 // import RegistrationSection from "./RegistrationSection";
 // import InvoiceSection from "./InvoiceSection";
 // import StorageSection from "./StorageSection";
-// import LienSection from "./LienSection";
+
 // import ChargesSection from "./ChargesSection";
 // import { fetchTowData } from "../lib/saveHandlers";
 // import PrintButton from "./invoices/PrintButton";
