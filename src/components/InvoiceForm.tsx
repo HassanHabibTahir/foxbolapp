@@ -20,6 +20,11 @@ import { fetchTowData } from "../lib/saveHandlers";
 import PrintButton from "./invoices/PrintButton";
 import { printInvoice } from "../utils/printInvoice";
 import StateInput from "./common/StateInput";
+import { Search } from "lucide-react";
+import { lookupLicensePlate } from "../lib/licenseLookup";
+import VinLookupField from "./VinLookupField";
+import AddressAutocomplete from "./common/AddressAutocomplete";
+// import VehicleDetailsSection from "./VehicleDetailsSection";
 
 interface AccountNameProps {
   label: string;
@@ -270,9 +275,15 @@ const FIELD_INDEXES: any = {
   modelcar: 23,
   colorcar: 24,
   bodytype: 25,
-  licensest:26,
-  licensenum:27,
-  tagmonthyear:28
+  licensest: 26,
+  licensenum: 27,
+  tagmonthyear: 28,
+  vin: 29,
+  odometer:30,
+  condition:31,
+  reason:32,
+  towedfrom:33,
+  towedto:34
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -310,14 +321,21 @@ const InvoiceForm = () => {
   const callphoneRef = useRef(null);
   const refnumberRef = useRef(null);
   const typeRef = useRef(null);
- const yearcarRef= useRef(null);
- const makecarRef= useRef(null);
- const modelcarRef= useRef(null);
- const colorcarRef= useRef(null);
- const bodytypeRef= useRef(null);
- const licensestRef = useRef(null);
- const licensenumRef = useRef(null);
- const tagmonthyearRef = useRef(null);
+  const yearcarRef = useRef(null);
+  const makecarRef = useRef(null);
+  const modelcarRef = useRef(null);
+  const colorcarRef = useRef(null);
+  const bodytypeRef = useRef(null);
+  const licensestRef = useRef(null);
+  const licensenumRef = useRef(null);
+  const tagmonthyearRef = useRef(null);
+  const vinRef = useRef(null);
+  const odometerRef = useRef(null);
+  const conditionRef = useRef(null);
+  const reasonRef = useRef(null);
+  const towedfromRef = useRef(null);
+  const towedtoRef = useRef(null)
+
   const inputRefs: any = {
     driver: driverRef,
     driver2: driver2Ref,
@@ -345,10 +363,16 @@ const InvoiceForm = () => {
     modelcar: modelcarRef,
     colorcar: colorcarRef,
     bodytype: bodytypeRef,
-    licensest:licensestRef,
-  licensenum:licensenumRef,
-  tagmonthyear:tagmonthyearRef
-
+    licensest: licensestRef,
+    licensenum: licensenumRef,
+    tagmonthyear: tagmonthyearRef,
+    vin: vinRef,
+    odometer:odometerRef,
+    condition:conditionRef,
+    reason:reasonRef,
+    towedfrom:towedfromRef,
+    towedto:towdateRef
+    
   };
 
   useEffect(() => {
@@ -404,7 +428,7 @@ const InvoiceForm = () => {
 
   const handleKeyDown = (e: any, fieldName: any) => {
     const currentIndex = FIELD_INDEXES[fieldName];
-
+    console.log(currentIndex, "currentIndex");
     if (e.key === "Enter") {
       e.preventDefault();
       const nextField = fieldOrder[currentIndex + 1];
@@ -419,6 +443,69 @@ const InvoiceForm = () => {
       }
     }
   };
+
+  //checkLiscense Section Update
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const expiresRef = useRef<HTMLInputElement>(null);
+  const handleLookup = async () => {
+    if (!formState.dispatch.licensenum || !formState.dispatch.licensest) {
+      setError("Please enter both license plate and state");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const details = await lookupLicensePlate(
+        formState.dispatch.licensenum,
+        formState.dispatch.licensest
+      );
+      if (details) {
+        console.log(details, "details");
+        // onPlateDetails(details);
+        updateDispatch((prev: any) => ({
+          ...prev,
+          vin: details.vin,
+          yearcar: details.year,
+          makecar: details.make,
+          modelcar: details.model,
+          colorcar: details.color,
+        }));
+      } else {
+        setError("License plate not found");
+      }
+    } catch (err) {
+      setError("Error looking up license plate");
+      console.error("License plate lookup error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVinDetails = (details: any) => {
+    try {
+      updateDispatch((prev: any) => ({
+        ...prev,
+        yearcar: details.year,
+        makecar: details.make,
+        modelcar: details.model,
+        bodytype: details.bodyType,
+      }));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setError(null);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [error]);
 
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
@@ -672,101 +759,230 @@ const InvoiceForm = () => {
               ref={inputRefs.type}
             />
             <FormInput
-            label="Year"
-            className="h-10 text-[14px]"
-            title="master.yearcar"
-            value={formState.dispatch.yearcar || ''}
-            onChange={(e) => updateDispatch({ yearcar: e.target.value })}
-            placeholder="YYYY"
-            onKeyDown={(e) => handleKeyDown(e, "yearcar")}
-            ref={inputRefs.yearcar}
-          /> 
-          <FormInput
+              label="Year"
               className="h-10 text-[14px]"
-            label="Make"
-            title="master.makecar"
-            value={formState.dispatch.makecar || ''}
-            onChange={(e) => updateDispatch({ makecar: e.target.value })}
-            placeholder="Make"
-            onKeyDown={(e) => handleKeyDown(e, "makecar")}
-            ref={inputRefs.makecar}
-          />
+              title="master.yearcar"
+              value={formState.dispatch.yearcar || ""}
+              onChange={(e) => updateDispatch({ yearcar: e.target.value })}
+              placeholder="YYYY"
+              onKeyDown={(e) => handleKeyDown(e, "yearcar")}
+              ref={inputRefs.yearcar}
+            />
             <FormInput
-            className="h-10 text-[14px]"
-            label="Model"
-            title="master.modelcar"
-            value={formState.dispatch.modelcar || ''}
-            onChange={(e) => updateDispatch({ modelcar: e.target.value })}
-            placeholder="Model"
-            onKeyDown={(e) => handleKeyDown(e, "modelcar")}
-            ref={inputRefs.modelcar}
-          />
-              <FormInput
-            label="Color"
-            title="master.colorcar"
-            className="h-10 text-[14px]"
-            value={formState.dispatch.colorcar || ''}
-            onChange={(e) => updateDispatch({ colorcar: e.target.value })}
-            placeholder="Color"
-            ref={inputRefs.colorcar}
-            onKeyDown={(e) => handleKeyDown(e, "colorcar")}
-          />
-            <FormInput
-            label="Body"
-            title="master.bodytype"
-            className="h-10 text-[14px]"
-            value={formState?.dispatch.bodytype || ''}
-            onChange={(e) => updateDispatch({ bodytype: e.target.value })}
-            placeholder="Body type"
-            ref={inputRefs.bodytype}  
-            onKeyDown={(e) => handleKeyDown(e, "bodytype")}
-          />
-
-       <StateInput
               className="h-10 text-[14px]"
-          label="State"
-          title="master.licensest"
-          size="xs"
-          value={formState?.dispatch?.licensest || ''}
-          onChange={(value) => updateDispatch({ licensest: value })}
-          ref={inputRefs.licensest}  
-          onKeyDown={(e:any) => handleKeyDown(e, "licensest")}
-        />
-
-            {/* yearcar ,makecar,modelcar ,colorcar,bodytype*/}
-       
-            {/* 
-          <FormInput
-            ref={modelRef}
-            className="h-10 text-[14px]"
-            label="Model"
-            title="master.modelcar"
-            value={dispatch.modelcar || ''}
-            onChange={(e) => onDispatchChange({ modelcar: e.target.value })}
-            onEnterPress={() => colorRef.current?.focus()}
-            placeholder="Model"
-          />
-          <FormInput
-            ref={colorRef}
-            label="Color"
-            title="master.colorcar"
-            className="h-10 text-[14px]"
-            value={dispatch.colorcar || ''}
-            onChange={(e) => onDispatchChange({ colorcar: e.target.value })}
-            onEnterPress={() => bodyRef.current?.focus()}
-            placeholder="Color"
-          />
-          <FormInput
-            ref={bodyRef}
-            label="Body"
-            title="master.bodytype"
-            className="h-10 text-[14px]"
-            value={dispatch.bodytype || ''}
-            onChange={(e) => onDispatchChange({ bodytype: e.target.value })}
-            onEnterPress={() => stateRef.current?.focus()}
-            placeholder="Body type"
-          /> */}
+              label="Make"
+              title="master.makecar"
+              value={formState.dispatch.makecar || ""}
+              onChange={(e) => updateDispatch({ makecar: e.target.value })}
+              placeholder="Make"
+              onKeyDown={(e) => handleKeyDown(e, "makecar")}
+              ref={inputRefs.makecar}
+            />
+            <FormInput
+              className="h-10 text-[14px]"
+              label="Model"
+              title="master.modelcar"
+              value={formState.dispatch.modelcar || ""}
+              onChange={(e) => updateDispatch({ modelcar: e.target.value })}
+              placeholder="Model"
+              onKeyDown={(e) => handleKeyDown(e, "modelcar")}
+              ref={inputRefs.modelcar}
+            />
+            <FormInput
+              label="Color"
+              title="master.colorcar"
+              className="h-10 text-[14px]"
+              value={formState.dispatch.colorcar || ""}
+              onChange={(e) => updateDispatch({ colorcar: e.target.value })}
+              placeholder="Color"
+              ref={inputRefs.colorcar}
+              onKeyDown={(e) => handleKeyDown(e, "colorcar")}
+            />
+            <FormInput
+              label="Body"
+              title="master.bodytype"
+              className="h-10 text-[14px]"
+              value={formState?.dispatch.bodytype || ""}
+              onChange={(e) => updateDispatch({ bodytype: e.target.value })}
+              placeholder="Body type"
+              ref={inputRefs.bodytype}
+              onKeyDown={(e) => handleKeyDown(e, "bodytype")}
+            />
           </div>
+          <div className="space-y-2">
+            <div className="flex gap-2 items-end">
+              <StateInput
+                className="h-10 text-[14px]"
+                label="State"
+                title="master.licensest"
+                size="xs"
+                value={formState?.dispatch?.licensest || ""}
+                onChange={(value) => updateDispatch({ licensest: value })}
+                ref={inputRefs.licensest}
+                maxLength={2}
+                placeholder="XX"
+                onKeyDown={(e: any) => handleKeyDown(e, "licensest")}
+              />
+              <StateInput
+                maxLength={7}
+                label="License Plate"
+                title="master.licensenum"
+                value={formState.dispatch.licensenum || ""}
+                onChange={(value) => updateDispatch({ licensenum: value })}
+                placeholder="ABC1234"
+                size="md"
+                ref={inputRefs.licensenum}
+                onKeyDown={(e: any) => handleKeyDown(e, "licensenum")}
+              />
+              <FormInput
+                label="Expires"
+                title="master.tagmonthyear"
+                value={formState.dispatch.tagmonthyear || ""}
+                onChange={(e) =>
+                  updateDispatch({ tagmonthyear: e.target.value })
+                }
+                placeholder="MM/YY"
+                ref={inputRefs.tagmonthyear}
+                onKeyDown={(e: any) => handleKeyDown(e, "tagmonthyear")}
+              />
+              <button
+                onClick={handleLookup}
+                disabled={
+                  loading ||
+                  !formState.dispatch.licensenum ||
+                  !formState.dispatch.licensest
+                }
+                className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+                disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none 
+                focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                title="Look up license plate information"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <VinLookupField
+                ref={inputRefs.vin}
+                value={formState.dispatch.vin || ""}
+                onChange={(value) => updateDispatch({ vin: value })}
+                onKeyDown={(e: any) => handleKeyDown(e, "vin")}
+                onVinDetails={handleVinDetails}
+              />
+            </div>
+            {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+          </div>
+          <FormSection title="C - Vehicle Details" >
+      <div className="flex flex-wrap gap-4 items-start">
+   
+        <FormInput 
+          label="Odometer" 
+          className="h-10 text-[14px]"
+          title="master.odometer" 
+          value={formState.dispatch.odometer}
+          onChange={(e) => updateDispatch({odometer: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "odometer")}
+          ref={inputRefs.odometer}
+        />
+            <FormInput 
+            size="full"
+          label="Condition" 
+          className="h-10 text-[14px] min-w-[600px]"
+          title="master.condition" 
+          value={formState.dispatch.condition}
+          onChange={(e) => updateDispatch({condition: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "condition")}
+          ref={inputRefs.condition}
+
+          
+        />
+         <FormInput 
+          className='h-10 text-[14px]'
+          label="Reason" 
+          title="master.reason" 
+          value={formState.dispatch.reason}
+          onChange={(e) => updateDispatch({reason: e.target.value})}
+          onKeyDown={(e: any) => handleKeyDown(e, "reason")}
+          placeholder="Enter reason"
+          ref={inputRefs.reason}
+        />
+      </div>
+    </FormSection>
+    <FormSection title="D - Location Information">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4">
+          <AddressAutocomplete
+            label="Towed From"
+            // onChange={(e) => updateDispatch({towedfrom: e.target.value})}
+            value={formState.dispatch.towedfrom || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ towedfrom: newValue })} 
+            onKeyDown={(e: any) => handleKeyDown(e, "towedfrom")}
+            ref={inputRefs.towedfrom}
+            className='h-10 w-full text-[14px]'
+
+          />
+          <AddressAutocomplete
+            label="Towed To"
+            value={formState?.dispatch.towedto || ''}
+            onChange={(newValue, placeDetails) => updateDispatch({ towedto: newValue })} 
+            className='h-10 w-full text-[14px]'
+            onKeyDown={(e: any) => handleKeyDown(e, "towedto")}
+            ref={inputRefs.towedto}
+          />
+          {/* 
+          <AddressAutocomplete
+            ref={retowToRef}
+            label="Retow To"
+            value={dispatch.retowto || ''}
+            onChange={handleAddressChange('retowto')}
+            onEnterPress={() => lotSectionRef.current?.focus()}
+             className='h-10 w-full text-[14px]'
+          /> */}
+        </div>
+        
+        {/* <div className="flex flex-wrap gap-4">
+          <FormInput
+            ref={lotSectionRef}
+            size='address'
+            label="Lot Section"
+            title="master.lotsection"
+            value={dispatch.lotsection || ''}
+            onChange={(e) => onDispatchChange({ lotsection: e.target.value })}
+            onEnterPress={() => callTypeRef.current?.focus()}
+            placeholder="Enter lot section"
+             className='h-10 w-[15rem] text-[14px] '
+            
+          />
+          <FormInput
+            ref={callTypeRef}
+            label="Call Type"
+            title="master.calltype"
+            className='h-10 w-[15rem] text-[14px] '
+            value={dispatch.calltype || ''}
+            onChange={(e) => onDispatchChange({ calltype: e.target.value })}
+            onEnterPress={() => keysInfoRef.current?.focus()}
+            placeholder="Enter call type"
+          />
+          <FormInput
+            ref={keysInfoRef}
+            label="Have Key?"
+            title="master.keyinfo"
+            value={dispatch.keysinfo || ''}
+            onChange={(e) => onDispatchChange({ keysinfo: e.target.value })}
+            onEnterPress={() => holdNoteRef.current?.focus()}
+            placeholder="Key information"
+            className='h-10 w-[15rem] text-[14px] '
+            />
+          <FormInput
+            ref={holdNoteRef}
+            label="Hold Note"
+            title="master.holdnote"
+            value={dispatch.holdnote || ''}
+            onChange={(e) => onDispatchChange({ holdnote: e.target.value })}
+            onEnterPress={onEnterPress}
+            placeholder="Enter hold note"
+            className='h-10 w-[15rem] text-[14px]'
+            />
+        </div> */}
+      </div>
+    </FormSection>
           {/* <div className="flex flex-wrap gap-4">
           <LicensePlateLookup
             ref={plateRef}

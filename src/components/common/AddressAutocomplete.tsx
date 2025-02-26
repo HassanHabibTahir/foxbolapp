@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, forwardRef, KeyboardEvent } from 'react';
 
 interface AddressAutocompleteProps {
-  label: string;
-  value: string;
-  onChange: (value: string, placeDetails?: google.maps.places.PlaceResult) => void;
+  label?: string;
+  value?: string;
+  onChange?: (value: any, placeDetails?: google.maps.places.PlaceResult) => void;
   onEnterPress?: () => void;
   placeholder?: string;
   className?: string;
+  onKeyDown?:any;
 }
 
 const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProps>(({
@@ -15,7 +16,8 @@ const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProp
   onChange,
   onEnterPress,
   placeholder = 'Enter address',
-  className = ''
+  className = '',
+  onKeyDown
 }, ref) => {
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -49,19 +51,20 @@ const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProp
   }, [ref]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    onKeyDown(e)
     // Prevent form submission on Enter if the autocomplete dropdown is open
-    if (e.key === 'Enter') {
-      const pacContainer = document.querySelector('.pac-container');
-      if (pacContainer && (pacContainer as HTMLElement).style.display !== 'none') {
-        e.preventDefault();
-        return;
-      }
+    // if (e.key === 'Enter') {
+    //   const pacContainer = document.querySelector('.pac-container');
+    //   if (pacContainer && (pacContainer as HTMLElement).style.display !== 'none') {
+    //     e.preventDefault();
+    //     return;
+    //   }
 
-      if (!e.shiftKey && onEnterPress) {
-        e.preventDefault();
-        onEnterPress();
-      }
-    }
+    //   if (!e.shiftKey && onEnterPress) {
+    //     e.preventDefault();
+    //     onEnterPress();
+    //   }
+    // }
   };
 
   return (

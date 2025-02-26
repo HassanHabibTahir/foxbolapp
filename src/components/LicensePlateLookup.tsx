@@ -80,7 +80,7 @@ const LicensePlateLookup = forwardRef<HTMLInputElement, LicensePlateLookupProps>
               className="h-10 text-[14px]"
           label="State"
           title="master.licensest"
-          size="xs"
+          size="xs" 
           value={dispatch.licensest || ''}
           onChange={(value) => onDispatchChange({ licensest: value })}
           onEnterPress={() => ref && 'current' in ref && ref.current?.focus()}
