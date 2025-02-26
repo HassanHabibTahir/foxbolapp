@@ -24,6 +24,7 @@ import { Search } from "lucide-react";
 import { lookupLicensePlate } from "../lib/licenseLookup";
 import VinLookupField from "./VinLookupField";
 import AddressAutocomplete from "./common/AddressAutocomplete";
+import NotesSection from "./NotesSection";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 interface AccountNameProps {
@@ -288,7 +289,8 @@ const FIELD_INDEXES: any = {
   lotsection:36,
   calltype:37,
   keysinfo:38,
-  holdnote:39,        
+  holdnote:39,   
+  notes:40     
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -345,6 +347,7 @@ const InvoiceForm = () => {
   const calltypeRef = useRef(null);
   const keysinfoRef = useRef(null);
   const holdnoteRef = useRef(null);
+  const notesRef=useRef(null);
           
 
   const inputRefs: any = {
@@ -388,6 +391,7 @@ const InvoiceForm = () => {
     calltype: calltypeRef,
     keysinfo: keysinfoRef,
     holdnote: holdnoteRef,
+    notes:notesRef
     
   };
 
@@ -522,6 +526,10 @@ const InvoiceForm = () => {
 
     return () => clearTimeout(timeout);
   }, [error]);
+
+
+
+console.log(formState,"formstate")
 
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
@@ -999,6 +1007,164 @@ const InvoiceForm = () => {
         </div>
       </div>
     </FormSection>
+    <NotesSection 
+         ref={inputRefs?.notes}
+         value={formState.dispatch.callremark || ''}
+        onChange={(notes) => updateDispatch({ 'callremark': notes })}
+        onKeyDown={(e: any) => handleKeyDown(e, "notes")}
+        // onEnterPress={() => focusSection(invoiceSectionRef)}
+      />
+
+<FormSection title="Invoice Information">
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <FormInput
+            label="Inv #"
+            title="master.invoicenum"
+            value={formState.invoice.invoicenum || ''}
+            onChange={(e) => updateInvoice({ invoicenum: e.target.value })}
+            // onEnterPress={() => invDateRef.current?.focus()}
+            placeholder="Invoice number"
+          />
+          {/* <DateInput 
+            ref={invDateRef}
+            label="Date" 
+            title="master.invdate" 
+            size="md"
+            value={invoice.invdate || ''}
+            onChange={(value) => onInvoiceChange({ invdate: value })}
+            onEnterPress={() => itemGroupRef.current?.focus()}
+          />
+          <FormInput
+            ref={itemGroupRef}
+            label="Group"
+            title="master.group"
+            value={invoice.itemgroup || ''}
+            onChange={(e) => onInvoiceChange({ itemgroup: e.target.value })}
+            onEnterPress={() => reasonRef.current?.focus()}
+            placeholder="Item group"
+          />
+          <FormInput
+            ref={reasonRef}
+            label="Reason"
+            title="master.reason"
+            value={invoice.reason || ''}
+            onChange={(e) => onInvoiceChange({ reason: e.target.value })}
+            onEnterPress={() => nameRef.current?.focus()}
+            placeholder="Reason"
+          /> */}
+        </div>
+        {/* <div className="flex gap-96">
+          <FormInput
+            ref={nameRef}
+            label="Name"
+            title="master.billtoname"
+            value={invoice.billtoname || ''}
+            onChange={(e) => onInvoiceChange({ billtoname: e.target.value })}
+            onEnterPress={() => poNumberRef.current?.focus()}
+            className="flex-1"
+            placeholder="Customer name"
+          />
+          <FormInput
+            ref={poNumberRef}
+            label="PO#"
+            title="master.ponumber"
+            value={invoice.ponumber || ''}
+            onChange={(e) => onInvoiceChange({ ponumber: e.target.value })}
+            onEnterPress={() => addr1Ref.current?.focus()}
+            className="w-48"
+            placeholder="PO number"
+          />
+        </div> */}
+        {/* <div className="flex gap-96">
+          <FormInput
+            ref={addr1Ref}
+            label="Address 1"
+            title="master.billtoaddr1"
+            size="full"
+            value={invoice.billtoaddr1 || ''}
+            onChange={(e) => onInvoiceChange({ billtoaddr1: e.target.value })}
+            onEnterPress={() => releaseLicRef.current?.focus()}
+            className="flex-1"
+            placeholder="Street address"
+          />
+          <FormInput
+            ref={releaseLicRef}
+            label="RelLic#"
+            title="master.releaselic"
+            value={invoice.releaselic || ''}
+            onChange={(e) => onInvoiceChange({ releaselic: e.target.value })}
+            onEnterPress={() => addr2Ref.current?.focus()}
+            className="w-48"
+            placeholder="Release license"
+          />
+        </div> */}
+        {/* <div className="flex gap-96">
+          <FormInput
+            ref={addr2Ref}
+            label="Address 2"
+            title="master.billtoaddr2"
+            size="full"
+            value={invoice.billtoaddr2 || ''}
+            onChange={(e) => onInvoiceChange({ billtoaddr2: e.target.value })}
+            onEnterPress={() => phoneRef.current?.focus()}
+            className="flex-1"
+            placeholder="Apt, Suite, etc."
+          />
+          <PhoneInput
+            ref={phoneRef}
+            label="Phone"
+            title="master.billtophone"
+            size="md"
+            value={invoice.billtophone || ''}
+            onChange={(value) => onInvoiceChange({ billtophone: value })}
+            onEnterPress={() => cityRef.current?.focus()}
+          />
+        </div> */}
+        {/* <div className="flex gap-40">
+          <div className="flex gap-2">
+            <FormInput
+              ref={cityRef}
+              label="City"
+              title="master.billtocity"
+              value={invoice.billtocity || ''}
+              onChange={(e) => onInvoiceChange({ billtocity: e.target.value })}
+              onEnterPress={() => stateRef.current?.focus()}
+              className="flex-1"
+              placeholder="City"
+            />
+            <StateInput
+              ref={stateRef}
+              label="State"
+              title="master.billtost"
+              value={invoice.billtost || ''}
+              onChange={(value) => onInvoiceChange({ billtost: value })}
+              onEnterPress={() => zipRef.current?.focus()}
+            />
+            <ZipInput
+              ref={zipRef}
+              label="Zip"
+              title="master.billtozip"
+              value={invoice.billtozip || ''}
+              onChange={(value) => onInvoiceChange({ billtozip: value })}
+              onEnterPress={() => contactRef.current?.focus()}
+            />
+          </div>
+          <FormInput
+            ref={contactRef}
+            label="Contact"
+            title="master.billtocont"
+            value={invoice.billtocont || ''}
+            onChange={(e) => onInvoiceChange({ billtocont: e.target.value })}
+            onEnterPress={onEnterPress}
+            className="w-64"
+            placeholder="Contact name"
+          />
+        </div> */}
+      </div>
+    </FormSection>
+
+
           {/* <div className="flex flex-wrap gap-4">
           <LicensePlateLookup
             ref={plateRef}

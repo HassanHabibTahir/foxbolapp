@@ -5,12 +5,14 @@ interface NotesSectionProps {
   value: string;
   onChange: (value: string) => void;
   onEnterPress?: () => void;
+  onKeyDown?:any
 }
 
 const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({ 
   value, 
   onChange,
-  onEnterPress
+  onEnterPress,
+  onKeyDown
 }, ref) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -90,6 +92,7 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
       e.preventDefault();
       onEnterPress();
     }
+    onKeyDown(e)
   };
 
   return (
