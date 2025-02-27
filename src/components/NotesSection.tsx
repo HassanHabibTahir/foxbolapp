@@ -73,26 +73,35 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+
+
+
     // Handle Ctrl+Enter or Cmd+Enter to add timestamp
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      const target = e.target as HTMLTextAreaElement;
-      const event = new MouseEvent('contextmenu', {
-        bubbles: true,
-        cancelable: true,
-        clientX: target.getBoundingClientRect().left,
-        clientY: target.getBoundingClientRect().top
-      });
-      target.dispatchEvent(event);
-      return;
-    }
+    // if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    //   e.preventDefault();
+    //   const target = e.target as HTMLTextAreaElement;
+    //   const event = new MouseEvent('contextmenu', {
+    //     bubbles: true,
+    //     cancelable: true,
+    //     clientX: target.getBoundingClientRect().left,
+    //     clientY: target.getBoundingClientRect().top
+    //   });
+    //   target.dispatchEvent(event);
+    //   return;
+    // }
 
     // Handle Enter without shift for form navigation
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
-    onKeyDown(e)
+    // if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    // if (e.key === 'ArrowDown') {
+
+      onKeyDown(e)
+    // }
+    // else if (e.key === 'Enter') {
+    //   return;
+    // }
   };
 
   return (
