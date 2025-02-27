@@ -30,6 +30,7 @@ import AccountName from "./common/AccountName";
 import BooleanSelect from "./common/BooleanSelector";
 import LienTypeInput from "./common/LienTypeInput";
 import LienFeeSelect from "./common/LienFeeSelect";
+import ChargesSection from "./ChargesSection";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 
@@ -102,6 +103,14 @@ const FIELD_INDEXES: any = {
   liendin:65,
   liendout:66,
   lientype:67,
+  lienfee:68,
+    description69: 69,
+    description70: 70,
+    description71: 71,
+    description72: 72,
+    description73: 73,
+    description73: 74,
+
   
 };
 
@@ -187,6 +196,13 @@ const InvoiceForm = () => {
   const liendinRef = useRef(null);
   const liendoutRef = useRef(null);
   const lientypeRef = useRef(null);
+  const lienfeeRef = useRef(null);
+  const description69Ref = useRef(null);
+  const description70Ref = useRef(null);
+  const description71Ref = useRef(null);
+  const description72Ref = useRef(null);
+  const description73Ref = useRef(null);
+  const description74Ref = useRef(null);
 
   const inputRefs: any = {
     driver: driverRef,
@@ -257,9 +273,16 @@ const InvoiceForm = () => {
     liendin: liendinRef,
     liendout: liendoutRef,
     lientype: lientypeRef,
-    
+    lienfee: lienfeeRef,
+    description69: description69Ref,
+    description70: description70Ref,
+    description71: description71Ref,
+    description72: description72Ref,
+    description73: description73Ref,
+    description74: description74Ref,
   
   
+
 };
 
   useEffect(() => {
@@ -330,12 +353,14 @@ const InvoiceForm = () => {
     if (e.key === "Enter"||e.key==="ArrowRight") {
       e.preventDefault();
       const nextField = fieldOrder[currentIndex + 1];
+      console.log(nextField,"nextField")
       if (nextField) {
         inputRefs[nextField].current?.focus();
       }
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       const prevField = fieldOrder[currentIndex - 1];
+      console.log(prevField,"prevField")
       if (prevField) {
         inputRefs[prevField].current?.focus();
       }
@@ -1208,7 +1233,7 @@ const InvoiceForm = () => {
           onKeyDown={(e: any) => handleKeyDown(e, "lientype")}
         />
         
-        {/* 
+        
         <LienFeeSelect
           ref={inputRefs?.lienfee}
           label="Lien Fee"
@@ -1216,9 +1241,18 @@ const InvoiceForm = () => {
           value={formState.dispatch.lienfee || 50}
           onChange={(value) => updateDispatch({ lienfee: value })}
           onKeyDown={(e: any) => handleKeyDown(e, "lienfee")}
-        /> */}
+        />
       </div>
     </FormSection>
+    {/* <ChargesSection
+      key="charges"
+      refs={inputRefs}
+      onKeyDown={handleKeyDown}  
+      transactionItems={formState.items || []}
+        onItemsChange={updateItems}
+        invoice={formState.invoice}
+        onInvoiceChange={updateInvoice}
+      /> */}
 
     {/* <LienSection
     dispatch={formState.dispatch}
@@ -2084,14 +2118,14 @@ export default InvoiceForm;
 //     //   />
 //     // </div>,
 //     // <div ref={chargesSectionRef} key="charges-wrapper">
-//     //   <ChargesSection
-//     //   key="charges"
-//     //   // ref={chargesSectionRef}
-//     //     transactionItems={formState.items || []}
-//     //     onItemsChange={updateItems}
-//     //     invoice={formState.invoice}
-//     //     onInvoiceChange={updateInvoice}
-//     //   />
+      // <ChargesSection
+      // key="charges"
+      // // ref={chargesSectionRef}
+      //   transactionItems={formState.items || []}
+      //   onItemsChange={updateItems}
+      //   invoice={formState.invoice}
+      //   onInvoiceChange={updateInvoice}
+      // />
 //     // </div>
 //   ];
 

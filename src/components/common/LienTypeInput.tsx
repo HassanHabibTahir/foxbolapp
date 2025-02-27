@@ -43,10 +43,10 @@ const LienTypeInput = forwardRef<HTMLInputElement, LienTypeInputProps>(({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
+    // if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
     onKeyDown(e)
   };
 

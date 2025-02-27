@@ -15,11 +15,12 @@ interface ItemOption {
 }
 
 interface ItemDescriptionComboboxProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   onItemSelect?: (item: Item) => void;
   onEnterPress?: () => void;
   className?: string;
+  onKeyDown?:any;
 }
 
 const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
@@ -27,7 +28,8 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
   onChange,
   onItemSelect,
   onEnterPress,
-  className = ''
+  className = '',
+  onKeyDown
 }, ref) => {
   const [selectedOption, setSelectedOption] = useState<ItemOption | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -95,20 +97,23 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
   const handleChange = (option: ItemOption | null) => {
     setSelectedOption(option);
     if (option) {
-      onChange(option.value);
+      // onChange(option.value);
       onItemSelect?.(option.item);
       if (onEnterPress) {
         setTimeout(onEnterPress, 0);
       }
     } else {
-      onChange('');
+      // onChange('');
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !menuIsOpen && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
+    // if (e.key === 'Enter' && !menuIsOpen && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    if(onkeydown){
+      onKeyDown(e)
     }
   };
 
