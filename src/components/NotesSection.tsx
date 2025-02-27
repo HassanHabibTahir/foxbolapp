@@ -97,7 +97,7 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
     // }
     // if (e.key === 'ArrowDown') {
 
-      onKeyDown(e)
+      onKeyDown(e)  
     // }
     // else if (e.key === 'Enter') {
     //   return;
@@ -110,7 +110,7 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Note
           <span className="text-sm text-gray-500 ml-2">
-            (Right-click or Ctrl+Enter to insert timestamp)
+            (Right-click or press Ctrl+Enter to insert a timestamp.<b> To move to the next field, press the Right Arrow key</b>.)
           </span>
         </label>
         <textarea 

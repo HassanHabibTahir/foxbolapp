@@ -27,6 +27,9 @@ import NotesSection from "./NotesSection";
 import ZipInput from "./common/ZipInput";
 import LienSection from "./LienSection";
 import AccountName from "./common/AccountName";
+import BooleanSelect from "./common/BooleanSelector";
+import LienTypeInput from "./common/LienTypeInput";
+import LienFeeSelect from "./common/LienFeeSelect";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 
@@ -94,7 +97,12 @@ const FIELD_INDEXES: any = {
   regstate:60,
   regzip:61,
   datein:62,
-  dateout:63
+  dateout:63,
+  commission:64,
+  liendin:65,
+  liendout:66,
+  lientype:67,
+  
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -175,7 +183,10 @@ const InvoiceForm = () => {
   const regzipRef = useRef(null);
   const dateinRef = useRef(null);
   const dateoutRef = useRef(null);
-
+  const commissionRef = useRef(null);
+  const liendinRef = useRef(null);
+  const liendoutRef = useRef(null);
+  const lientypeRef = useRef(null);
 
   const inputRefs: any = {
     driver: driverRef,
@@ -242,11 +253,14 @@ const InvoiceForm = () => {
     regzip : regzipRef,
     datein:dateinRef,
     dateout:dateoutRef,
-  
-   
-
+    commission:commissionRef,
+    liendin: liendinRef,
+    liendout: liendoutRef,
+    lientype: lientypeRef,
     
-  };
+  
+  
+};
 
   useEffect(() => {
     const foxtow_id = localStorage.getItem("foxtow_id") || "";
@@ -304,7 +318,7 @@ const InvoiceForm = () => {
     if(currentIndex === 40){
       if(e.key==="Enter"){
         return
-      } else if(e.key==="ArrowDown"){
+      } else if(e.key==="ArrowRight"){
         e.preventDefault();
         const nextField = fieldOrder[currentIndex + 1];
         if (nextField) {
@@ -312,9 +326,8 @@ const InvoiceForm = () => {
         }
       }
     }
-    console.log(fieldName,currentIndex,"currentIndex");
-    console.log(currentIndex, "currentIndex");
-    if (e.key === "Enter"||e.key==="ArrowDown") {
+
+    if (e.key === "Enter"||e.key==="ArrowRight") {
       e.preventDefault();
       const nextField = fieldOrder[currentIndex + 1];
       if (nextField) {
@@ -328,42 +341,7 @@ const InvoiceForm = () => {
       }
     }
   };
-  // const handleKeyDown = (e: React.KeyboardEvent, fieldName: string) => {
-  //   const currentIndex = FIELD_INDEXES[fieldName];
   
-  //   if (currentIndex === undefined) {
-  //     console.warn(`Field index not found for: ${fieldName}`);
-  //     return;
-  //   }
-  
-  //   console.log(fieldName, currentIndex, "currentIndex");
-  
-  //   if (e.key === "Enter") {
-  //     e.preventDefault();
-  //     if (currentIndex === 40) return; // Prevent Enter if currentIndex is 40
-  
-  //     const nextField = fieldOrder[currentIndex + 1];
-  //     if (nextField && inputRefs[nextField]?.current) {
-  //       inputRefs[nextField].current.focus();
-  //     }
-  //   } else if (e.key === "ArrowUp") {
-  //     e.preventDefault();
-  //     const prevField = fieldOrder[currentIndex - 1];
-  //     if (prevField && inputRefs[prevField]?.current) {
-  //       inputRefs[prevField].current.focus();
-  //     }
-  //   } else if (e.key === "ArrowDown" && currentIndex !== 40) {
-  //     e.preventDefault();
-  //     const nextField = fieldOrder[currentIndex + 1];
-  //     if (nextField && inputRefs[nextField]?.current) {
-  //       inputRefs[nextField].current.focus();
-  //     }
-  //   }
-  // };
-  
-
-  //checkLiscense Section Update
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const expiresRef = useRef<HTMLInputElement>(null);
@@ -1178,6 +1156,70 @@ const InvoiceForm = () => {
         />
       </div>
     </FormSection>
+
+    <FormSection title="I - Lien Information">
+      <div className="flex flex-wrap gap-4">
+        <BooleanSelect
+        className='h-10  text-[14px]'
+          label="Commission"
+          ref={inputRefs?.commission}
+          value={formState.dispatch.commission || false}
+          onChange={(value:boolean) => updateDispatch({ commission: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "commission")}
+          size="lg"
+          // onEnterPress={() => lienStartRef.current?.focus()}
+        />
+  
+        <DateInput 
+            ref={inputRefs?.liendin}
+          className='h-10  text-[14px]'
+          label="Lien Start" 
+          title="master.liendin"
+          size="md"
+          value={formState.dispatch.liendin || ''}
+          onChange={(value) => updateDispatch({ liendin: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "liendin")}
+          FIELD_INDEXES={FIELD_INDEXES}
+          fieldName="liendin"
+          inputRefs={inputRefs}
+          // onEnterPress={() => lienClearRef.current?.focus()}
+        />
+        <DateInput 
+            ref={inputRefs?.liendout}
+          className='h-10  text-[14px]'
+          label="Lien Start" 
+          title="master.liendout"
+          size="md"
+          value={formState.dispatch.liendout || ''}
+          onChange={(value) => updateDispatch({ liendout: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "liendout")}
+          FIELD_INDEXES={FIELD_INDEXES}
+          fieldName="liendout"
+          inputRefs={inputRefs}
+          // onEnterPress={() => lienClearRef.current?.focus()}
+        />
+        <LienTypeInput 
+           ref={inputRefs?.lientype}
+          label="Lien Type" 
+          className=''
+          title="master.lientype"
+          value={formState.dispatch.lientype || ''}
+          onChange={(value) => updateDispatch({ lientype: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "lientype")}
+        />
+        
+        {/* 
+        <LienFeeSelect
+          ref={inputRefs?.lienfee}
+          label="Lien Fee"
+          title="master.lienfee"
+          value={formState.dispatch.lienfee || 50}
+          onChange={(value) => updateDispatch({ lienfee: value })}
+          onKeyDown={(e: any) => handleKeyDown(e, "lienfee")}
+        /> */}
+      </div>
+    </FormSection>
+
     {/* <LienSection
     dispatch={formState.dispatch}
     onDispatchChange={updateDispatch}
