@@ -21,6 +21,7 @@ interface ItemDescriptionComboboxProps {
   onEnterPress?: () => void;
   className?: string;
   onKeyDown?:any;
+  inputRefs?:any
 }
 
 const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
@@ -29,7 +30,8 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
   onItemSelect,
   onEnterPress,
   className = '',
-  onKeyDown
+  onKeyDown,
+  inputRefs
 }, ref) => {
   const [selectedOption, setSelectedOption] = useState<ItemOption | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -97,25 +99,64 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
   const handleChange = (option: ItemOption | null) => {
     setSelectedOption(option);
     if (option) {
-      // onChange(option.value);
+      onChange?.(option.value); // Ensure value is updated
       onItemSelect?.(option.item);
       if (onEnterPress) {
         setTimeout(onEnterPress, 0);
       }
     } else {
-      // onChange('');
+      onChange?.(''); // Clear value if no option is selected
     }
   };
-
+  
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // if (e.key === 'Enter' && !menuIsOpen && onEnterPress) {
+    const selectElement = document.querySelector(".react-select__menu")
+      console.log(selectElement , "focused option-->",inputRefs);
+
+          if (selectElement) {
+            (window as any)._keyboardNavigation = true;
+            const selectInstance = inputRefs?.current
+
+            if (selectInstance) {
+              const focusedOption = document.querySelector(".react-select__option--is-focused");
+              if (focusedOption && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault()
+                const selectedOption = selectInstance.props.options.find(
+                  (opt: any) => opt.label === focusedOption.textContent,
+                )
+                if (selectedOption) {
+                  handleChange(selectedOption)
+                }
+              }
+            }
+          }
+
+
+    // if (e.key === 'Enter' && !menuIsOpen) {
     //   e.preventDefault();
-    //   onEnterPress();
+      
+    //   if (selectedOption) {
+    //     handleChange(selectedOption);
+    //   }
+  
+    //   if (onEnterPress) {
+    //     setTimeout(onEnterPress, 0);
+    //   }
+  
+    //   // Remove focus from input
+    //   if (document.activeElement instanceof HTMLElement) {
+    //     document.activeElement.blur();
+    //   }
     // }
-    if(onkeydown){
-      onKeyDown(e)
+    if (onKeyDown) {
+      onKeyDown(e);
     }
+  
   };
+  
+
+
+  
 
   const customStyles = {
     control: (provided: any, state: { isFocused: boolean }) => ({
@@ -160,12 +201,31 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
     })
   };
 
+
+  const selectProps = {
+    id: "select",
+    name: "select",
+    loadOptions:{loadOptions},
+    value: selectedOption,
+    onChange: handleChange,
+    onKeyDown: handleKeyDown,
+    className: "react-select-container",
+    classNamePrefix: "react-select",
+    menuPortalTarget: document.body,
+    blurInputOnSelect: true,
+    menuIsOpen: menuIsOpen,
+    onMenuOpen: () => setMenuIsOpen(true),
+    onMenuClose: () => setMenuIsOpen(false),
+    openMenuOnFocus: true,
+  };
+
   return (
     <div className={`flex-1 ${className}`}>
       <AsyncSelect<ItemOption>
+        {...selectProps}
         ref={ref}
-        value={selectedOption}
-        onChange={handleChange}
+        // value={selectedOption}
+        // onChange={handleChange}
         loadOptions={loadOptions}
         defaultOptions
         isClearable
@@ -176,9 +236,9 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(({
         classNamePrefix="react-select"
         cacheOptions
         menuIsOpen={menuIsOpen}
-        onMenuOpen={() => setMenuIsOpen(true)}
-        onMenuClose={() => setMenuIsOpen(false)}
-        onKeyDown={handleKeyDown}
+        // onMenuOpen={() => setMenuIsOpen(true)}
+        // onMenuClose={() => setMenuIsOpen(false)}
+        // onKeyDown={handleKeyDown}
         blurInputOnSelect
         loadingMessage={() => "Loading items..."}
         noOptionsMessage={({ inputValue }) => 

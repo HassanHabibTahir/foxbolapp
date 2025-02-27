@@ -26,36 +26,45 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
   onKeyDown
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value === '' ? 0 : parseFloat(e.target.value);
-    
+    const value = e.target.value;
+    if (/[^0-9.]/.test(value)) {
+        return value; // Return the character input
+    }
+
+    const newValue = value === '' ? 0 : parseFloat(value);
+
     if (isNaN(newValue)) {
-      onChange(0);
-      return;
+        onChange(0);
+        return;
     }
 
     // Ensure value is within bounds
     if (newValue < min) {
-      onChange(min);
+        onChange(min);
     } else if (newValue > max) {
-      onChange(max);
+        onChange(max);
     } else {
-      onChange(newValue);
+        onChange(newValue);
     }
-  };
+};
+
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Handle arrow keys for increment/decrement
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const newValue = Math.min(value + step, max);
-      onChange(newValue);
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const newValue = Math.max(value - step, min);
-      onChange(newValue);
-    } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
+    // if (e.key === 'ArrowUp') {
+    //   e.preventDefault();
+    //   const newValue = Math.min(value + step, max);
+    //   onChange(newValue);
+    // } else if (e.key === 'ArrowDown') {
+    //   e.preventDefault();
+    //   const newValue = Math.max(value - step, min);
+    //   onChange(newValue);
+    // } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault(); // Prevents number from changing
     }
     onKeyDown(e)
   };
@@ -72,7 +81,7 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
   return (
     <input
       ref={ref}
-      type="number"
+      type="text"
       value={value === 0 ? '' : value}
       onChange={handleChange}
       onKeyDown={handleKeyDown}

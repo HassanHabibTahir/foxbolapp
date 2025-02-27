@@ -60,17 +60,20 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Handle arrow keys for increment/decrement
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const newValue = Math.min(value + 1, max);
-      onChange(newValue);
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const newValue = Math.max(value - 1, min);
-      onChange(newValue);
-    } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
+    // if (e.key === 'ArrowUp') {
+    //   e.preventDefault();
+    //   const newValue = Math.min(value + 1, max);
+    //   onChange(newValue);
+    // } else if (e.key === 'ArrowDown') {
+    //   e.preventDefault();
+    //   const newValue = Math.max(value - 1, min);
+    //   onChange(newValue);
+    // } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault(); // Prevents number from changing
     }
     onKeyDown(e);
   };
