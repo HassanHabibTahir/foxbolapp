@@ -10,6 +10,7 @@ interface QuantityInputProps {
   min?: number;
   max?: number;
   step?: number;
+  onKeyDown?:any
 }
 
 const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
@@ -21,7 +22,8 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
   disabled = false,
   min = 0,
   max = 9999,
-  step = 1
+  step = 1,
+  onKeyDown
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? 0 : parseFloat(e.target.value);
@@ -55,6 +57,7 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
       e.preventDefault();
       onEnterPress();
     }
+    onKeyDown(e)
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {

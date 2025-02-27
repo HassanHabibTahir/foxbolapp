@@ -73,26 +73,35 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+
+
+
     // Handle Ctrl+Enter or Cmd+Enter to add timestamp
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      const target = e.target as HTMLTextAreaElement;
-      const event = new MouseEvent('contextmenu', {
-        bubbles: true,
-        cancelable: true,
-        clientX: target.getBoundingClientRect().left,
-        clientY: target.getBoundingClientRect().top
-      });
-      target.dispatchEvent(event);
-      return;
-    }
+    // if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    //   e.preventDefault();
+    //   const target = e.target as HTMLTextAreaElement;
+    //   const event = new MouseEvent('contextmenu', {
+    //     bubbles: true,
+    //     cancelable: true,
+    //     clientX: target.getBoundingClientRect().left,
+    //     clientY: target.getBoundingClientRect().top
+    //   });
+    //   target.dispatchEvent(event);
+    //   return;
+    // }
 
     // Handle Enter without shift for form navigation
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
-    onKeyDown(e)
+    // if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    // if (e.key === 'ArrowDown') {
+
+      onKeyDown(e)  
+    // }
+    // else if (e.key === 'Enter') {
+    //   return;
+    // }
   };
 
   return (
@@ -101,7 +110,7 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Note
           <span className="text-sm text-gray-500 ml-2">
-            (Right-click or Ctrl+Enter to insert timestamp)
+            (Right-click or press Ctrl+Enter to insert a timestamp.<b> To move to the next field, press the Right Arrow key</b>.)
           </span>
         </label>
         <textarea 

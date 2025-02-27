@@ -9,6 +9,7 @@ interface LienTypeInputProps {
   onChange: (value: string) => void;
   onEnterPress?: () => void;
   disabled?: boolean;
+  onKeyDown?:any
 }
 
 const LienTypeInput = forwardRef<HTMLInputElement, LienTypeInputProps>(({
@@ -19,7 +20,8 @@ const LienTypeInput = forwardRef<HTMLInputElement, LienTypeInputProps>(({
   value,
   onChange,
   onEnterPress,
-  disabled = false
+  disabled = false,
+  onKeyDown
 }, ref) => {
   const validTypes = ['U', 'R', 'O'] as const;
   type ValidLienType = typeof validTypes[number];
@@ -41,10 +43,11 @@ const LienTypeInput = forwardRef<HTMLInputElement, LienTypeInputProps>(({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
+    // if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+    //   e.preventDefault();
+    //   onEnterPress();
+    // }
+    onKeyDown(e)
   };
 
   const handleBlur = () => {

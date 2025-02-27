@@ -9,6 +9,7 @@ interface CurrencyInputProps {
   min?: number;
   max?: number;
   allowNegative?: boolean;
+  onKeyDown?:any
 }
 
 const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
@@ -19,7 +20,8 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
   disabled = false,
   min = -999999.99,
   max = 999999.99,
-  allowNegative = true
+  allowNegative = true,
+  onKeyDown
 }, ref) => {
   const formatValue = (num: number): string => {
     if (isNaN(num)) return '';
@@ -70,6 +72,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
       e.preventDefault();
       onEnterPress();
     }
+    onKeyDown(e);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
