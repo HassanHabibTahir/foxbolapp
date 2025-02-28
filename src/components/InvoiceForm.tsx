@@ -608,7 +608,7 @@ const InvoiceForm = () => {
               ref={inputRefs.kitnum}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap  items-center gap-2">
             <FormInput
               className="h-10 text-[14px]"
               label="Member #"
@@ -655,10 +655,12 @@ const InvoiceForm = () => {
               inputRefs={inputRefs}
             />
 
-            <AccountName
+          </div>
+          <div className="flex flex-wrap  items-center gap-2">
+          <AccountName
               label="Account Name"
               title="master.account"
-              size="xl"
+              size="full"
               value={formState.dispatch.callname || ""}
               onChange={(value: any) => updateDispatch({ callname: value })}
               onKeyDown={(e: any) => handleKeyDown(e, "callname")}
