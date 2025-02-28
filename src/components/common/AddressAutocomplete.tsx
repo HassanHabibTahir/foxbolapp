@@ -3,7 +3,7 @@ import React, { useEffect, useRef, forwardRef, KeyboardEvent } from 'react';
 interface AddressAutocompleteProps {
   label?: string;
   value?: string;
-  onChange?: (value: any, placeDetails?: google.maps.places.PlaceResult) => void;
+  onChange?: ((value: any, placeDetails?: google.maps.places.PlaceResult) => void) | any;
   onEnterPress?: () => void;
   placeholder?: string;
   className?: string;
@@ -35,7 +35,7 @@ const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProp
 
       autocompleteRef.current.addListener('place_changed', () => {
         const place = autocompleteRef.current?.getPlace();
-        onChange(place?.formatted_address || value, place);
+        onChange(place?.formatted_address || value, place) ;
       });
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
