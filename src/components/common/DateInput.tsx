@@ -66,7 +66,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
     function formatDateToString(date: Date | undefined): string {
       if (!date || isNaN(date.getTime())) return ""
 
-      const month = date.getMonth() + 1 // JS months are 0-indexed
+      const month = date.getMonth() + 1 
       const day = date.getDate()
       const year = date.getFullYear()
 
