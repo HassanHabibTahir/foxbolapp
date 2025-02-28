@@ -318,7 +318,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                         onChange={(value) => handleItemChange(item.id, value)}
                         onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
                         inputRefs={descriptionRef}
-                        onKeyDown={(e) =>
+                        onKeyDown={(e: React.KeyboardEvent<Element>) =>
                           onKeyDown(e, `description${baseRef}`)
                         }
                       />
@@ -346,7 +346,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                           onBlur={() =>
                             handleQuantityBlur(item.id, item.quantity)
                           }
-                          onKeyDown={(e) =>
+                          onKeyDown={(e: React.KeyboardEvent<Element>) =>
                             onKeyDown(e, `description${baseRef + 1}`)
                           }
                         />
@@ -357,7 +357,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                         ref={priceRef}
                         value={item.price}
                         onChange={(value) => handlePriceChange(item.id, value)}
-                        onKeyDown={(e) =>
+                        onKeyDown={(e: React.KeyboardEvent<Element>) =>
                           onKeyDown(e, `description${baseRef + 2}`)
                         }
                       />

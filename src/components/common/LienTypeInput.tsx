@@ -67,7 +67,7 @@ const LienTypeInput = forwardRef<HTMLInputElement, LienTypeInputProps>(({
 
   return (
     <div className={size === 'full' ? 'w-full' : 'inline-block'}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-gray-700 mb-2">
         {label}
         <span className="text-xs text-gray-500 ml-2">
           ({validTypes.join('/')})

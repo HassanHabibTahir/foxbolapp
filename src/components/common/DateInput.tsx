@@ -72,9 +72,31 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
 
       return `${month}/${day}/${year}`
     }
-
+    function formatDate(dateString:any) {
+      // Agar input empty hai to wahi return kar do
+      if (!dateString) return "";
+  
+      // Agar input incomplete hai (e.g., user typing) to format apply na karein
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+  
+      const date = new Date(dateString);
+  
+      // Agar invalid date hai to wahi return kar do
+      if (isNaN(date.getTime())) return dateString;
+  
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+      const year = date.getFullYear();
+  
+      return `${month}/${day}/${year}`;
+  }
+  
     useEffect(() => {
-      setInternalValue(value)
+      if(value){
+        setInternalValue(formatDate(value))
+
+      }
+      console.log(value,"value====>")
       const parsedDate = parseStringToDate(value)
       setSelectedDate(parsedDate)
       if (parsedDate) {
@@ -339,6 +361,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
             }}
             maxLength={10}
             onContextMenu={handleContextMenu}
+           
             placeholder="M/D/YYYY"
           />
           <button
