@@ -29,6 +29,9 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (/[^0-9.]/.test(e?.target?.value)) {
+      return value; // Return the character input
+  }
     const inputValue = e.target.value.replace(/[^\d.-]/g, '');
     
     if (inputValue === '' || inputValue === '-') {
@@ -96,8 +99,8 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
 
   return (
     <input
-      ref={ref}
-      type="number"
+      ref={ref} 
+      type="text"
       value={formatValue(typeof value !== 'number' ? Number(value) : value)}
       onChange={handleChange}
       onKeyDown={handleKeyDown}

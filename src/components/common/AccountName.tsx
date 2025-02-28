@@ -112,7 +112,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
         },
         boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
         minHeight: "38px",
-        minWidth: "300px",
+        minWidth: "165%",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
