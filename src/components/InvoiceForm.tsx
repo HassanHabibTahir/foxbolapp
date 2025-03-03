@@ -32,6 +32,9 @@ import LienTypeInput from "./common/LienTypeInput";
 import LienFeeSelect from "./common/LienFeeSelect";
 import ChargesSection from "./ChargesSection";
 import VehicleReasonsSelect from "./common/VehicleReasons";
+import DollarFormInput from "./common/DollarFormInput";
+import ColorSelect from "./common/ColorSelect";
+import NumberInput from "./common/NumbeInput";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -334,6 +337,7 @@ const InvoiceForm = () => {
 
   const handleNew = (invoiceNumber: any) => {
     resetForm();
+    console.log(invoiceNumber,"invoiceNumber");
     updateDispatch({ dispnum: invoiceNumber });
   };
 
@@ -634,7 +638,7 @@ const InvoiceForm = () => {
               fieldName="memberexp"
               inputRefs={inputRefs}
             />
-            <FormInput
+            <DollarFormInput
               className="h-10 text-[14px]"
               label="Value"
               title="master.value"
@@ -746,7 +750,8 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
             />
-            <FormInput
+            {/* <div>this is colro</div> */}
+            {/* <FormInput
               label="Color"
               title="master.colorcar"
               className="h-10 text-[14px]"
@@ -755,7 +760,17 @@ const InvoiceForm = () => {
               placeholder="Color"
               ref={inputRefs.colorcar}
               onKeyDown={(e) => handleKeyDown(e, "colorcar")}
-            />
+            /> */}
+                  <ColorSelect
+         
+                label="Color"
+                 title="master.colorcar"
+                value={formState.dispatch.colorcar || ""}
+                onChange={(value) => updateDispatch({ colorcar: value })}
+                ref={inputRefs.colorcar}
+                onKeyDown={(e:any) => handleKeyDown(e, "colorcar")}
+                size="md"
+              />
             <FormInput
               label="Body"
               title="master.bodytype"
@@ -829,7 +844,7 @@ const InvoiceForm = () => {
           </div>
           <FormSection title="C - Vehicle Details">
             <div className="flex flex-wrap gap-4 items-start">
-              <FormInput
+              <NumberInput
                 label="Odometer"
                 className="h-10 text-[14px]"
                 title="master.odometer"
@@ -1319,31 +1334,6 @@ const InvoiceForm = () => {
             invoice={formState.invoice}
             onInvoiceChange={updateInvoice}
           />
-
-          {/* <LienSection
-    dispatch={formState.dispatch}
-    onDispatchChange={updateDispatch}
-    /> */}
-          {/* <div className="flex flex-wrap gap-4">
-          <LicensePlateLookup
-            ref={plateRef}
-            stateRef={stateRef}
-            onPlateDetails={handlePlateDetails}
-            maxLength={7}
-            onDispatchChange={onDispatchChange}
-            dispatch={dispatch}
-            onEnterPress={() => vinRef.current?.focus()}
-          />
-          <VinLookupField
-            ref={vinRef}
-            value={dispatch.vin || ''}
-            onChange={(value) => onDispatchChange({ vin: value })}
-            onVinDetails={handleVinDetails}
-            onEnterPress={onEnterPress}
-          />
-          */}
-          {/* </div> */}
-          {/* </div> */}
         </div>
       </FormSection>
     </div>,

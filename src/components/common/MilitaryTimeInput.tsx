@@ -254,10 +254,9 @@ const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
    
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       const currentIndex = FIELD_INDEXES[fieldName];
-      console.log(FIELD_INDEXES,fieldName,"fieldName==>")
       const input = e.target as HTMLInputElement
       const currentValue = input.value.replace(":", "")
-      console.log(currentValue,"curerent")
+     
       
       if (e.key === "Backspace") {
         // Allow backspace to remove characters without moving focus

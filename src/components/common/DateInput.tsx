@@ -80,10 +80,9 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
       if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
   
       const date = new Date(dateString);
-  
+
       // Agar invalid date hai to wahi return kar do
       if (isNaN(date.getTime())) return dateString;
-  
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const day = date.getDate().toString().padStart(2, "0");
       const year = date.getFullYear();
@@ -96,7 +95,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
         setInternalValue(formatDate(value))
 
       }
-      console.log(value,"value====>")
+   
       const parsedDate = parseStringToDate(value)
       setSelectedDate(parsedDate)
       if (parsedDate) {
@@ -204,46 +203,46 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
       }
     }
 
-    const handleDateBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      const currentValue = e.target.value
+    // const handleDateBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    //   const currentValue = e.target.value
 
-      if (currentValue) {
-        const parts = currentValue.split("/")
-        if (parts.length === 3) {
-          const month = Number.parseInt(parts[0], 10)
-          const day = Number.parseInt(parts[1], 10)
-          const year = Number.parseInt(parts[2], 10)
+    //   if (currentValue) {
+    //     const parts = currentValue.split("/")
+    //     if (parts.length === 3) {
+    //       const month = Number.parseInt(parts[0], 10)
+    //       const day = Number.parseInt(parts[1], 10)
+    //       const year = Number.parseInt(parts[2], 10)
 
-          // Validate month and day
-          if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year > 0) {
-            const formattedDate = `${month}/${day}/${year}`
-            setInternalValue(formattedDate)
-            onChange(formattedDate)
+    //       // Validate month and day
+    //       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year > 0) {
+    //         const formattedDate = `${month}/${day}/${year}`
+    //         setInternalValue(formattedDate)
+    //         onChange(formattedDate)
 
-            const parsedDate = parseStringToDate(formattedDate)
-            setSelectedDate(parsedDate)
-            if (parsedDate) {
-              setCurrentMonth(parsedDate)
-            }
-          }
-        } else if (parts.length === 1 && parts[0].length <= 2) {
-          // Handle short years (convert 23 to 2023)
-          const currentYear = new Date().getFullYear()
-          const century = Math.floor(currentYear / 100) * 100
-          const fullYear = century + Number.parseInt(parts[0].padStart(2, "0"), 10)
+    //         const parsedDate = parseStringToDate(formattedDate)
+    //         setSelectedDate(parsedDate)
+    //         if (parsedDate) {
+    //           setCurrentMonth(parsedDate)
+    //         }
+    //       }
+    //     } else if (parts.length === 1 && parts[0].length <= 2) {
+    //       // Handle short years (convert 23 to 2023)
+    //       const currentYear = new Date().getFullYear()
+    //       const century = Math.floor(currentYear / 100) * 100
+    //       const fullYear = century + Number.parseInt(parts[0].padStart(2, "0"), 10)
 
-          setInternalValue(`1/1/${fullYear}`)
-          onChange(`1/1/${fullYear}`)
-        }
-      }
+    //       setInternalValue(`1/1/${fullYear}`)
+    //       onChange(`1/1/${fullYear}`)
+    //     }
+    //   }
 
-      // Use setTimeout to allow clicking on calendar before it closes
-      setTimeout(() => {
-        if (!calendarRef.current?.contains(document.activeElement)) {
-          setIsCalendarOpen(false)
-        }
-      }, 0)
-    }
+    //   // Use setTimeout to allow clicking on calendar before it closes
+    //   setTimeout(() => {
+    //     if (!calendarRef.current?.contains(document.activeElement)) {
+    //       setIsCalendarOpen(false)
+    //     }
+    //   }, 0)
+    // }
 
     const sizeClasses = {
       xs: "w-20",
