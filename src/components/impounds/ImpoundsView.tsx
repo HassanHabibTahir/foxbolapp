@@ -4,9 +4,9 @@ import { StorageFacilitySelect } from './StorageFacilitySelect';
 import { useAccountSettings } from '../../hooks/useAccountSettings';
 import { useToast } from '../../hooks/useToast';
 import { Toast } from '../common/Toast';
-import type { ImpoundSettings, StorageFacility } from './types';
+import type { ImpoundSettings } from './types';
 
-const STORAGE_FACILITIES: StorageFacility[] = [
+const STORAGE_FACILITIES: any[] = [
   {
     id: '1',
     name: 'Certified Towing Lot 1 (2777 Giant Rd.)',

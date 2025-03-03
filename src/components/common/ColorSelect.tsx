@@ -6,7 +6,7 @@ interface Option {
   label: string;
 }
 
-interface VehicleReasonsSelectProps {
+interface ColorSelectProps {
   label: string;
   title?: string;
   value?: string;
@@ -18,7 +18,7 @@ interface VehicleReasonsSelectProps {
   onKeyDown?: any;
 }
 
-const VehicleReasonsSelect = forwardRef<any, VehicleReasonsSelectProps>(({
+const ColorSelect = forwardRef<any, ColorSelectProps>(({
   label,
   title,
   value,
@@ -39,33 +39,18 @@ const VehicleReasonsSelect = forwardRef<any, VehicleReasonsSelectProps>(({
   };
 
   const options: Option[] = [
-    { value: '', label: 'Leave reason unspecified' },
-    { value: '(other)', label: '(other)' },
-    { value: 'Abandoned Vehicle', label: 'Abandoned Vehicle' },
-    { value: 'Accident', label: 'Accident' },
-    { value: 'Expired Plates', label: 'Expired Plates' },
-    { value: 'Fire Lane Parking', label: 'Fire Lane Parking' },
-    { value: 'Fuel Delivery', label: 'Fuel Delivery' },
-    { value: 'GOA', label: 'GOA' },
-    { value: 'Handicap Parking', label: 'Handicap Parking' },
-    { value: 'Illegal Parking', label: 'Illegal Parking' },
-    { value: 'Inoperable Vehicle', label: 'Inoperable Vehicle' },
-    { value: 'Jump Start', label: 'Jump Start' },
-    { value: 'Lock-Out', label: 'Lock-Out' },
-    { value: 'No Parking Permit', label: 'No Parking Permit' },
-    { value: 'Police', label: 'Police' },
-    { value: 'Private Property Tow', label: 'Private Property Tow' },
-    { value: 'Private Property Tow Away (PPTA)', label: 'Private Property Tow Away (PPTA)' },
-    { value: 'Relocation', label: 'Relocation' },
-    { value: 'Repossession', label: 'Repossession' },
-    { value: 'Reserved Parking', label: 'Reserved Parking' },
-    { value: 'Secondary Accident', label: 'Secondary Accident' },
-    { value: 'See Notes...', label: 'See Notes...' },
-    { value: 'Service Call', label: 'Service Call' },
-    { value: 'Tire Service', label: 'Tire Service' },
-    { value: 'Tow', label: 'Tow' },
-    { value: 'Winch Out', label: 'Winch Out' }
-  ];
+    { value: 'black', label: 'Black' },
+    { value: 'Blue', label: 'Blue' },
+    { value: 'Brown', label: 'Brown' },
+    { value: 'Gold', label: 'Gold' },
+    { value: 'Gray', label: 'Gray' },
+    { value: 'Green', label: 'Green' },
+    { value: 'Orange', label: 'Orange' },
+    { value: 'Purple', label: 'Purple' },
+    { value: 'Red', label: 'Red' },
+    { value: 'Silver', label: 'Silver' },
+    { value: 'White', label: 'White' },
+    { value: 'Yellow', label: 'Yellow' }];
 
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -135,7 +120,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     singleValue: (provided: any) => ({
       ...provided,
       color: '#111827',
-      fontWeight: 400
+      fontWeight: 500
     }),
     placeholder: (provided: any) => ({
       ...provided,
@@ -189,5 +174,5 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   );
 });
 
-VehicleReasonsSelect.displayName = 'VehicleReasonsSelect';
-export default VehicleReasonsSelect;
+ColorSelect.displayName = 'ColorSelect';
+export default ColorSelect;
