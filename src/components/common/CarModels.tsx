@@ -192,7 +192,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     <div className={className}>
      
         <label className="block text-sm font-medium text-gray-700 mb-1">
-        {"Loading..."+ label}
+        {label}
       </label>
       <Select<Option>
         {...selectProps}
