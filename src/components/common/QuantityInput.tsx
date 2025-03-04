@@ -10,7 +10,6 @@ interface QuantityInputProps {
   min?: number;
   max?: number;
   step?: number;
-  onKeyDown?:any
 }
 
 const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
@@ -22,51 +21,40 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
   disabled = false,
   min = 0,
   max = 9999,
-  step = 1,
-  onKeyDown
+  step = 1
 }, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/[^0-9.]/.test(value)) {
-        return value; // Return the character input
-    }
-
-    const newValue = value === '' ? 0 : parseFloat(value);
-
+    const newValue = e.target.value === '' ? 0 : parseFloat(e.target.value);
+    
     if (isNaN(newValue)) {
-        onChange(0);
-        return;
+      onChange(0);
+      return;
     }
 
     // Ensure value is within bounds
     if (newValue < min) {
-        onChange(min);
+      onChange(min);
     } else if (newValue > max) {
-        onChange(max);
+      onChange(max);
     } else {
-        onChange(newValue);
+      onChange(newValue);
     }
-};
-
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Handle arrow keys for increment/decrement
-    // if (e.key === 'ArrowUp') {
-    //   e.preventDefault();
-    //   const newValue = Math.min(value + step, max);
-    //   onChange(newValue);
-    // } else if (e.key === 'ArrowDown') {
-    //   e.preventDefault();
-    //   const newValue = Math.max(value - step, min);
-    //   onChange(newValue);
-    // } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-    //   e.preventDefault();
-    //   onEnterPress();
-    // }
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      e.preventDefault(); // Prevents number from changing
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const newValue = Math.min(value + step, max);
+      onChange(newValue);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const newValue = Math.max(value - step, min);
+      onChange(newValue);
+    } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+      e.preventDefault();
+      onEnterPress();
     }
-    onKeyDown(e)
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -81,7 +69,7 @@ const QuantityInput = forwardRef<HTMLInputElement, QuantityInputProps>(({
   return (
     <input
       ref={ref}
-      type="text"
+      type="number"
       value={value === 0 ? '' : value}
       onChange={handleChange}
       onKeyDown={handleKeyDown}

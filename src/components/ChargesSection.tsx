@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef, createRef } from "react";
-import FormSection from "./common/FormSection";
-import CurrencyInput from "./common/CurrencyInput";
-import QuantityInput from "./common/QuantityInput";
-import ItemDescriptionCombobox from "./common/ItemDescriptionCombobox";
-import InvoiceTotals from "./InvoiceTotals";
-import { lookupPrice } from "../lib/priceService";
-import FormInput from "./common/FormInput";
+import React, { useState, useEffect, useRef } from 'react';
+import FormSection from './common/FormSection';
+import CurrencyInput from './common/CurrencyInput';
+import QuantityInput from './common/QuantityInput';
+import ItemDescriptionCombobox from './common/ItemDescriptionCombobox';
+import InvoiceTotals from './InvoiceTotals';
+import { lookupPrice } from '../lib/priceService';
 
 interface LineItem {
   id: number;
@@ -22,52 +21,11 @@ interface LineItem {
 }
 
 const INITIAL_ITEMS: LineItem[] = [
-  {
-    id: 1,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 2,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 3,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 4,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 5,
-    description: "DISCOUNT",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    isDiscount: true,
-    hasActualItem: false,
-  },
+  { id: 1, description: '', quantity: 0, price: 0, extended: 0, itemgroup: '', hasActualItem: false },
+  { id: 2, description: '', quantity: 0, price: 0, extended: 0, itemgroup: '', hasActualItem: false },
+  { id: 3, description: '', quantity: 0, price: 0, extended: 0, itemgroup: '', hasActualItem: false },
+  { id: 4, description: '', quantity: 0, price: 0, extended: 0, itemgroup: '', hasActualItem: false },
+  { id: 5, description: 'DISCOUNT', quantity: 0, price: 0, extended: 0, itemgroup: '', isDiscount: true, hasActualItem: false }
 ];
 
 interface ChargesSectionProps {
@@ -75,17 +33,13 @@ interface ChargesSectionProps {
   invoice: any;
   onInvoiceChange: (updates: any) => void;
   onItemsChange: (items: LineItem[]) => void;
-  refs: any;
-  onKeyDown: (e: React.KeyboardEvent, fieldName: string) => void;
 }
 
-const ChargesSection: React.FC<ChargesSectionProps> = ({
-  invoice,
-  transactionItems,
-  onInvoiceChange,
-  onItemsChange,
-  refs,
-  onKeyDown,
+const ChargesSection: React.FC<ChargesSectionProps> = ({ 
+  invoice, 
+  transactionItems, 
+  onInvoiceChange, 
+  onItemsChange 
 }) => {
   const [items, setItems] = useState<LineItem[]>([]);
   const [taxRate, setTaxRate] = useState(8.25);
@@ -99,27 +53,20 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 
   useEffect(() => {
     if (transactionItems.length > 0) {
-      const transactions = transactionItems.map((item) => ({
+      const transactions = transactionItems.map(item => ({
         ...item,
-        extended: item.extended || item.price * item.quantity,
+        extended: item.extended || item.price * item.quantity
       }));
-      setItems([
-        ...transactions,
-        ...INITIAL_ITEMS.slice(transactionItems.length),
-      ]);
+      setItems([...transactions, ...INITIAL_ITEMS.slice(transactionItems.length)]);
     } else {
       setItems(INITIAL_ITEMS);
     }
   }, [transactionItems]);
 
-  const calculateExtended = (
-    item: LineItem,
-    quantity: number,
-    price: number
-  ) => {
+  const calculateExtended = (item: LineItem, quantity: number, price: number) => {
     const qty = quantity || 1;
     const prc = price || 0;
-    return item.isDiscount ? -qty * prc : qty * prc;
+    return item.isDiscount ? (-qty * prc) : (qty * prc);
   };
 
   const calculateSubtotal = () => {
@@ -127,7 +74,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const calculateTaxAmount = (subtotal: number) => {
-    return (subtotal * (taxRate || 0)) / 100;
+    return ((subtotal * (taxRate || 0)) / 100);
   };
 
   const calculateTotal = (subtotal: number, taxAmount: number) => {
@@ -140,14 +87,14 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handleQuantityChange = (id: number, value = 0) => {
-    const updatedItems = items.map((item) => {
+    const updatedItems = items.map(item => {
       if (item.id === id) {
         const extended = calculateExtended(item, value, item.price);
         return {
           ...item,
           quantity: value,
           extended,
-          itemgroup: invoice.group,
+          itemgroup: invoice.group
         };
       }
       return item;
@@ -156,14 +103,14 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handlePriceChange = (id: number, value = 0) => {
-    const updatedItems = items.map((item) => {
+    const updatedItems = items.map(item => {
       if (item.id === id) {
         const extended = calculateExtended(item, item.quantity, value);
         return {
           ...item,
           price: value,
           extended,
-          itemgroup: invoice.group,
+          itemgroup: invoice.group
         };
       }
       return item;
@@ -172,12 +119,12 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handleItemChange = async (id: number, description: string) => {
-    let updatedItems = items.map((item) => {
+    let updatedItems = items.map(item => {
       if (item.id === id) {
         return {
           ...item,
           description,
-          itemgroup: invoice.group,
+          itemgroup: invoice.group
         };
       }
       return item;
@@ -185,21 +132,18 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 
     // If description changed and we have an item group, lookup price
     if (description && invoice.itemgroup) {
-      const { price, quantity } = await lookupPrice(
-        description,
-        invoice.itemgroup
-      );
+      const { price, quantity } = await lookupPrice(description, invoice.itemgroup);
       if (price !== null || quantity !== null) {
-        updatedItems = updatedItems.map((item) => {
+        updatedItems = updatedItems.map(item => {
           if (item.id === id) {
-            const qty = quantity === "" ? 1 : quantity ?? item.quantity;
+            const qty = quantity === '' ? 1 : quantity ?? item.quantity;
             const prc = price ?? item.price;
             const extended = calculateExtended(item, qty, prc);
             return {
               ...item,
               quantity: qty,
               price: prc,
-              extended,
+              extended
             };
           }
           return item;
@@ -212,15 +156,9 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 
   const handleQuantityBlur = (id: number, quantity: number) => {
     if (quantity === 0) {
-      const updatedItems = items.map((item) => {
+      const updatedItems = items.map(item => {
         if (item.id === id) {
-          return {
-            ...item,
-            description: "",
-            quantity: 0,
-            price: 0,
-            extended: 0,
-          };
+          return { ...item, description: '', quantity: 0, price: 0, extended: 0 };
         }
         return item;
       });
@@ -229,15 +167,15 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handleItemSelect = (id: number, selectedItem: any) => {
-    const updatedItems = items.map((item) => {
+    const updatedItems = items.map(item => {
       if (item.id === id) {
-        const price = selectedItem.price?.toString() || "";
+        const price = selectedItem.price?.toString() || '';
         const extended = calculateExtended(item, item.quantity, price);
         return {
           ...item,
           description: selectedItem.description,
           price,
-          extended,
+          extended
         };
       }
       return item;
@@ -259,25 +197,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
     onInvoiceChange({ ...invoice, total });
   }, [total]);
 
-
-
-
-
-  
-  // Initialize refs before rendering
-  useEffect(() => {
-    if (!refs.current) return; // Prevent undefined error
-
-    items.forEach((_, index) => {
-      const descriptionKey = `description${
-        69 + (index > 2 ? index + 1 : index)
-      }`;
-      if (!refs.current[descriptionKey]) {
-        refs.current[descriptionKey] = createRef<HTMLInputElement>();
-      }
-    });
-  }, [items]);
-
   return (
     <>
       <FormSection title="Charges">
@@ -292,87 +211,60 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
               </tr>
             </thead>
             <tbody>
-              {items.map((item, index) => {
-                const baseRef = 69 + index * 3;
-                const descriptionRef = refs[`description${baseRef}`];
-                const sectionRef = refs[`description${baseRef + 1}`];
-                const priceRef = refs[`description${baseRef + 2}`];
-
-                return (
-                  <tr
-                    key={item.id}
-                    className={item.isDiscount ? "bg-gray-50" : ""}
-                  >
-                    <td className="p-1">
-                      {item.isDiscount ? (
-                        <input
-                          type="text"
-                          className="w-full rounded-md border border-gray-300 p-2 bg-gray-50"
-                          value={item.description}
-                          disabled
-                        />
-                      ) : (
-                        <ItemDescriptionCombobox
-                        ref={descriptionRef}
+              {items.map((item, index) => (
+                <tr key={item.id} className={item.isDiscount ? 'bg-gray-50' : ''}>
+                  <td className="p-1">
+                    {item.isDiscount ? (
+                      <input
+                        type="text"
+                        className="w-full rounded-md border border-gray-300 p-2 bg-gray-50"
+                        value={item.description}
+                        disabled
+                      />
+                    ) : (
+                      <ItemDescriptionCombobox
+                        ref={el => itemRefs.current[index * 3] = el}
                         value={item.description}
                         onChange={(value) => handleItemChange(item.id, value)}
                         onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
-                        inputRefs={descriptionRef}
-                        onKeyDown={(e: React.KeyboardEvent<Element>) =>
-                          onKeyDown(e, `description${baseRef}`)
+                        onEnterPress={() => itemRefs.current[index * 3 + 1]?.focus()}
+                      />
+                    )}
+                  </td>
+                  <td className="p-1">
+                    {!item.isDiscount && (
+                      <QuantityInput
+                        ref={el => itemRefs.current[index * 3 + 1] = el}
+                        value={item.quantity}
+                        onChange={(value) => handleQuantityChange(item.id, value)}
+                        onBlur={() => handleQuantityBlur(item.id, item.quantity)}
+                        onEnterPress={() => itemRefs.current[index * 3 + 2]?.focus()}
+                      />
+                    )}
+                  </td>
+                  <td className="p-1">
+                    <CurrencyInput
+                      ref={el => itemRefs.current[index * 3 + 2] = el}
+                      value={item.price}
+                      onChange={(value) => handlePriceChange(item.id, value)}
+                      onEnterPress={() => {
+                        const nextIndex = (index + 1) * 3;
+                        if (nextIndex < itemRefs.current.length) {
+                          itemRefs.current[nextIndex]?.focus();
                         }
-                      />
-                        // <FormInput
-                        //   ref={descriptionRef}
-                        //   label="City"
-                        //   title="master.regcity"
-                        //   type="text"
-                        //   className="w-full p-2 border rounded"
-                        //   placeholder="Enter city"
-                          // onKeyDown={(e) =>
-                          //   onKeyDown(e, `description${baseRef}`)
-                          // }
-                        // />
-                      )}
-                    </td>
-                    <td className="p-1">
-                      {!item.isDiscount && (
-                        <QuantityInput
-                          ref={sectionRef}
-                          value={item.quantity}
-                          onChange={(value) =>
-                            handleQuantityChange(item.id, value)
-                          }
-                          onBlur={() =>
-                            handleQuantityBlur(item.id, item.quantity)
-                          }
-                          onKeyDown={(e: React.KeyboardEvent<Element>) =>
-                            onKeyDown(e, `description${baseRef + 1}`)
-                          }
-                        />
-                      )}
-                    </td>
-                    <td className="p-1">
-                      <CurrencyInput
-                        ref={priceRef}
-                        value={item.price}
-                        onChange={(value) => handlePriceChange(item.id, value)}
-                        onKeyDown={(e: React.KeyboardEvent<Element>) =>
-                          onKeyDown(e, `description${baseRef + 2}`)
-                        }
-                      />
-                    </td>
-                    <td className="p-1">
-                      <CurrencyInput
-                        value={item.extended}
-                        onChange={() => {}} // Read-only
-                        disabled={true}
-                        className={item.isDiscount ? "text-red-600" : ""}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
+                      }}
+                    />
+                  </td>
+                  <td className="p-1">
+                    <CurrencyInput
+                      value={item.extended}
+                      onChange={() => {}} // Read-only
+                      disabled={true}
+                      className={item.isDiscount ? 'text-red-600' : ''}
+                    />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -392,114 +284,3 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 };
 
 export default ChargesSection;
-
-// import React from 'react';
-{/* <FormInput
-                        // ref={refs.}
-                          label="City"
-                          title="master.regcity"
-                          // onKeyDown={onKeyDown}
-                          ref={refs.description69}
-              type="text"
-              className="w-full p-2 border rounded"
-              placeholder="Enter city"
-              onKeyDown={(e) => onKeyDown(e, "description69")}
-                          // value={formState.invoice.regcity || ''}
-                          // onChange={(e) => updateInvoice({ regcity: e.target.value })}
-                          // onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                          // className="w-48"
-                          // placeholder="Enter city"
-                        /> */}
-
-            {/* <ItemDescriptionCombobox
-                          ref={refs.description69}
-                          onKeyDown={(e) => onKeyDown(e, "description69")}
-                          value={''}
-                          // onChange={(value) => handleItemChange(item.id, value)}
-                          // onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
-                          // onEnterPress={() => itemRefs.current[index * 3 + 1]?.focus()}
-                        /> */}
-
-// // Define the props interface
-// interface ChargesSectionProps {
-//   invoice: any;
-//   transactionItems: any[];
-//   onInvoiceChange: (updates: any) => void;
-//   onItemsChange: (items: any[]) => void;
-//   refs:any
-//   onKeyDown: (e: React.KeyboardEvent, fieldName: string) => void;
-// }
-
-// const ChargesSection: React.FC<ChargesSectionProps> = ({
-//   invoice,
-//   transactionItems,
-//   onInvoiceChange,
-//   onItemsChange,
-//   refs,
-//   onKeyDown
-// }) => {
-//   return (
-//     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-//       <h2 className="text-lg font-medium mb-4">Charges Section</h2>
-
-//       <div className="space-y-4">
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-//           <input
-// ref={refs.description69}
-// type="text"
-// className="w-full p-2 border rounded"
-// placeholder="Enter city"
-// onKeyDown={(e) => onKeyDown(e, "description69")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-//           <input
-//             ref={refs.description70}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter state"
-//             onKeyDown={(e) => onKeyDown(e, "description70")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
-//           <input
-//             ref={refs.description71}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter zip code"
-//             onKeyDown={(e) => onKeyDown(e, "description71")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-//           <input
-//             ref={refs.description72}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter country"
-//             onKeyDown={(e) => onKeyDown(e, "description72")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-//           <input
-//             ref={refs.description73}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter phone"
-//             onKeyDown={(e) => onKeyDown(e, "description73")}
-//           />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChargesSection;

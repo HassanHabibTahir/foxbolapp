@@ -9,7 +9,7 @@ const CheckBox = (props: CheckBoxPropsType) => {
         checked={props.checked}
         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
         ref={props.reference}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => props.onChange(e.target.checked)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => props.onChange(e.target.value)}
         onKeyDown={(e) => props.handleKeyDown(e, props.refName)}
       />
       <label className="block text-sm font-medium text-gray-700 ml-2">

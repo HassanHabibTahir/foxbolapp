@@ -1,6 +1,4 @@
-import React from 'react';
 import ConnectButton from './ConnectButton';
-import { QuickBooksSettings } from './types';
 
 const QuickBooksSetupPage = () => {
   const handleConnect = () => {

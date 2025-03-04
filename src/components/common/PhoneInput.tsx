@@ -10,8 +10,6 @@ interface PhoneInputProps {
   onChange?: (value: string) => void;
   onEnterPress?: () => void;
   format?: 'US' | 'INTL';
-    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  
 }
 
 const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(({
@@ -22,8 +20,7 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(({
   value = '',
   onChange,
   onEnterPress,
-  format = appConfig.defaultPhoneFormat,
-  onKeyDown
+  format = appConfig.defaultPhoneFormat
 }, ref) => {
   const [isInternational, setIsInternational] = useState(format === 'INTL');
   const [inputValue, setInputValue] = useState(value);
@@ -74,21 +71,17 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(({
     }
   };
 
-  // const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-  //     e.preventDefault();
-  //     onEnterPress();
-  //   }
-  // };
- const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (onKeyDown) {
-      onKeyDown(e)
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+      e.preventDefault();
+      onEnterPress();
     }
-  }
+  };
+
   return (
     <div className={size === 'full' ? 'w-full' : 'inline-block'}>
       <div className="flex items-center gap-2">
-        <label className="block text-sm font-medium text-gray-700 ">{label}</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       </div>
       <input
         ref={ref}

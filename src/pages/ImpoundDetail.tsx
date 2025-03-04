@@ -148,7 +148,7 @@ function ImpoundDetail() {
             <div className="p-4">
               <DetailRow 
                 label="Impound Total" 
-                value={invoice ? `$${invoice?.total?.toFixed(2)} as of ${formatDate(invoice?.invdate)}` : '-'} 
+                value={invoice ? `$${invoice.total.toFixed(2)} as of ${formatDate(invoice.invdate)}` : '-'} 
               />
               <DetailRow label="Storage Lot" value={dispatch?.storagelot || '-'} />
               <DetailRow 

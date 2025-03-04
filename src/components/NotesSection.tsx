@@ -5,14 +5,12 @@ interface NotesSectionProps {
   value: string;
   onChange: (value: string) => void;
   onEnterPress?: () => void;
-  onKeyDown?:any
 }
 
 const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({ 
   value, 
   onChange,
-  onEnterPress,
-  onKeyDown
+  onEnterPress
 }, ref) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -73,50 +71,39 @@ const NotesSection = forwardRef<HTMLTextAreaElement, NotesSectionProps>(({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-
-
-
     // Handle Ctrl+Enter or Cmd+Enter to add timestamp
-    // if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    //   e.preventDefault();
-    //   const target = e.target as HTMLTextAreaElement;
-    //   const event = new MouseEvent('contextmenu', {
-    //     bubbles: true,
-    //     cancelable: true,
-    //     clientX: target.getBoundingClientRect().left,
-    //     clientY: target.getBoundingClientRect().top
-    //   });
-    //   target.dispatchEvent(event);
-    //   return;
-    // }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      const target = e.target as HTMLTextAreaElement;
+      const event = new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: target.getBoundingClientRect().left,
+        clientY: target.getBoundingClientRect().top
+      });
+      target.dispatchEvent(event);
+      return;
+    }
 
     // Handle Enter without shift for form navigation
-    // if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-    //   e.preventDefault();
-    //   onEnterPress();
-    // }
-    // if (e.key === 'ArrowDown') {
-
-      onKeyDown(e)  
-    // }
-    // else if (e.key === 'Enter') {
-    //   return;
-    // }
+    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+      e.preventDefault();
+      onEnterPress();
+    }
   };
 
   return (
-    <FormSection title="E - Notes">
+    <FormSection title="Notes">
       <div className="relative">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Note
           <span className="text-sm text-gray-500 ml-2">
-            (Right-click or press Ctrl+Enter to insert a timestamp.<b> To move to the next field, press the Right Arrow key</b>.)
+            (Right-click or Ctrl+Enter to insert timestamp)
           </span>
         </label>
         <textarea 
-         
           ref={ref}
-          className="h-10 text-[14px] mt-1 block w-full rounded-md border border-gray-300 p-2 
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 h-32
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
             resize-y min-h-[8rem]"
           value={localValue}

@@ -13,7 +13,6 @@ import ImpoundDeatil from './pages/ImpoundDetail';
 import './i18n'
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import Newimpound from './pages/Newimpound';
 
 function App() {
     const { i18n } = useTranslation();
@@ -33,7 +32,6 @@ function App() {
             <Route path="/dispatch" element={<Dispatch />} />
             <Route path="/map" element={<Map />} />
             <Route path="/impound" element={<Impound />} />
-            <Route path="/new-impound" element={<Newimpound />} />
             <Route path="/impound/detail" element={<ImpoundDeatil />} />
             <Route path="/account" element={<Account />} />
             <Route path="/report" element={<Report />} />

@@ -77,10 +77,9 @@ const LicensePlateLookup = forwardRef<HTMLInputElement, LicensePlateLookupProps>
       <div className="flex gap-2 items-end">
         <StateInput
           ref={stateRef}
-              className="h-10 text-[14px]"
           label="State"
           title="master.licensest"
-          size="xs" 
+          size="xs"
           value={dispatch.licensest || ''}
           onChange={(value) => onDispatchChange({ licensest: value })}
           onEnterPress={() => ref && 'current' in ref && ref.current?.focus()}
@@ -95,7 +94,7 @@ const LicensePlateLookup = forwardRef<HTMLInputElement, LicensePlateLookupProps>
             value={dispatch.licensenum || ''}
             onChange={handlePlateChange}
             onKeyDown={handleKeyDown}
-            className="h-10 text-[14px] mt-1 w-[14ch] font-mono rounded-md border border-gray-300 p-2
+            className="mt-1 w-[14ch] font-mono rounded-md border border-gray-300 p-2
               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="ABC1234"
             maxLength={maxLength}
@@ -110,12 +109,11 @@ const LicensePlateLookup = forwardRef<HTMLInputElement, LicensePlateLookupProps>
           onChange={(e) => onDispatchChange({ tagmonthyear: e.target.value })}
           onEnterPress={onEnterPress}
           placeholder="MM/YY"
-          className='h-10 text-[14px]'
         />
         <button
           onClick={handleLookup}
           disabled={loading || !dispatch.licensenum || !dispatch.licensest}
-          className="h-10 text-[14px] px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+          className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
             disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none 
             focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           title="Look up license plate information"

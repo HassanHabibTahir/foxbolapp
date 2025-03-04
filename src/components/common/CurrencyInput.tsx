@@ -9,7 +9,6 @@ interface CurrencyInputProps {
   min?: number;
   max?: number;
   allowNegative?: boolean;
-  onKeyDown?:any
 }
 
 const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
@@ -20,8 +19,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
   disabled = false,
   min = -999999.99,
   max = 999999.99,
-  allowNegative = true,
-  onKeyDown
+  allowNegative = true
 }, ref) => {
   const formatValue = (num: number): string => {
     if (isNaN(num)) return '';
@@ -29,9 +27,6 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (/[^0-9.]/.test(e?.target?.value)) {
-      return value; // Return the character input
-  }
     const inputValue = e.target.value.replace(/[^\d.-]/g, '');
     
     if (inputValue === '' || inputValue === '-') {
@@ -63,22 +58,18 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Handle arrow keys for increment/decrement
-    // if (e.key === 'ArrowUp') {
-    //   e.preventDefault();
-    //   const newValue = Math.min(value + 1, max);
-    //   onChange(newValue);
-    // } else if (e.key === 'ArrowDown') {
-    //   e.preventDefault();
-    //   const newValue = Math.max(value - 1, min);
-    //   onChange(newValue);
-    // } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-    //   e.preventDefault();
-    //   onEnterPress();
-    // }
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      e.preventDefault(); // Prevents number from changing
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const newValue = Math.min(value + 1, max);
+      onChange(newValue);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const newValue = Math.max(value - 1, min);
+      onChange(newValue);
+    } else if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+      e.preventDefault();
+      onEnterPress();
     }
-    onKeyDown(e);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -99,8 +90,8 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(({
 
   return (
     <input
-      ref={ref} 
-      type="text"
+      ref={ref}
+      type="number"
       value={formatValue(typeof value !== 'number' ? Number(value) : value)}
       onChange={handleChange}
       onKeyDown={handleKeyDown}

@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef } from 'react';
 import Select from 'react-select';
 
 interface Option {
@@ -15,7 +15,6 @@ interface BooleanSelectProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
   disabled?: boolean;
   onEnterPress?: () => void;
-  onKeyDown?: any;
 }
 
 const BooleanSelect = forwardRef<any, BooleanSelectProps>(({
@@ -26,8 +25,7 @@ const BooleanSelect = forwardRef<any, BooleanSelectProps>(({
   className = '',
   size = 'sm',
   disabled = false,
-  onEnterPress,
-  onKeyDown
+  onEnterPress
 }, ref) => {
   const sizeClasses = {
     xs: '5rem',
@@ -44,7 +42,7 @@ const BooleanSelect = forwardRef<any, BooleanSelectProps>(({
   ];
 
   const selectedOption = options.find(option => option.value === value) || null;
-const [menuIsOpen, setMenuIsOpen] = useState(false);
+
   const handleChange = (option: Option | null) => {
     if (option !== null) {
       onChange(option.value);
@@ -55,32 +53,10 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      const focusedOption = document.querySelector(
-        ".react-select__option--is-focused"
-      );
-      console.log(focusedOption , "focused option");
-      if (focusedOption) {
-        e.preventDefault();
-        const selectedOptionText = focusedOption.textContent;
-        console.log(selectedOptionText, "selectedOptionText");
-        const _selectedOption = options?.find(
-          (opt: { label: string | null }) => opt.label === selectedOptionText
-        );
-        console.log(
-          _selectedOption,
-          "selectedOptions-->",
-          selectedOptionText
-        );
-
-        if (_selectedOption) {
-          handleChange(_selectedOption);
-          setMenuIsOpen(false);
-        }
-      }
+    if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
+      e.preventDefault();
+      onEnterPress();
     }
-    onKeyDown(e)
-    
   };
 
   const customStyles = {
@@ -125,37 +101,21 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
       display: 'none'
     })
   };
-  const selectProps = {
-    id: "select",
-    name: "select",
-    options: options,
-    value: selectedOption,
-    onChange: handleChange,
-    onKeyDown: handleKeyDown,
-    className: "react-select-container",
-    classNamePrefix: "react-select",
-    menuPortalTarget: document.body,
-    blurInputOnSelect: true,
-    menuIsOpen: menuIsOpen,
-    onMenuOpen: () => setMenuIsOpen(true),
-    onMenuClose: () => setMenuIsOpen(false),
-    openMenuOnFocus: true,
-  };
+
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
       <Select<Option>
-        {...selectProps}
         ref={ref}
-        // value={selectedOption}
-        // onChange={handleChange}
-        // options={options}
+        value={selectedOption}
+        onChange={handleChange}
+        options={options}
         styles={customStyles}
-        // isDisabled={disabled}
-        // isSearchable={false}
-        // onKeyDown={handleKeyDown}
+        isDisabled={disabled}
+        isSearchable={false}
+        onKeyDown={handleKeyDown}
         // title={title}
         aria-label={label}
         placeholder="Select..."

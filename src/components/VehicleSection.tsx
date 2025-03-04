@@ -80,24 +80,22 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
   };
 
   return (
-    <FormSection title="B - Vehicle Information" className='mt-4'>
+    <FormSection title="Vehicle Information">
       <div className="space-y-4">
         <div className="flex flex-wrap gap-4">
           <FormInput
             ref={typeRef}
-            
             label="Type"
             title="master.type"
             value={dispatch.type || ''}
             onChange={(e) => onDispatchChange({ type: e.target.value })}
             onEnterPress={() => yearRef.current?.focus()}
-            className="uppercase w-[7ch] h-10 text-[14px]"
+            className="uppercase w-[6ch]"
             placeholder="Type"
           />
           <FormInput
             ref={yearRef}
             label="Year"
-            className="h-10 text-[14px]"
             title="master.yearcar"
             value={dispatch.yearcar || ''}
             onChange={(e) => onDispatchChange({ yearcar: e.target.value })}
@@ -106,7 +104,6 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
           />
           <FormInput
             ref={makeRef}
-              className="h-10 text-[14px]"
             label="Make"
             title="master.makecar"
             value={dispatch.makecar || ''}
@@ -116,7 +113,6 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
           />
           <FormInput
             ref={modelRef}
-            className="h-10 text-[14px]"
             label="Model"
             title="master.modelcar"
             value={dispatch.modelcar || ''}
@@ -128,7 +124,6 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
             ref={colorRef}
             label="Color"
             title="master.colorcar"
-            className="h-10 text-[14px]"
             value={dispatch.colorcar || ''}
             onChange={(e) => onDispatchChange({ colorcar: e.target.value })}
             onEnterPress={() => bodyRef.current?.focus()}
@@ -138,7 +133,6 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
             ref={bodyRef}
             label="Body"
             title="master.bodytype"
-            className="h-10 text-[14px]"
             value={dispatch.bodytype || ''}
             onChange={(e) => onDispatchChange({ bodytype: e.target.value })}
             onEnterPress={() => stateRef.current?.focus()}
@@ -146,6 +140,7 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({
           />
         </div>
         <div className="flex flex-wrap gap-4">
+
           <LicensePlateLookup
             ref={plateRef}
             stateRef={stateRef}

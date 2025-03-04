@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 function Impounds() {
   const { t } = useTranslation();
-
   const foxtow_id = localStorage.getItem('foxtow_id')
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -106,23 +105,6 @@ function Impounds() {
       fields: ['Color', 'Make', 'Model', 'Odometer', 'Plate', 'Plate State']
     }
   ];
-
-
-
-
-
-
- const newPageHandler = ()=>{
-  navigate("/new-impound");
- }
-
-
-
-
-
-
-
-
 
   // Initialize column widths
   useEffect(() => {
@@ -415,7 +397,7 @@ function Impounds() {
       <div className="p-6">
         {/* Header Actions */}
         <div className="mb-6 flex gap-4">
-          <button  onClick={()=>newPageHandler()} className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             <FileText size={20} />
             {t('impounds.actions.newImpound')}
           </button>

@@ -1,26 +1,22 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 interface FormSectionProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
-  mt?: string;
 }
 
-const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(({ 
+const FormSection: React.FC<FormSectionProps> = ({ 
   title, 
   children, 
-  className = '',
-  mt = ''
-}, ref) => {
+  className = ''
+}) => {
   return (
-    <section ref={ref} className={`mb-4 ${mt} ${className}`}>
-      {title && <h2 className="text-lg font-semibold mb-2">{title}</h2>}
+    <section className={`mb-6 ${className}`}>
+      {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
       {children}
     </section>
   );
-});
-
-FormSection.displayName = "FormSection";
+};
 
 export default FormSection;
