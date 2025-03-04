@@ -36,12 +36,6 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({
   const isMobile = deviceType === 'mobile';
   const width = isMobile ? '100%' : fieldSizes[size];
 
-  // const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Enter' && !e.shiftKey && onEnterPress) {
-  //     e.preventDefault();
-  //     onEnterPress();
-  //   }
-  // };
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (onKeyDown) {
     
