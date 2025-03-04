@@ -35,6 +35,8 @@ import VehicleReasonsSelect from "./common/VehicleReasons";
 import DollarFormInput from "./common/DollarFormInput";
 import ColorSelect from "./common/ColorSelect";
 import NumberInput from "./common/NumbeInput";
+import CarMake from "./common/CarMake";
+import CarMakeModels from "./common/CarModels";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -462,6 +464,10 @@ const InvoiceForm = () => {
     return () => clearTimeout(timeout);
   }, [error]);
 
+  const [carMakeId, setCarMakeId] = useState<string | null>(null);
+
+console.log(formState?.dispatch,"dispatch")
+
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -730,17 +736,31 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "yearcar")}
               ref={inputRefs.yearcar}
             />
-            <FormInput
-              className="h-10 text-[14px]"
+            <CarMake
+              className="h-10 min-w-[170px] text-[14px]"
               label="Make"
               title="master.makecar"
               value={formState.dispatch.makecar || ""}
-              onChange={(e) => updateDispatch({ makecar: e.target.value })}
-              placeholder="Make"
-              onKeyDown={(e) => handleKeyDown(e, "makecar")}
+              onChange={(value) => updateDispatch({ makecar: value })}
+              size="full"
+              onKeyDown={(e:any) => handleKeyDown(e, "makecar")}
               ref={inputRefs.makecar}
+              setCarMakeId={setCarMakeId}
+              
             />
-            <FormInput
+            <CarMakeModels
+             className="h-10 min-w-[170px] text-[14px]"
+             label="Model"
+             title="master.modelcar"
+             carMakeId = {carMakeId} 
+             value={formState.dispatch.modelcar || ""}
+             onChange={(value) => updateDispatch({ modelcar: value })}
+             size="full"
+             onKeyDown={(e:any) => handleKeyDown(e, "modelcar")}
+             ref={inputRefs.modelcar}
+            />
+            
+            {/* <FormInput
               className="h-10 text-[14px]"
               label="Model"
               title="master.modelcar"
@@ -749,7 +769,7 @@ const InvoiceForm = () => {
               placeholder="Model"
               onKeyDown={(e) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
-            />
+            /> */}
             {/* <div>this is colro</div> */}
             {/* <FormInput
               label="Color"

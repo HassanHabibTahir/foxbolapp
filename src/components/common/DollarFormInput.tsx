@@ -10,7 +10,7 @@ interface DollarFormInputProps {
   size?: keyof typeof fieldSizes;
   value?: string;
   height?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: any) => void;
   onEnterPress?: () => void;
   disabled?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
