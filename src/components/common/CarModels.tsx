@@ -42,20 +42,6 @@ const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
   };
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(false);
-//   const options: Option[] = [
-//     // { value: 'black', label: 'Black' },
-//     // { value: 'Blue', label: 'Blue' },
-//     // { value: 'Brown', label: 'Brown' },
-//     // { value: 'Gold', label: 'Gold' },
-//     // { value: 'Gray', label: 'Gray' },
-//     // { value: 'Green', label: 'Green' },
-//     // { value: 'Orange', label: 'Orange' },
-//     // { value: 'Purple', label: 'Purple' },
-//     // { value: 'Red', label: 'Red' },
-//     // { value: 'Silver', label: 'Silver' },
-//     // { value: 'White', label: 'White' },
-//     // { value: 'Yellow', label: 'Yellow' }
-// ];
 
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);

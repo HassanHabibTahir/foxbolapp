@@ -38,6 +38,7 @@ import NumberInput from "./common/NumbeInput";
 import CarMake from "./common/CarMake";
 import CarMakeModels from "./common/CarModels";
 import ConditionSelect from "./common/ConditionSelect";
+import YearSlects from "./common/YearSelect";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -722,14 +723,13 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "type")}
               ref={inputRefs.type}
             />
-            <FormInput
+            <YearSlects
               label="Year"
               className="h-10 text-[14px]"
               title="master.yearcar"
               value={formState.dispatch.yearcar || ""}
-              onChange={(e) => updateDispatch({ yearcar: e.target.value })}
-              placeholder="YYYY"
-              onKeyDown={(e) => handleKeyDown(e, "yearcar")}
+              onChange={(value) => updateDispatch({ yearcar: value })}
+              onKeyDown={(e:any) => handleKeyDown(e, "yearcar")}
               ref={inputRefs.yearcar}
             />
             <CarMake
@@ -745,8 +745,8 @@ const InvoiceForm = () => {
             />
             
             <CarMakeModels
-              className="h-10  text-[14px]"
-              label="Model(Select Make first before selecting a model)"
+              className="h-10 min-w-[170px]  text-[14px]"
+              label="Model"
               title="master.modelcar"
               carMakeId={carMakeId}
               value={formState.dispatch.modelcar || ""}
@@ -755,10 +755,7 @@ const InvoiceForm = () => {
               onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
             />
-          </div>
- <div className="space-y-4">
- <div className="flex flex-wrap gap-4">
-            <ColorSelect
+    <ColorSelect
               label="Color"
               title="master.colorcar"
               value={formState.dispatch.colorcar || ""}
@@ -778,7 +775,7 @@ const InvoiceForm = () => {
               onKeyDown={(e) => handleKeyDown(e, "bodytype")}
             />
           </div>
-          </div>
+
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2 items-end">
               <StateInput

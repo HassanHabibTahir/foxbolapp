@@ -1,6 +1,5 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import Select from 'react-select';
-import { supabase } from '../../lib/supabase';
 
 interface Option {
   value: string;
@@ -8,7 +7,7 @@ interface Option {
   id?:string;
 }
 
-interface CarMakeProps {
+interface YearSlectsProps {
   label: string;
   title?: string;
   value?: string;
@@ -18,10 +17,10 @@ interface CarMakeProps {
   disabled?: boolean;
   onEnterPress?: () => void;
   onKeyDown?: any;
-  setCarMakeId:any;
+ 
 }
 
-const CarMake = forwardRef<any, CarMakeProps>(({
+const YearSlects = forwardRef<any, YearSlectsProps>(({
   label,
   title,
   value,
@@ -31,7 +30,7 @@ const CarMake = forwardRef<any, CarMakeProps>(({
   disabled = false,
   onEnterPress,
   onKeyDown,
-  setCarMakeId
+
 }, ref) => {
   const sizeClasses = {
     xs: '5rem',
@@ -41,28 +40,18 @@ const CarMake = forwardRef<any, CarMakeProps>(({
     xl: '30rem',
     full: '100%'
   };
-  const [options, setOptions] = useState<{ value: string; id:string, label: string }[]>([]);
-  const [loading, setLoading] = useState(false);
-//   const options: Option[] = [
-//     // { value: 'black', label: 'Black' },
-//     // { value: 'Blue', label: 'Blue' },
-//     // { value: 'Brown', label: 'Brown' },
-//     // { value: 'Gold', label: 'Gold' },
-//     // { value: 'Gray', label: 'Gray' },
-//     // { value: 'Green', label: 'Green' },
-//     // { value: 'Orange', label: 'Orange' },
-//     // { value: 'Purple', label: 'Purple' },
-//     // { value: 'Red', label: 'Red' },
-//     // { value: 'Silver', label: 'Silver' },
-//     // { value: 'White', label: 'White' },
-//     // { value: 'Yellow', label: 'Yellow' }
-// ];
+  const currentYear = new Date().getFullYear();
+  const options: { value: string; label: string }[] = Array.from(
+    { length: currentYear - 1950 + 1 },  
+    (_, i) => ({ value: (1950 + i).toString(), label: (1950 + i).toString() })
+  );
+  
 
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
   const handleChange = (option: Option | null) => {
     if (option !== null) {
-      setCarMakeId(option?.id)
+
       onChange(option?.value);
       if (onEnterPress) {
         setTimeout(onEnterPress, 0);
@@ -156,34 +145,6 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
 
 
 
-  const init = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from("carmakes").select();
-
-      if (error) {
-        console.error("Supabase error:", error);
-        return;
-      }
-      if (data && data.length > 0) {
-        setOptions(
-          data.map((carmake: { id: string; name: string }) => ({
-            id: carmake.id.toString(),
-            value: carmake.name,
-            label: carmake.name,
-          }))
-        );
-      }
-    } catch (e) {
-      console.error("Fetch error:", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [setOptions]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
 
 
   return (
@@ -214,5 +175,5 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   );
 });
 
-CarMake.displayName = 'CarMake';
-export default CarMake;
+YearSlects.displayName = 'YearSlects';
+export default YearSlects;
