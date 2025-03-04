@@ -41,11 +41,17 @@ const YearSlects = forwardRef<any, YearSlectsProps>(({
     full: '100%'
   };
   const currentYear = new Date().getFullYear();
-  const options: { value: string; label: string }[] = Array.from(
-    { length: currentYear - 1950 + 1 },  
-    (_, i) => ({ value: (1950 + i).toString(), label: (1950 + i).toString() })
-  );
-  
+  // show to the top
+  const options = [
+    { value: "", label: "none" },
+    ...Array.from(
+      { length: currentYear - 1950 + 1 },
+      (_, i) => ({
+        value: (currentYear - i).toString(),
+        label: (currentYear - i).toString(),
+      })
+    ),
+  ];
 
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -103,6 +109,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
       backgroundColor: state.isSelected ? '#E5E7EB' : state.isFocused ? '#F3F4F6' : 'white',
       color: '#111827',
       cursor: 'pointer',
+      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
       '&:hover': {
         backgroundColor: '#F3F4F6'
       }
@@ -149,7 +156,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-gray-700 mb-1 ">
         {label}
       </label>
       <Select<Option>
