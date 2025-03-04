@@ -25,7 +25,7 @@ import VinLookupField from "./VinLookupField";
 import AddressAutocomplete from "./common/AddressAutocomplete";
 import NotesSection from "./NotesSection";
 import ZipInput from "./common/ZipInput";
-import LienSection from "./LienSection";
+// import LienSection from "./LienSection";
 import AccountName from "./common/AccountName";
 import BooleanSelect from "./common/BooleanSelector";
 import LienTypeInput from "./common/LienTypeInput";
@@ -37,6 +37,7 @@ import ColorSelect from "./common/ColorSelect";
 import NumberInput from "./common/NumbeInput";
 import CarMake from "./common/CarMake";
 import CarMakeModels from "./common/CarModels";
+import ConditionSelect from "./common/ConditionSelect";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -339,7 +340,7 @@ const InvoiceForm = () => {
 
   const handleNew = (invoiceNumber: any) => {
     resetForm();
-    console.log(invoiceNumber,"invoiceNumber");
+    console.log(invoiceNumber, "invoiceNumber");
     updateDispatch({ dispnum: invoiceNumber });
   };
 
@@ -466,8 +467,6 @@ const InvoiceForm = () => {
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
 
-console.log(formState?.dispatch,"dispatch")
-
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -503,7 +502,6 @@ console.log(formState?.dispatch,"dispatch")
             inputRefs={inputRefs.driver2}
           />
           <div className="flex flex-wrap gap-2">
-
             <MilitaryTimeInput
               label="Received"
               title="drivetran.timerec"
@@ -667,10 +665,9 @@ console.log(formState?.dispatch,"dispatch")
               fieldName="dateStored"
               inputRefs={inputRefs}
             />
-
           </div>
           <div className="flex flex-wrap  items-center gap-2">
-          <AccountName
+            <AccountName
               label="Account Name"
               title="master.account"
               size="full"
@@ -679,10 +676,9 @@ console.log(formState?.dispatch,"dispatch")
               onKeyDown={(e: any) => handleKeyDown(e, "callname")}
               ref={inputRefs.callname}
             />
-           
           </div>
           <div className="flex flex-wrap  items-center gap-2">
-          <FormInput
+            <FormInput
               label="Who Called"
               className="h-10 text-[14px]"
               title="master.whocalled"
@@ -743,54 +739,34 @@ console.log(formState?.dispatch,"dispatch")
               value={formState.dispatch.makecar || ""}
               onChange={(value) => updateDispatch({ makecar: value })}
               size="full"
-              onKeyDown={(e:any) => handleKeyDown(e, "makecar")}
+              onKeyDown={(e: any) => handleKeyDown(e, "makecar")}
               ref={inputRefs.makecar}
               setCarMakeId={setCarMakeId}
-              
-            />
-            <CarMakeModels
-             className="h-10 min-w-[170px] text-[14px]"
-             label="Model"
-             title="master.modelcar"
-             carMakeId = {carMakeId} 
-             value={formState.dispatch.modelcar || ""}
-             onChange={(value) => updateDispatch({ modelcar: value })}
-             size="full"
-             onKeyDown={(e:any) => handleKeyDown(e, "modelcar")}
-             ref={inputRefs.modelcar}
             />
             
-            {/* <FormInput
-              className="h-10 text-[14px]"
-              label="Model"
+            <CarMakeModels
+              className="h-10  text-[14px]"
+              label="Model(Select Make first before selecting a model)"
               title="master.modelcar"
+              carMakeId={carMakeId}
               value={formState.dispatch.modelcar || ""}
-              onChange={(e) => updateDispatch({ modelcar: e.target.value })}
-              placeholder="Model"
-              onKeyDown={(e) => handleKeyDown(e, "modelcar")}
+              onChange={(value) => updateDispatch({ modelcar: value })}
+              size="full"
+              onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
-            /> */}
-            {/* <div>this is colro</div> */}
-            {/* <FormInput
+            />
+          </div>
+ <div className="space-y-4">
+ <div className="flex flex-wrap gap-4">
+            <ColorSelect
               label="Color"
               title="master.colorcar"
-              className="h-10 text-[14px]"
               value={formState.dispatch.colorcar || ""}
-              onChange={(e) => updateDispatch({ colorcar: e.target.value })}
-              placeholder="Color"
+              onChange={(value) => updateDispatch({ colorcar: value })}
               ref={inputRefs.colorcar}
-              onKeyDown={(e) => handleKeyDown(e, "colorcar")}
-            /> */}
-                  <ColorSelect
-         
-                label="Color"
-                 title="master.colorcar"
-                value={formState.dispatch.colorcar || ""}
-                onChange={(value) => updateDispatch({ colorcar: value })}
-                ref={inputRefs.colorcar}
-                onKeyDown={(e:any) => handleKeyDown(e, "colorcar")}
-                size="md"
-              />
+              onKeyDown={(e: any) => handleKeyDown(e, "colorcar")}
+              size="md"
+            />
             <FormInput
               label="Body"
               title="master.bodytype"
@@ -801,6 +777,7 @@ console.log(formState?.dispatch,"dispatch")
               ref={inputRefs.bodytype}
               onKeyDown={(e) => handleKeyDown(e, "bodytype")}
             />
+          </div>
           </div>
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2 items-end">
@@ -873,17 +850,17 @@ console.log(formState?.dispatch,"dispatch")
                 onKeyDown={(e: any) => handleKeyDown(e, "odometer")}
                 ref={inputRefs.odometer}
               />
-              <FormInput
+              <ConditionSelect
                 size="full"
                 label="Condition"
                 className="h-10 text-[14px] min-w-[600px]"
                 title="master.condition"
                 value={formState.dispatch.condition}
-                onChange={(e) => updateDispatch({ condition: e.target.value })}
+                onChange={(value) => updateDispatch({ condition: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "condition")}
                 ref={inputRefs.condition}
               />
-                <VehicleReasonsSelect
+              <VehicleReasonsSelect
                 ref={inputRefs.reason}
                 label="Reason"
                 title="master.reason"
@@ -965,36 +942,39 @@ console.log(formState?.dispatch,"dispatch")
                   placeholder="Enter call type"
                   onKeyDown={(e: any) => handleKeyDown(e, "calltype")}
                 />
-                        <BooleanSelect
-                className="h-10 w-44 text-[14px]"
-                label="Have Key?"
-                title="master.keyinfo"
-                ref={inputRefs?.keysinfo}
-                value={formState?.dispatch.keysinfo === true || formState?.dispatch.keysinfo === 'true'}
+                <BooleanSelect
+                  className="h-10 w-44 text-[14px]"
+                  label="Have Key?"
+                  title="master.keyinfo"
+                  ref={inputRefs?.keysinfo}
+                  value={
+                    formState?.dispatch.keysinfo === true ||
+                    formState?.dispatch.keysinfo === "true"
+                  }
+                  onChange={(value: boolean) =>
+                    updateDispatch({ keysinfo: value })
+                  }
+                  onKeyDown={(e: any) => handleKeyDown(e, "keysinfo")}
+                  size="lg"
+                  // onEnterPress={() => lienStartRef.current?.focus()}
+                />
 
-                onChange={(value: boolean) =>
-                  updateDispatch({ keysinfo: value })
-                }
-                onKeyDown={(e: any) => handleKeyDown(e, "keysinfo")}
-                size="lg"
-                // onEnterPress={() => lienStartRef.current?.focus()}
-              />
-       
-               <BooleanSelect
-                className="h-10 w-44 text-[14px]"
-                ref={inputRefs?.holdnote}
+                <BooleanSelect
+                  className="h-10 w-44 text-[14px]"
+                  ref={inputRefs?.holdnote}
                   label="Hold Note"
                   title="master.holdnote"
-                  
-                  value={formState?.dispatch.holdnote === true || formState?.dispatch.holdnote === 'true'}
+                  value={
+                    formState?.dispatch.holdnote === true ||
+                    formState?.dispatch.holdnote === "true"
+                  }
                   onChange={(value: boolean) =>
-                  updateDispatch({ holdnote: value })
-                }
-                onKeyDown={(e: any) => handleKeyDown(e, "holdnote")}
-                size="lg"
-                // onEnterPress={() => lienStartRef.current?.focus()}
-              />
-         
+                    updateDispatch({ holdnote: value })
+                  }
+                  onKeyDown={(e: any) => handleKeyDown(e, "holdnote")}
+                  size="lg"
+                  // onEnterPress={() => lienStartRef.current?.focus()}
+                />
               </div>
             </div>
           </FormSection>
