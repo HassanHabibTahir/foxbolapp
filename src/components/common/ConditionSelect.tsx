@@ -1,13 +1,12 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import Select from 'react-select';
-import { supabase } from '../../lib/supabase';
 
 interface Option {
   value: string;
   label: string;
 }
 
-interface CarMakeModelsProps {
+interface ConditionSelectProps {
   label: string;
   title?: string;
   value?: string;
@@ -17,10 +16,9 @@ interface CarMakeModelsProps {
   disabled?: boolean;
   onEnterPress?: () => void;
   onKeyDown?: any;
-  carMakeId?:any;
 }
 
-const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
+const ConditionSelect = forwardRef<any, ConditionSelectProps>(({
   label,
   title,
   value,
@@ -29,8 +27,7 @@ const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
   size = 'sm',
   disabled = false,
   onEnterPress,
-  onKeyDown,
-  carMakeId
+  onKeyDown
 }, ref) => {
   const sizeClasses = {
     xs: '5rem',
@@ -40,22 +37,14 @@ const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
     xl: '30rem',
     full: '100%'
   };
-  const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
-  const [loading, setLoading] = useState(false);
-//   const options: Option[] = [
-//     // { value: 'black', label: 'Black' },
-//     // { value: 'Blue', label: 'Blue' },
-//     // { value: 'Brown', label: 'Brown' },
-//     // { value: 'Gold', label: 'Gold' },
-//     // { value: 'Gray', label: 'Gray' },
-//     // { value: 'Green', label: 'Green' },
-//     // { value: 'Orange', label: 'Orange' },
-//     // { value: 'Purple', label: 'Purple' },
-//     // { value: 'Red', label: 'Red' },
-//     // { value: 'Silver', label: 'Silver' },
-//     // { value: 'White', label: 'White' },
-//     // { value: 'Yellow', label: 'Yellow' }
-// ];
+
+  const options: Option[] = [
+    { value: 'new', label: 'New' },
+    { value: 'like', label: 'Like' },
+    { value: 'excellent', label: 'Excellent' },
+    { value: 'good', label: 'Good' },
+    { value: 'fari', label: 'Fari' },
+    { value: 'salvage', label: 'Salvage' }];
 
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -151,48 +140,10 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     onMenuClose: () => setMenuIsOpen(false),
     openMenuOnFocus: true,
   };
-
-
-
-  const init = useCallback(async () => {
-    setLoading(true);
-    try {
-        if(carMakeId){
-        const { data, error } = await supabase
-        .from("carmodels")
-        .select("*")
-        .eq("makeid", carMakeId); 
-      if (error) {
-        console.error("Supabase error:", error);
-        return;
-      }
-      if (data && data.length > 0) {
-        setOptions(
-          data.map((carmake: { makeid: string; name: string }) => ({
-            value: carmake.name,
-            label: carmake.name,
-          }))
-        );
-      }
-    }
-    } catch (e) {
-      console.error("Fetch error:", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [carMakeId]);
-
-  useEffect(() => {
-    init();
-  }, [init,carMakeId]);
-
-
-
   return (
     <div className={className}>
-     
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-        {"Loading..."+ label}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
       </label>
       <Select<Option>
         {...selectProps}
@@ -206,17 +157,16 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         // onKeyDown={handleKeyDown}
         // title={title}
         aria-label={label}
-        placeholder={loading?"Loading...":"Select..."}
+        placeholder="Select..."
         menuPlacement="auto"
         blurInputOnSelect
         components={{
           IndicatorSeparator: null
         }}
       />
-   
     </div>
   );
 });
 
-CarMakeModels.displayName = 'CarMake';
-export default CarMakeModels;
+ConditionSelect.displayName = 'ConditionSelect';
+export default ConditionSelect;
