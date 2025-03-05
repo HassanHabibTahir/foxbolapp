@@ -6,6 +6,7 @@ import ItemDescriptionCombobox from "./common/ItemDescriptionCombobox";
 import InvoiceTotals from "./InvoiceTotals";
 import { lookupPrice } from "../lib/priceService";
 import FormInput from "./common/FormInput";
+import ExtendedCurrencyInput from "./common/ExtendedCurrenctInput";
 
 interface LineItem {
   id: number;
@@ -363,7 +364,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                       />
                     </td>
                     <td className="p-1">
-                      <CurrencyInput
+                      <ExtendedCurrencyInput
                         value={item.extended}
                         onChange={() => {}} // Read-only
                         disabled={true}
