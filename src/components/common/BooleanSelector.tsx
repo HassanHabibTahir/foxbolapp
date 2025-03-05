@@ -67,11 +67,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         const _selectedOption = options?.find(
           (opt: { label: string | null }) => opt.label === selectedOptionText
         );
-        console.log(
-          _selectedOption,
-          "selectedOptions-->",
-          selectedOptionText
-        );
+  
 
         if (_selectedOption) {
           handleChange(_selectedOption);
@@ -91,7 +87,8 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         borderColor: state.isFocused ? '#3B82F6' : '#9CA3AF'
       },
       boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-      minHeight: '38px',
+      minHeight: '35px',
+      height:"34px",
       width: className ? 'auto' : sizeClasses[size],
       opacity: disabled ? 0.5 : 1,
       backgroundColor: disabled ? '#F3F4F6' : 'white',
@@ -143,7 +140,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   };
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-0">
         {label}
       </label>
       <Select<Option>

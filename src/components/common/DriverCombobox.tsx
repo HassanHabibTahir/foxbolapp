@@ -3,6 +3,7 @@ import type React from "react"
 import { useState, useEffect, forwardRef } from "react"
 import Select, { components } from "react-select"
 import { supabase } from "../../lib/supabase"
+import { ClassNames } from "@emotion/react"
 
 interface Driver {
   driver_num: string
@@ -26,11 +27,12 @@ interface DriverComboboxProps {
   tabIndex?: number
   onKeyDown?: (e: React.KeyboardEvent) => void
   inputRefs?: any
+  className?:string
   
 }
 
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
-  ({ label, size = "xs", value = "", onChange, onDriverSelect, tabIndex,inputRefs, onKeyDown }, ref) => {
+  ({ label, size = "xs", value = "", onChange, onDriverSelect,className, tabIndex,inputRefs, onKeyDown }, ref) => {
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [selectedOption, setSelectedOption] = useState<DriverOption | null>(null)
 
@@ -101,7 +103,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
         },
         boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
         minHeight: "34px",
-        height: "34px",
+        height: "35px",
         padding: "0px",
       }),
       valueContainer: (provided: any) => ({
@@ -180,6 +182,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
         <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
         <div style={{ width: sizeClasses[size] }}>
           <Select
+      
             {...selectProps}
             ref={ref as any}
             styles={customStyles}

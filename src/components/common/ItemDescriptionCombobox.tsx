@@ -112,7 +112,8 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         "&:hover": {
           borderColor: "#9CA3AF",
         },
-        minHeight: "38px",
+        minHeight: "35px",
+        height:"34px"
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,

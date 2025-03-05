@@ -31,14 +31,16 @@ const InvoiceTotals: React.FC<InvoiceTotalsProps> = ({
           <span className="font-medium text-gray-700">Tax Rate %:</span>
           <div className="w-40">
             <CurrencyInput
+
               value={taxRate}
               onChange={onTaxRateChange}
-              className="text-right"
+              className="text-right h-9"
+              
             />
           </div>
         </div>
 
-        <TotalDisplay label="Tax Amount" amount={taxAmount} />
+        <TotalDisplay label="Tax Amount" amount={taxAmount} className='h-9'/>
         
         <div className="flex items-center justify-end gap-4">
           <span className="font-medium text-gray-700">Amount Received:</span>
@@ -46,7 +48,8 @@ const InvoiceTotals: React.FC<InvoiceTotalsProps> = ({
             <CurrencyInput
               value={amountReceived}
               onChange={onAmountReceivedChange}
-              className="text-right"
+              className="text-right h-9"
+
             />
           </div>
         </div>
@@ -55,7 +58,7 @@ const InvoiceTotals: React.FC<InvoiceTotalsProps> = ({
           <TotalDisplay 
             label="Invoice Total" 
             amount={total}
-            className="text-lg" 
+            className="text-lg h-9" 
           />
         </div>
       </div>

@@ -156,12 +156,13 @@ interface MilitaryTimeInputProps {
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   fieldName:any
   FIELD_INDEXES:any
-  inputRefs:any
+  inputRefs:any;
+  className?:string
 
 }
 
 const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
-  ({ label, title, value, onChange, onEnterPress, onKeyDown,fieldName,FIELD_INDEXES,inputRefs }, ref) => {
+  ({ label, title, value, onChange, onEnterPress, onKeyDown,fieldName,FIELD_INDEXES,inputRefs ,className}, ref) => {
     const internalInputRef = useRef<HTMLInputElement>(null);
     const inputRef = (ref || internalInputRef) as React.RefObject<HTMLInputElement>;
     
@@ -288,7 +289,7 @@ const MilitaryTimeInput = forwardRef<HTMLInputElement, MilitaryTimeInputProps>(
 
           // onKeyDown={onKeyDown}
           title={title}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          className={`border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${className}`}
           style={{ width: '120px', fontSize: '0.875rem' }}
           placeholder="HH:MM"
           maxLength={5}

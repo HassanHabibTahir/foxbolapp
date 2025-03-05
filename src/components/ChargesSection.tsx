@@ -308,7 +308,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                       {item.isDiscount ? (
                         <input
                           type="text"
-                          className="w-full rounded-md border border-gray-300 p-2 bg-gray-50"
+                          className="w-full h-9 rounded-md border border-gray-300 p-2 bg-gray-50"
                           value={item.description}
                           disabled
                         />
@@ -339,6 +339,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                     <td className="p-1">
                       {!item.isDiscount && (
                         <QuantityInput
+                        className="h-9"
                           ref={sectionRef}
                           value={item.quantity}
                           onChange={(value) =>
@@ -356,6 +357,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                     <td className="p-1">
                       <CurrencyInput
                         ref={priceRef}
+                        className="h-9"
                         value={item.price}
                         onChange={(value) => handlePriceChange(item.id, value)}
                         onKeyDown={(e: React.KeyboardEvent<Element>) =>
@@ -365,10 +367,11 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                     </td>
                     <td className="p-1">
                       <ExtendedCurrencyInput
+                     
                         value={item.extended}
                         onChange={() => {}} // Read-only
                         disabled={true}
-                        className={item.isDiscount ? "text-red-600" : ""}
+                        className={item.isDiscount ? "text-red-600 h-9" : ""}
                       />
                     </td>
                   </tr>

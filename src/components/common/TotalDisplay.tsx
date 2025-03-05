@@ -19,10 +19,11 @@ const TotalDisplay: React.FC<TotalDisplayProps> = ({
       <span className="font-medium text-gray-700">{label}:</span>
       <div className="w-40">
         <CurrencyInput
+        
           value={amount}
           onChange={() => {}}
           disabled={disabled}
-          className="font-bold"
+          className="font-bold h-9"
         />
       </div>
     </div>

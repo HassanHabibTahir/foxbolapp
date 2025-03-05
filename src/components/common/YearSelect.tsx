@@ -98,7 +98,8 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         borderColor: state.isFocused ? '#3B82F6' : '#9CA3AF'
       },
       boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-      minHeight: '38px',
+      minHeight: '35px',
+      height:"34px",
       width: className ? 'auto' : sizeClasses[size],
       opacity: disabled ? 0.5 : 1,
       backgroundColor: disabled ? '#F3F4F6' : 'white',

@@ -344,7 +344,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
             }}
             autoComplete="off"
             type="text"
-            className={`mt-1 block ${sizeClasses[size]} rounded-l-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
+            className={`mt-0 block ${sizeClasses[size]} rounded-l-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
             title={`${title} (Format: M/D/YYYY, Right-click to insert/clear date)`}
             value={internalValue}
             onChange={handleChange}
@@ -366,7 +366,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
           <button
             ref={calendarButtonRef}
             type="button"
-            className="mt-1 rounded-l-none rounded-r-md border border-l-0 border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            className="mt-0 rounded-l-none rounded-r-md border border-l-0 border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
             onClick={() => setIsCalendarOpen(!isCalendarOpen)}
             aria-label="Toggle calendar"
           >
@@ -404,7 +404,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
                 </div>
 
                 {/* Weekday headers */}
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-400 mb-1">
+                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-400 ">
                   {weekdays.map((day, index) => (
                     <div key={index}>{day}</div>
                   ))}

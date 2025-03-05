@@ -76,7 +76,7 @@ const StateInput = forwardRef<HTMLInputElement, StateInputProps>(
         <input
           ref={ref}
           type="text"
-          className={`
+          className={`h-9
           mt-1 block rounded-md border border-gray-300 p-2 uppercase
           focus:ring-2 focus:ring-blue-500 focus:border-blue-500
           disabled:bg-gray-100 disabled:cursor-not-allowed

@@ -129,7 +129,8 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
         borderColor: '#9CA3AF'
       },
       boxShadow: 'none',
-      minHeight: '38px'
+      minHeight: "34px",
+      height: "35px",
     }),
     option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
       ...provided,

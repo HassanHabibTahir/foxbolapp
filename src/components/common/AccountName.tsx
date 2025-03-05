@@ -106,16 +106,19 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     const customStyles = {
       control: (provided: any, state: { isFocused: boolean }) => ({
         ...provided,
+        fontSize: '13px',
         borderColor: state.isFocused ? "#3B82F6" : "#D1D5DB",
         "&:hover": {
           borderColor: state.isFocused ? "#3B82F6" : "#9CA3AF",
         },
         boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
-        minHeight: "38px",
+        minHeight: "34px",
+        height: "35px",
         minWidth: "165%",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
+        fontSize: '13px',
         backgroundColor: state.isSelected ? "#3B82F6" : state.isFocused ? "#F3F4F6" : "white",
         color: state.isSelected ? "white" : "#111827",
         cursor: "pointer",
@@ -159,6 +162,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       menuIsOpen: menuIsOpen,
       onMenuOpen: () => setMenuIsOpen(true),
       onMenuClose: () => setMenuIsOpen(false),
+      onInputChange:handleInputChange,
       openMenuOnFocus: true,
     }
     return (

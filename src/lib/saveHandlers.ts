@@ -7,13 +7,11 @@ export interface SavePayload {
     driver_id?: string;
     // ... other dispatch fields
   };
-  driver: {
-
-  },
+  driver?: object|any,
   invoice?: {
     invoice_number: string;
     total_amount: number;
-    tax_amount: number;
+    tax_amount: number; 
     subtotal: number;
     paid_amount: number;
     // ... other invoice fields
