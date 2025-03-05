@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   Umbrella,
   Twitch,
+  BadgeDollarSign,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
@@ -146,6 +147,13 @@ const SettingsSidebar = ({ currentPage, onPageChange }: SettingsSidebarProps) =>
           id="items"
           active={currentPage === 'items'}
           onClick={() => onPageChange('items')}
+        />
+        <SidebarItem
+          icon={<BadgeDollarSign size={18} />}
+          label={t('Prices')}
+          id="prices"
+          active={currentPage === 'prices'}
+          onClick={() => onPageChange('prices')}
         />
 
         <div className="mt-4 pt-4 border-t border-gray-200">
