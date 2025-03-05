@@ -15,6 +15,8 @@ import SquareSetupPage from '../components/Settings/Square/SquareSetupPage';
 import StatementsPage from '../components/Settings/Statements/StatementsPage';
 import SettingsSidebar from '../components/Settings/SettingsSidebar';
 import Header from '../components/layouts/Header';
+import KitsPage from '../components/Settings/Kits/KitsPage';
+import ItemsPage from '../components/Settings/Items/ItemsPage';
 
 const Setting = () => {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -49,6 +51,10 @@ const Setting = () => {
         return <SquareSetupPage />;
       case 'statements':
         return <StatementsPage />;
+        case 'kits':
+          return <KitsPage />;
+        case 'items':
+          return <ItemsPage />;
       default:
         return <OverviewPage />;
     }

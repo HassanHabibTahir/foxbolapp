@@ -138,13 +138,13 @@ const ItemsPage = () => {
     }
   };
 
-  const handleExcludeWindowChange = (value: boolean) => {
-    setExcludeWindow(value);
+  const handleExcludeWindowChange = (value: string) => {
+    setExcludeWindow(value ? true : false);
     console.log(value);
   }
 
-  const handleTaxableChange = (value: boolean) => {
-    setTaxable(value);
+  const handleTaxableChange = (value: string) => {
+    setTaxable(value ? true : false);
     console.log(value);
   }
 
@@ -430,6 +430,7 @@ const ItemsPage = () => {
             >
               Delete
             </button>
+
 
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-2 rounded duration-300"

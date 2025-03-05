@@ -3,7 +3,7 @@ type CheckBoxPropsType = {
   checked: boolean,
   reference: React.RefObject<HTMLInputElement>,
   refName: string,
-  onChange: (value: boolean) => void,
+  onChange: (value: any) => void,
   handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>, field: string) => void,
 }
 
