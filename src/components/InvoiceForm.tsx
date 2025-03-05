@@ -39,6 +39,7 @@ import CarMake from "./common/CarMake";
 import CarMakeModels from "./common/CarModels";
 import ConditionSelect from "./common/ConditionSelect";
 import YearSlects from "./common/YearSelect";
+import StateSelect from "./common/StateSelect";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -1120,7 +1121,7 @@ const InvoiceForm = () => {
               </div>
 
               <div className="flex gap-2">
-                <StateInput
+                <StateSelect
                   ref={inputRefs?.billtost}
                   label="State"
                   title="master.billtost"
