@@ -778,17 +778,17 @@ const InvoiceForm = () => {
           </div>
 
           <div className="space-y-2">
-            <div className="flex flex-wrap gap-2 items-end">
-              <StateInput
-                className="h-10 text-[14px]"
+            <div className="flex items-center flex-wrap gap-2 ">
+          
+              <StateSelect
+                className=" text-[14px]"
                 label="State"
                 title="master.licensest"
-                size="xs"
+                size="full"
+                
                 value={formState?.dispatch?.licensest || ""}
                 onChange={(value) => updateDispatch({ licensest: value })}
                 ref={inputRefs.licensest}
-                maxLength={2}
-                placeholder="XX"
                 onKeyDown={(e: any) => handleKeyDown(e, "licensest")}
               />
               <StateInput
@@ -1129,6 +1129,7 @@ const InvoiceForm = () => {
                   onChange={(value) => updateInvoice({ billtost: value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "billtost")}
                 />
+              
                 <ZipInput
                   ref={inputRefs?.billtozip}
                   label="Zip"
@@ -1211,7 +1212,7 @@ const InvoiceForm = () => {
                   placeholder="Enter city"
                 />
 
-                <StateInput
+                <StateSelect
                   ref={inputRefs?.regstate}
                   label="State"
                   title="master.regstate"
