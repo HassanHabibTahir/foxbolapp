@@ -149,7 +149,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       placeholder = "0.00",
       className = "",
       size = "auto",
-      value = 0,
+      value = '',
       height = "",
       onChange,
       onEnterPress,
@@ -245,7 +245,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
         `}
           title={title}
           placeholder={placeholder}
-          value={formatDisplayValue()}
+          value={formatDisplayValue()==='0'?"":formatDisplayValue()}
           onChange={handleInputChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
