@@ -12,11 +12,12 @@ interface AccountNameProps {
   onChange?: (value: string) => void
   onEnterPress?: () => void
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  className?: string
 }
 
 // this is account Name
 const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
-  ({ label, title, size = "md", value = "", onChange, onEnterPress, onKeyDown }, ref) => {
+  ({ label, title, size = "md", value = "", onChange, onEnterPress, onKeyDown,className }, ref) => {
     const [companies, setCompanies] = useState<any[]>([])
     const [selectedOption, setSelectedOption] = useState<any | null>(null)
     const [menuIsOpen, setMenuIsOpen] = useState(false)
@@ -27,7 +28,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       sm: "8rem",
       md: "12rem",
       lg: "16rem",
-      xl: "24rem",
+      xl: "60%",
       full: "100%",
     }
 
@@ -168,7 +169,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <div className="w-full" style={{ minWidth: sizeClasses[size] }}>
+        <div className={`w-full ${className}`} style={{ minWidth: sizeClasses[size] }}>
           <Select
             {...selectProps}
             ref={ref as any}

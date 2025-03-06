@@ -21,6 +21,7 @@ interface TruckComboboxProps {
   onEnterPress?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputRefs: any;
+  className?: string;
 }
 
 const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
@@ -31,7 +32,8 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
   onChange,
   onEnterPress,
   onKeyDown,
-  inputRefs
+  inputRefs,
+  className
 }, ref) => {
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [selectedOption, setSelectedOption] = useState<TruckOption | null>(null);
@@ -171,7 +173,7 @@ const TruckCombobox = forwardRef<HTMLInputElement, TruckComboboxProps>(({
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
-      <div style={{ width: sizeClasses[size] }}>
+      <div style={{ width: sizeClasses[size] }} className={`${className}`}>
         <Select
           {...selectProps}
           ref={ref as any}

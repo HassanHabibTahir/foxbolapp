@@ -8,6 +8,7 @@ interface VinLookupFieldProps {
   onVinDetails?: (details: VinDetails) => void;
   onEnterPress?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  className?: string;
 }
 
 const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
@@ -15,7 +16,8 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
   onChange,
   onVinDetails,
   onEnterPress,
-  onKeyDown
+  onKeyDown,
+  className
 }, ref) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,9 +93,9 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="mt-1 w-[34ch] h-9 font-mono rounded-md border border-gray-300 p-2
+            className={` ${className} mt-1  h-9 font-mono rounded-md border border-gray-300 p-2
               focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-              disabled:bg-gray-100 disabled:cursor-not-allowed"
+              disabled:bg-gray-100 disabled:cursor-not-allowed`}
             placeholder="17 characters"
             maxLength={17}
             title="Enter 17-character VIN (Shift+Enter to lookup)"

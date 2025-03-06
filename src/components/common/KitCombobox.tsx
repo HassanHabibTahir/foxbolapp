@@ -27,6 +27,7 @@ interface KitComboboxProps {
   onKitSelect?: (kit: Kit) => void;
   onEnterPress?: () => void;
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    className?: string;
   
 }
 
@@ -41,6 +42,7 @@ const KitCombobox = forwardRef<HTMLInputElement, KitComboboxProps>(
       onKitSelect,
       onEnterPress,
       onKeyDown,
+      className
     },
     ref
   ) => {
@@ -190,7 +192,7 @@ const KitCombobox = forwardRef<HTMLInputElement, KitComboboxProps>(
           <input
             ref={ref}
             type="text"
-            className="mt-1 h-9 text-[14px] block w-full rounded-md border border-gray-300 p-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={` ${className} mt-1 h-9 w-[100%] text-[14px] block  rounded-md border border-gray-300 p-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
             value={searchTerm || value}
             onChange={(e) => {
               setSearchTerm(e.target.value);
