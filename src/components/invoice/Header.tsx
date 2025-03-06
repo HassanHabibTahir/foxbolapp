@@ -12,9 +12,9 @@ const Header: React.FC<HeaderProps> = ({ dispatchNumber }) => {
   const [showScanner, setShowScanner] = React.useState(false);
 
   return (
-    <header className="flex justify-between items-center mb-6">
+    <header className="flex flex-wrap justify-between items-center mb-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
           Dispatch # 
           {dispatchNumber}
         </h1>
