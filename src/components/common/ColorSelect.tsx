@@ -16,6 +16,7 @@ interface ColorSelectProps {
   disabled?: boolean;
   onEnterPress?: () => void;
   onKeyDown?: any;
+  placeholder?: string;
 }
 
 const ColorSelect = forwardRef<any, ColorSelectProps>(({
@@ -27,7 +28,8 @@ const ColorSelect = forwardRef<any, ColorSelectProps>(({
   size = 'sm',
   disabled = false,
   onEnterPress,
-  onKeyDown
+  onKeyDown,
+  placeholder="Select..."
 }, ref) => {
   const sizeClasses = {
     xs: '5rem',
@@ -164,7 +166,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         // onKeyDown={handleKeyDown}
         // title={title}
         aria-label={label}
-        placeholder="Select..."
+        placeholder={placeholder} 
         menuPlacement="auto"
         blurInputOnSelect
         components={{

@@ -17,6 +17,7 @@ interface YearSlectsProps {
   disabled?: boolean;
   onEnterPress?: () => void;
   onKeyDown?: any;
+  placeholder?: string;
  
 }
 
@@ -30,6 +31,7 @@ const YearSlects = forwardRef<any, YearSlectsProps>(({
   disabled = false,
   onEnterPress,
   onKeyDown,
+  placeholder="Select..."
 
 }, ref) => {
   const sizeClasses = {
@@ -172,7 +174,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         // onKeyDown={handleKeyDown}
         // title={title}
         aria-label={label}
-        placeholder="Select..."
+        placeholder={placeholder}
         menuPlacement="auto"
         blurInputOnSelect
         components={{

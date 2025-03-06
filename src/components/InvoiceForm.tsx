@@ -721,30 +721,33 @@ const InvoiceForm = () => {
       </div>
 
       <FormSection title="B - Vehicle Information" className="mt-4">
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full">
-            <FormInput
+        <div className="space-y-4 items-center">
+        <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
+            <div className="flex flex-nowrap sm:flex-wrap gap-2">   <FormInput
               label="Type"
               title="master.type"
               value={formState.dispatch.type || ""}
               onChange={(e) => updateDispatch({ type: e.target.value })}
-              className="uppercase  w-full h-9 text-[14px]"
+              className="uppercase  w-[150px] h-9 text-[14px]"
               placeholder="Type"
               onKeyDown={(e) => handleKeyDown(e, "type")}
               ref={inputRefs.type}
             />
             <YearSlects
-              label="Year"
-              className="h-9 w-full text-[14px]"
+              label="Year"  
+              placeholder="Year"
+              className="h-9 w-[150px] text-[14px]"
               title="master.yearcar"
               value={formState.dispatch.yearcar || ""}
               onChange={(value) => updateDispatch({ yearcar: value })}
               onKeyDown={(e: any) => handleKeyDown(e, "yearcar")}
               ref={inputRefs.yearcar}
-            />
+            /></div>
+         
             <CarMake
-              className="h-9 w-full min-w-[170px] text-[14px]"
+              className="h-15 w-full min-w-[170px] text-[14px]"
               label="Make"
+              placeholder="Select ..."
               title="master.makecar"
               value={formState.dispatch.makecar || ""}
               onChange={(value) => updateDispatch({ makecar: value })}
@@ -755,7 +758,7 @@ const InvoiceForm = () => {
             />
 
             <CarMakeModels
-              className="h-10 w-full min-w-[170px]  text-[14px]"
+              className="h-15 w-full min-w-[170px]  text-[14px]"
               label="Model"
               title="master.modelcar"
               carMakeId={carMakeId}
@@ -765,9 +768,9 @@ const InvoiceForm = () => {
               onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
             />
-            <ColorSelect
+            <div className="flex flex-nowrap sm:flex-wrap gap-2">    <ColorSelect
               label="Color"
-              className="w-full"
+              className="w-[150px]"
               title="master.colorcar"
               value={formState.dispatch.colorcar || ""}
               onChange={(value) => updateDispatch({ colorcar: value })}
@@ -778,23 +781,24 @@ const InvoiceForm = () => {
             <FormInput
               label="Body"
               title="master.bodytype"
-              className="h-9 w-full text-[14px]"
+              className="h-9 w-[150px] text-[14px]"
               value={formState?.dispatch.bodytype || ""}
               onChange={(e) => updateDispatch({ bodytype: e.target.value })}
               placeholder="Body type"
               ref={inputRefs.bodytype}
               onKeyDown={(e) => handleKeyDown(e, "bodytype")}
-            />
+            /></div>
+         
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-              {/* State Select */}
+          <div className="py-3  space-y-2">
+          <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
+          {/* State Select */}
               <StateSelect
-                className="w-full text-[14px]"
+                className="w-[250px] text-[14px]"
                 label="State"
                 title="master.licensest"
-                size="full"
+                size="md"
                 value={formState?.dispatch?.licensest || ""}
                 onChange={(value) => updateDispatch({ licensest: value })}
                 ref={inputRefs.licensest}
@@ -810,7 +814,7 @@ const InvoiceForm = () => {
                 value={formState.dispatch.licensenum || ""}
                 onChange={(value) => updateDispatch({ licensenum: value })}
                 placeholder="ABC1234"
-                size="md"
+                size="full"
                 ref={inputRefs.licensenum}
                 onKeyDown={(e: any) => handleKeyDown(e, "licensenum")}
               />
@@ -853,7 +857,7 @@ const InvoiceForm = () => {
                 onChange={(value) => updateDispatch({ vin: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "vin")}
                 onVinDetails={handleVinDetails}
-                className="w-full md:w-[30ch] text-[14px]"
+                className="w-full md:w-[40ch] text-[14px]"
               />
             </div>
 
@@ -1053,7 +1057,7 @@ const InvoiceForm = () => {
                   onKeyDown={(e: any) => handleKeyDown(e, "inreason")}
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 w-full">
               <FormInput
                   ref={inputRefs?.billtoname}
                   label="Name"
@@ -1077,7 +1081,76 @@ const InvoiceForm = () => {
                   className="h-9 w-full"
                   placeholder="PO number"
                 />
-                <FormInput
+
+<div className="flex w-full items-center gap-6">
+  {/* Left Side - Textarea */}
+  <div className="w-full">
+    <label htmlFor="message" className="text-lg font-semibold text-gray-700 mb-2 block">
+      Your Message
+    </label>
+    <textarea
+      id="message"
+      placeholder="Type your message here..."
+      className="w-[600px] h-[150px] p-3 text-gray-800 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+    ></textarea>
+  </div>
+
+  {/* Right Side - Inputs */}
+  <div className="w-full flex  flex-wrap gap-2">
+<div className="flex gap-2">
+<FormInput
+      ref={inputRefs?.releaselic}
+      label="RelLic#"
+      title="master.releaselic"
+      value={formState.invoice.releaselic || ""}
+      onChange={(e) => updateInvoice({ releaselic: e.target.value })}
+      onKeyDown={(e) => handleKeyDown(e, "releaselic")}
+      className="h-9 w-[300px]"
+      placeholder="Release license"
+    />
+
+    <StateSelect
+      ref={inputRefs?.billtost}
+      label="State"
+      title="master.billtost"
+      value={formState.invoice.billtost || ""}
+      onChange={(value) => updateInvoice({ billtost: value })}
+      onKeyDown={(e) => handleKeyDown(e, "billtost")}
+      className="h-9 w-[300px]"
+    />
+</div>
+<div className="flex gap-2">
+
+    <PhoneInput
+      ref={inputRefs?.billtophone}
+      label="Phone"
+      title="master.billtophone"
+      size="md"
+      className="h-9 w-[300px]"
+      value={formState.invoice.billtophone || ""}
+      onChange={(value) => updateInvoice({ billtophone: value })}
+      onKeyDown={(e) => handleKeyDown(e, "billtophone")}
+    />
+
+    <FormInput
+      ref={inputRefs?.billtocont}
+      label="Contact"
+      title="master.billtocont"
+      value={formState.invoice.billtocont || ""}
+      onChange={(e) => updateInvoice({ billtocont: e.target.value })}
+      onKeyDown={(e) => handleKeyDown(e, "billtocont")}
+     className="h-9 w-[300px]"
+      placeholder="Contact name"
+    />
+</div>
+  </div>
+</div>
+
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+
+
+                  {/* <FormInput
                   ref={inputRefs?.billtoaddr1}
                   label="Address 1"
                   title="master.billtoaddr1"
@@ -1087,25 +1160,10 @@ const InvoiceForm = () => {
                     updateInvoice({ billtoaddr1: e.target.value })
                   }
                   onKeyDown={(e: any) => handleKeyDown(e, "billtoaddr1")}
-                  className="h-9 w-full"
+                  className="h-10 w-full"
                   placeholder="Street address"
-                />
-
-                <FormInput
-                  ref={inputRefs?.releaselic}
-                  label="RelLic#"
-                  title="master.releaselic"
-                  value={formState.invoice.releaselic || ""}
-                  onChange={(e) =>
-                    updateInvoice({ releaselic: e.target.value })
-                  }
-                  onKeyDown={(e: any) => handleKeyDown(e, "releaselic")}
-                  className="h-9 w-full"
-                  placeholder="Release license"
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-                <FormInput
+                /> */}
+                {/* <FormInput
                   ref={inputRefs?.billtoaddr2}
                   label="Address 2"
                   title="master.billtoaddr2"
@@ -1117,8 +1175,8 @@ const InvoiceForm = () => {
                   onKeyDown={(e: any) => handleKeyDown(e, "billtoaddr2")}
                   className="h-9 w-full"
                   placeholder="Apt, Suite, etc."
-                />
-                <PhoneInput
+                /> */}
+                {/* <PhoneInput
                   ref={inputRefs?.billtophone}
                   label="Phone"
                   title="master.billtophone"
@@ -1127,9 +1185,9 @@ const InvoiceForm = () => {
                   value={formState.invoice.billtophone || ""}
                   onChange={(value) => updateInvoice({ billtophone: value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "billtophone")}
-                />
+                /> */}
 
-                <FormInput
+                {/* <FormInput
                   ref={inputRefs?.billtocity}
                   label="City"
                   title="master.billtocity"
@@ -1140,32 +1198,8 @@ const InvoiceForm = () => {
                   onKeyDown={(e: any) => handleKeyDown(e, "billtocity")}
                   className="h-9 w-full"
                   placeholder="City"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-              <StateSelect
-                  ref={inputRefs?.billtost}
-                  label="State"
-                  title="master.billtost"
-                  value={formState.invoice.billtost || ""}
-                  onChange={(value) => updateInvoice({ billtost: value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "billtost")}
-                  className="h-9 w-full"
-
-
-                />
-
-                <ZipInput
-                  ref={inputRefs?.billtozip}
-                  label="Zip"
-                  className="h-9 w-full"
-                  title="master.billtozip"
-                  value={formState.invoice.billtozip || ""}
-                  onChange={(value) => updateInvoice({ billtozip: value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "billtozip")}
-                />
-                <FormInput
+                /> */}
+                   {/* <FormInput
                   ref={inputRefs?.billtocont}
                   label="Contact"
                   title="master.billtocont"
@@ -1176,7 +1210,55 @@ const InvoiceForm = () => {
                   onKeyDown={(e: any) => handleKeyDown(e, "billtocont")}
                   className="h-9 w-full"
                   placeholder="Contact name"
+                />  */}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 w-full">
+              <FormInput
+                  ref={inputRefs?.billtocity}
+                  label="City"
+                  title="master.billtocity"
+                  value={formState.invoice.billtocity || ""}
+                  onChange={(e) =>
+                    updateInvoice({ billtocity: e.target.value })
+                  }
+                  onKeyDown={(e: any) => handleKeyDown(e, "billtocity")}
+                  className="h-9 w-full"
+                  placeholder="City"
+                /> 
+               <StateSelect
+                  ref={inputRefs?.billtost}
+                  label="State"
+                  title="master.billtost"
+                  value={formState.invoice.billtost || ""}
+                  onChange={(value) => updateInvoice({ billtost: value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "billtost")}
+                  className="h-9 w-full"
+
+
+                /> 
+
+                <ZipInput
+                  ref={inputRefs?.billtozip}
+                  label="Zip"
+                  className="h-9 w-full"
+                  title="master.billtozip"
+                  value={formState.invoice.billtozip || ""}
+                  onChange={(value) => updateInvoice({ billtozip: value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "billtozip")}
                 />
+                {/* <FormInput
+                  ref={inputRefs?.billtocont}
+                  label="Contact"
+                  title="master.billtocont"
+                  value={formState.invoice.billtocont || ""}
+                  onChange={(e) =>
+                    updateInvoice({ billtocont: e.target.value })
+                  }
+                  onKeyDown={(e: any) => handleKeyDown(e, "billtocont")}
+                  className="h-9 w-full"
+                  placeholder="Contact name"
+                />  */}
               </div>
             </div>
           </FormSection>
@@ -1216,49 +1298,50 @@ const InvoiceForm = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
+              <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
               <FormInput
-                  ref={inputRefs?.regaddr1}
-                  label="Address"
-                  title="master.regaddr1"
-                  value={formState.invoice.regaddr1 || ""}
-                  onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
-                  className="h-9 w-full"
-                  placeholder="Enter registration address"
-                />
+    ref={inputRefs?.regaddr1}
+    label="Address"
+    title="master.regaddr1"
+    value={formState.invoice.regaddr1 || ""}
+    onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
+    onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
+    className="h-9 w-full md:w-[480px]"
+    placeholder="Enter registration address"
+  />
 
-                <FormInput
-                  ref={inputRefs?.regcity}
-                  label="City"
-                  title="master.regcity"
-                  value={formState.invoice.regcity || ""}
-                  onChange={(e) => updateInvoice({ regcity: e.target.value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                  className="h-9 w-full"
-                  placeholder="Enter city"
-                />
+  <FormInput
+    ref={inputRefs?.regcity}
+    label="City"
+    title="master.regcity"
+    value={formState.invoice.regcity || ""}
+    onChange={(e) => updateInvoice({ regcity: e.target.value })}
+    onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
+    className="h-9 w-full md:w-[480px]"
+    placeholder="Enter city"
+  />
 
-                <StateSelect
-                  ref={inputRefs?.regstate}
-                  label="State"
-                  title="master.regstate"
-                  value={formState.invoice.regstate || ""}
-                  onChange={(value) => updateInvoice({ regstate: value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
-                  className="h-9 w-full"
-                />
+  <StateSelect
+    ref={inputRefs?.regstate}
+    label="State"
+    title="master.regstate"
+    value={formState.invoice.regstate || ""}
+    onChange={(value) => updateInvoice({ regstate: value })}
+    onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
+    className="h-9 w-[150px]"
+  />
 
-                <ZipInput
-                  ref={inputRefs?.regzip}
-                  label="Zip"
-                  title="master.regzip"
-                  value={formState.invoice.regzip || ""}
-                  onChange={(value) => updateInvoice({ regzip: value })}
-                  onKeyDown={(e: any) => handleKeyDown(e, "regzip")}
-                 className="h-9 w-full"
-                />
-              </div>
+  <ZipInput
+    ref={inputRefs?.regzip}
+    label="Zip"
+    title="master.regzip"
+    value={formState.invoice.regzip || ""}
+    onChange={(value) => updateInvoice({ regzip: value })}
+    onKeyDown={(e: any) => handleKeyDown(e, "regzip")}
+    className="h-9 w-[150px]"
+  />
+</div>
+
             </div>
           </FormSection>
           <FormSection title="H - Storage Information"> 
