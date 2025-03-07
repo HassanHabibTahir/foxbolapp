@@ -472,33 +472,33 @@ const InvoiceForm = () => {
   }, [error]);
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
-  const [isDesktopOrLaptop, setIsDesktop] = useState(false);
-  const [isDesktopOrLaptop2, setIsDesktop2] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsDesktop(window.matchMedia("(min-width: 1400px)").matches);
-      setIsDesktop2(window.matchMedia("(min-width: 1100px)").matches);
-    };
-
-    checkScreenSize(); // Initial check
-    window.addEventListener("resize", checkScreenSize); // Listen for screen changes
-
-    return () => window.removeEventListener("resize", checkScreenSize); // Cleanup
-  }, []);
-
-
-  // const [isClient, setIsClient] = useState(false);
+  // const [isDesktopOrLaptop, setIsDesktop] = useState(false);
+  // const [isDesktopOrLaptop2, setIsDesktop2] = useState(false);
 
   // useEffect(() => {
-  //   setIsClient(true);
+  //   const checkScreenSize = () => {
+  //     setIsDesktop(window.matchMedia("(min-width: 1400px)").matches);
+  //     setIsDesktop2(window.matchMedia("(min-width: 1100px)").matches);
+  //   };
+
+  //   checkScreenSize(); // Initial check
+  //   window.addEventListener("resize", checkScreenSize); // Listen for screen changes
+
+  //   return () => window.removeEventListener("resize", checkScreenSize); // Cleanup
   // }, []);
 
-  // const showDesktop = useMediaQuery({ query: "(min-width: 1300px)" });
-  // const showDesktop2 =  useMediaQuery({ query: "(min-width: 1100px)" });
 
-  // const isDesktopOrLaptop = isClient && showDesktop;
-  // const isDesktopOrLaptop2 = isClient && showDesktop2;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const showDesktop = useMediaQuery({ query: "(min-width: 1500px)" });
+  const showDesktop2 =  useMediaQuery({ query: "(min-width: 1100px)" });
+
+  const isDesktopOrLaptop = isClient && showDesktop;
+  const isDesktopOrLaptop2 = isClient && showDesktop2;
   console.log(isDesktopOrLaptop,isDesktopOrLaptop2,"isDesktopOrLaptop")
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
@@ -1337,7 +1337,8 @@ const InvoiceForm = () => {
                   value={formState.invoice.regaddr1 || ""}
                   onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
-                  className={`h-9  ${isDesktopOrLaptop?"w-[600px]":"w-[400px]"}`}
+                  //  className="h-9 w-full md:w-[480px]"
+                  className={`h-9  ${isDesktopOrLaptop?"w-[500px]":"w-[480px]"}`}
                   placeholder="Enter registration address"
                 />
 
@@ -1348,7 +1349,8 @@ const InvoiceForm = () => {
                   value={formState.invoice.regcity || ""}
                   onChange={(e) => updateInvoice({ regcity: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                  className={`h-9  ${isDesktopOrLaptop2?"w-[350px]":"w-full"}`}
+                  //  className="h-9 w-full md:w-[480px]"
+                  className={`h-9  ${isDesktopOrLaptop?"w-[480px]":"w-[400px"}`}
                   placeholder="Enter city"
                 />
 
@@ -1359,8 +1361,8 @@ const InvoiceForm = () => {
                   value={formState.invoice.regstate || ""}
                   onChange={(value) => updateInvoice({ regstate: value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
-                  // className="h-9 w-[150px]"
-                  className={`h-9  ${isDesktopOrLaptop2?"w-[150px]":"w-[220px]"}`}
+                  className="h-9 w-[150px]"
+                  // className={`h-9  ${isDesktopOrLaptop2?"w-[150px]":"w-[220px]"}`}
                 />
 
                 <ZipInput
