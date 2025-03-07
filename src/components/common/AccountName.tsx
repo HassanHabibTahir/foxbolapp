@@ -107,7 +107,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     const customStyles = {
       control: (provided: any, state: { isFocused: boolean }) => ({
         ...provided,
-        fontSize: '13px',
+        fontSize: '14px',
         borderColor: state.isFocused ? "#3B82F6" : "#D1D5DB",
         "&:hover": {
           borderColor: state.isFocused ? "#3B82F6" : "#9CA3AF",
@@ -119,7 +119,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
-        fontSize: '13px',
+        fontSize: '14px',
         backgroundColor: state.isSelected ? "#3B82F6" : state.isFocused ? "#F3F4F6" : "white",
         color: state.isSelected ? "white" : "#111827",
         cursor: "pointer",

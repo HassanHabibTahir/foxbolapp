@@ -517,8 +517,8 @@ const InvoiceForm = () => {
           <DriverCombobox
             label="Driver 1"
             title="master.driver"
-            size="md"
-            className="h-8"
+            size="lg"
+            className="h-8 w-full"
             value={formState.driver.driver || ""}
             onChange={(value) => updateDriver({ driver: value })}
             onKeyDown={(e: any) => handleKeyDown(e, "driver")}
@@ -528,7 +528,7 @@ const InvoiceForm = () => {
           <DriverCombobox
             label="Driver 2"
             title="master.driver2"
-            size="md"
+            size="lg"
             value={formState.driver.driver2 || ""}
             onChange={(value) => updateDriver({ driver2: value })}
             onKeyDown={(e: any) => handleKeyDown(e, "driver2")}

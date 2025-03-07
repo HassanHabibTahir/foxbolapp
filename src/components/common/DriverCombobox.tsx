@@ -117,7 +117,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
         ...provided,
         margin: "0px",
         padding: "0px",
-        fontSize: "11px",
+        fontSize: "14px",
         textAlign: "center",
       }),
       placeholder: (provided: any) => ({
@@ -128,7 +128,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       }),
       singleValue: (provided: any) => ({
         ...provided,
-        fontSize: "11px",
+        fontSize: "14px",
         textAlign: "center",
         color: "#111827",
       }),
