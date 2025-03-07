@@ -472,17 +472,33 @@ const InvoiceForm = () => {
   }, [error]);
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [isDesktopOrLaptop, setIsDesktop] = useState(false);
+  const [isDesktopOrLaptop2, setIsDesktop2] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    const checkScreenSize = () => {
+      setIsDesktop(window.matchMedia("(min-width: 1300px)").matches);
+      setIsDesktop2(window.matchMedia("(min-width: 1100px)").matches);
+    };
+
+    checkScreenSize(); // Initial check
+    window.addEventListener("resize", checkScreenSize); // Listen for screen changes
+
+    return () => window.removeEventListener("resize", checkScreenSize); // Cleanup
   }, []);
 
-  const showDesktop = useMediaQuery({ query: "(min-width: 1300px)" });
-  const showDesktop2 =  useMediaQuery({ query: "(min-width: 1100px)" });
 
-  const isDesktopOrLaptop = isClient && showDesktop;
-  const isDesktopOrLaptop2 = isClient && showDesktop2;
+  // const [isClient, setIsClient] = useState(false);
+
+  // useEffect(() => {
+  //   setIsClient(true);
+  // }, []);
+
+  // const showDesktop = useMediaQuery({ query: "(min-width: 1300px)" });
+  // const showDesktop2 =  useMediaQuery({ query: "(min-width: 1100px)" });
+
+  // const isDesktopOrLaptop = isClient && showDesktop;
+  // const isDesktopOrLaptop2 = isClient && showDesktop2;
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
