@@ -41,8 +41,7 @@ import ConditionSelect from "./common/ConditionSelect";
 import YearSlects from "./common/YearSelect";
 import StateSelect from "./common/StateSelect";
 import AddressSection from "./addressSection";
-import { useMediaQuery } from 'react-responsive'
-
+import { useMediaQuery } from "react-responsive";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -473,15 +472,17 @@ const InvoiceForm = () => {
   }, [error]);
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
-  const isDesktopOrLaptop = useMediaQuery({
-    query: '(min-width: 1300px)'
-  })
- 
-  const isDesktopOrLaptop2 = useMediaQuery({
-    query: '(min-width: 1100px)'
-  })
+  const [isClient, setIsClient] = useState(false);
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
+  const showDesktop = useMediaQuery({ query: "(min-width: 1300px)" });
+  const showDesktop2 =  useMediaQuery({ query: "(min-width: 1100px)" });
+
+  const isDesktopOrLaptop = isClient && showDesktop;
+  const isDesktopOrLaptop2 = isClient && showDesktop2;
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
