@@ -830,7 +830,7 @@ const InvoiceForm = () => {
     <div className={`flex ${isDesktopOrLaptop2 ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
               {/* State Select */}
               <StateSelect
-                className={`${isDesktopOrLaptop2?"w-[600px]":"w-[400px]"} text-[14px]`}
+                className={`w-full text-[14px]`}
                 label="State"
                 title="master.licensest"
                 size="md"
@@ -892,7 +892,7 @@ const InvoiceForm = () => {
                 onChange={(value) => updateDispatch({ vin: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "vin")}
                 onVinDetails={handleVinDetails}
-                className={`w-full ${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
+                className={`${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
               />
             </div>
 
