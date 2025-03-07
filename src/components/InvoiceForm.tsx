@@ -41,6 +41,8 @@ import ConditionSelect from "./common/ConditionSelect";
 import YearSlects from "./common/YearSelect";
 import StateSelect from "./common/StateSelect";
 import AddressSection from "./addressSection";
+import { useMediaQuery } from 'react-responsive'
+
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -471,6 +473,14 @@ const InvoiceForm = () => {
   }, [error]);
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
+  const isDesktopOrLaptop = useMediaQuery({
+    query: '(min-width: 1300px)'
+  })
+ 
+  const isDesktopOrLaptop2 = useMediaQuery({
+    query: '(min-width: 1100px)'
+  })
+
 
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
@@ -676,9 +686,9 @@ const InvoiceForm = () => {
               />
             </div>
 
-            <div className=" max-w-full flex-wrap items-center gap-2 w-full">
+            <div className=" max-w-[100%] flex-wrap items-center gap-2 w-full">
               <AccountName
-                className="w-full max-w-[61%]"
+                className="w-[60.5%] max-w-[60.5%]"
                 label="Account Name"
                 title="master.account"
                 size="xl"
@@ -725,8 +735,8 @@ const InvoiceForm = () => {
 
       <FormSection title="B - Vehicle Information" className="mt-4">
         <div className="space-y-4 items-center">
-          <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-            <div className="flex flex-nowrap sm:flex-wrap gap-2">
+        <div className={`flex ${isDesktopOrLaptop ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
+            <div className={`flex ${isDesktopOrLaptop?"":'flex-wrap'} gap-2`}>
               {" "}
               <FormInput
                 label="Type"
@@ -774,7 +784,7 @@ const InvoiceForm = () => {
               onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
             />
-            <div className="flex flex-nowrap sm:flex-wrap gap-2">
+          <div className={`flex ${isDesktopOrLaptop ? "flex-nowrap" : "flex-wrap"} gap-2`}>
               {" "}
               <ColorSelect
                 label="Color"
@@ -800,10 +810,10 @@ const InvoiceForm = () => {
           </div>
 
           <div className="py-3  space-y-2">
-            <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
+    <div className={`flex ${isDesktopOrLaptop2 ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
               {/* State Select */}
               <StateSelect
-                className="w-[250px] text-[14px]"
+                className={`${isDesktopOrLaptop2?"w-[600px]":"w-[400px]"} text-[14px]`}
                 label="State"
                 title="master.licensest"
                 size="md"
@@ -816,7 +826,7 @@ const InvoiceForm = () => {
               {/* License Plate Input */}
               <StateInput
                 maxLength={7}
-                className="w-full text-[14px]"
+                className="w-full  text-[14px]"
                 label="License Plate"
                 title="master.licensenum"
                 value={formState.dispatch.licensenum || ""}
@@ -830,7 +840,7 @@ const InvoiceForm = () => {
               {/* Expires Input with Button Inside */}
               <div className="flex items-end space-x-2">
                 <FormInput
-                  className="h-9 w-full md:w-[30ch]  text-[14px]"
+                  className={`h-9 w-full ${isDesktopOrLaptop2?'w-[25ch]':'w-[30ch]'}  text-[14px]`}
                   label="Expires"
                   title="master.tagmonthyear"
                   value={formState.dispatch.tagmonthyear || ""}
@@ -865,7 +875,7 @@ const InvoiceForm = () => {
                 onChange={(value) => updateDispatch({ vin: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "vin")}
                 onVinDetails={handleVinDetails}
-                className="w-full md:w-[40ch] text-[14px]"
+                className={`w-full ${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
               />
             </div>
 
@@ -1097,11 +1107,11 @@ const InvoiceForm = () => {
                     ref={inputRefs?.billtoaddr1}
                     value={formState.dispatch.billtoaddr1 || ""}
                     onChange={(notes) => updateDispatch({ billtoaddr1: notes })}
-                    onKeyDown={(e) => handleKeyDown(e, "billtoaddr1")}
+                    onKeyDown={(e:any) => handleKeyDown(e, "billtoaddr1")}
                   />
                 </div>
                 {/* <div className=""> */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-4 ">
+                  <div className="grid grid-cols-1  sm:grid-cols-2 gap-2 w-full mt-4 ">
                     <FormInput
                       ref={inputRefs?.releaselic}
                       label="RelLic#"
@@ -1122,7 +1132,7 @@ const InvoiceForm = () => {
                       title="master.billtoaddr2"
                       value={formState.invoice.billtoaddr2 || ""}
                       onChange={(value) => updateInvoice({ billtoaddr2: value })}
-                      onKeyDown={(e) => handleKeyDown(e, "billtoaddr2")}
+                      onKeyDown={(e:any) => handleKeyDown(e, "billtoaddr2")}
                       className="h-9 w-full"
                     />
 
@@ -1301,15 +1311,15 @@ const InvoiceForm = () => {
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-                <FormInput
+              <div className={`flex ${isDesktopOrLaptop ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
+              <FormInput
                   ref={inputRefs?.regaddr1}
                   label="Address"
                   title="master.regaddr1"
                   value={formState.invoice.regaddr1 || ""}
                   onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
-                  className="h-9 w-full md:w-[480px]"
+                  className={`h-9 w-full ${isDesktopOrLaptop2?"w-[400px]":"w-[480px]"}`}
                   placeholder="Enter registration address"
                 />
 
@@ -1320,7 +1330,7 @@ const InvoiceForm = () => {
                   value={formState.invoice.regcity || ""}
                   onChange={(e) => updateInvoice({ regcity: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                  className="h-9 w-full md:w-[480px]"
+                  className={`h-9 w-full ${isDesktopOrLaptop2?"w-[350px]":"w-[400px]"}`}
                   placeholder="Enter city"
                 />
 
