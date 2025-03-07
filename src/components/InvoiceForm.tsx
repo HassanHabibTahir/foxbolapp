@@ -477,7 +477,7 @@ const InvoiceForm = () => {
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsDesktop(window.matchMedia("(min-width: 1300px)").matches);
+      setIsDesktop(window.matchMedia("(min-width: 1400px)").matches);
       setIsDesktop2(window.matchMedia("(min-width: 1100px)").matches);
     };
 
@@ -499,6 +499,7 @@ const InvoiceForm = () => {
 
   // const isDesktopOrLaptop = isClient && showDesktop;
   // const isDesktopOrLaptop2 = isClient && showDesktop2;
+  console.log(isDesktopOrLaptop,isDesktopOrLaptop2,"isDesktopOrLaptop")
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -892,7 +893,7 @@ const InvoiceForm = () => {
                 onChange={(value) => updateDispatch({ vin: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "vin")}
                 onVinDetails={handleVinDetails}
-                className={`${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
+                className={` ${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
               />
             </div>
 
@@ -1328,7 +1329,7 @@ const InvoiceForm = () => {
                 />
               </div>
 
-              <div className={`flex ${isDesktopOrLaptop ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
+              <div className={`flex ${isDesktopOrLaptop2 ? "flex-row" : "flex-col"} items-start gap-4 w-full`}>
               <FormInput
                   ref={inputRefs?.regaddr1}
                   label="Address"
@@ -1336,7 +1337,7 @@ const InvoiceForm = () => {
                   value={formState.invoice.regaddr1 || ""}
                   onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
-                  className={`h-9 w-full ${isDesktopOrLaptop2?"w-[400px]":"w-[480px]"}`}
+                  className={`h-9  ${isDesktopOrLaptop?"w-[600px]":"w-[400px]"}`}
                   placeholder="Enter registration address"
                 />
 
@@ -1347,7 +1348,7 @@ const InvoiceForm = () => {
                   value={formState.invoice.regcity || ""}
                   onChange={(e) => updateInvoice({ regcity: e.target.value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                  className={`h-9 w-full ${isDesktopOrLaptop2?"w-[350px]":"w-[400px]"}`}
+                  className={`h-9  ${isDesktopOrLaptop2?"w-[350px]":"w-full"}`}
                   placeholder="Enter city"
                 />
 
@@ -1358,7 +1359,8 @@ const InvoiceForm = () => {
                   value={formState.invoice.regstate || ""}
                   onChange={(value) => updateInvoice({ regstate: value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
-                  className="h-9 w-[150px]"
+                  // className="h-9 w-[150px]"
+                  className={`h-9  ${isDesktopOrLaptop2?"w-[150px]":"w-[220px]"}`}
                 />
 
                 <ZipInput
