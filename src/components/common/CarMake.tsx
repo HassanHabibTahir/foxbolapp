@@ -19,6 +19,7 @@ interface CarMakeProps {
   onEnterPress?: () => void;
   onKeyDown?: any;
   setCarMakeId:any;
+  placeholder?:any
 }
 
 const CarMake = forwardRef<any, CarMakeProps>(({
@@ -31,7 +32,8 @@ const CarMake = forwardRef<any, CarMakeProps>(({
   disabled = false,
   onEnterPress,
   onKeyDown,
-  setCarMakeId
+  setCarMakeId,
+  placeholder="Select..."
 }, ref) => {
   const sizeClasses = {
     xs: '5rem',
@@ -204,7 +206,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
         // onKeyDown={handleKeyDown}
         // title={title}
         aria-label={label}
-        placeholder="Select..."
+        placeholder={placeholder}
         menuPlacement="auto"
         blurInputOnSelect
         components={{
