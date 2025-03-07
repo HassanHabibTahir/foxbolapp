@@ -857,7 +857,7 @@ const InvoiceForm = () => {
               {/* Expires Input with Button Inside */}
               <div className="flex items-end space-x-2">
                 <FormInput
-                  className={`h-9 w-full ${isDesktopOrLaptop2?'w-[25ch]':'w-[30ch]'}  text-[14px]`}
+                  className={`h-9 ${isDesktopOrLaptop2?'w-[25ch]':'w-[30ch]'}  text-[14px]`}
                   label="Expires"
                   title="master.tagmonthyear"
                   value={formState.dispatch.tagmonthyear || ""}
