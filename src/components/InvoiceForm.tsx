@@ -40,6 +40,7 @@ import CarMakeModels from "./common/CarModels";
 import ConditionSelect from "./common/ConditionSelect";
 import YearSlects from "./common/YearSelect";
 import StateSelect from "./common/StateSelect";
+import AddressSection from "./addressSection";
 // import VehicleDetailsSection from "./VehicleDetailsSection";
 
 const FIELD_INDEXES: any = {
@@ -94,10 +95,10 @@ const FIELD_INDEXES: any = {
   releaselic: 48,
   billtoaddr2: 49,
   billtophone: 50,
-  billtocity: 51,
-  billtost: 52,
-  billtozip: 53,
-  billtocont: 54,
+  billtocont: 51,
+  billtocity: 52,
+  billtost: 53,
+  billtozip: 54,
   regname: 55,
   rtype: 56,
   auct_num: 57,
@@ -124,8 +125,10 @@ const FIELD_INDEXES: any = {
   description78: 78,
   description79: 79,
   description80: 80,
+  //commit both
   // description81: 81,
   // description82: 82,
+  //
   description83: 83,
 };
 
@@ -369,7 +372,7 @@ const InvoiceForm = () => {
 
   const handleKeyDown = (e: any, fieldName: any) => {
     const currentIndex = FIELD_INDEXES[fieldName];
-    if (currentIndex === 40) {
+    if (currentIndex === 40|| currentIndex===47) {
       if (e.key === "Enter") {
         return;
       } else if (e.key === "ArrowRight") {
@@ -722,28 +725,31 @@ const InvoiceForm = () => {
 
       <FormSection title="B - Vehicle Information" className="mt-4">
         <div className="space-y-4 items-center">
-        <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-            <div className="flex flex-nowrap sm:flex-wrap gap-2">   <FormInput
-              label="Type"
-              title="master.type"
-              value={formState.dispatch.type || ""}
-              onChange={(e) => updateDispatch({ type: e.target.value })}
-              className="uppercase  w-[150px] h-9 text-[14px]"
-              placeholder="Type"
-              onKeyDown={(e) => handleKeyDown(e, "type")}
-              ref={inputRefs.type}
-            />
-            <YearSlects
-              label="Year"  
-              placeholder="Year"
-              className="h-9 w-[150px] text-[14px]"
-              title="master.yearcar"
-              value={formState.dispatch.yearcar || ""}
-              onChange={(value) => updateDispatch({ yearcar: value })}
-              onKeyDown={(e: any) => handleKeyDown(e, "yearcar")}
-              ref={inputRefs.yearcar}
-            /></div>
-         
+          <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
+            <div className="flex flex-nowrap sm:flex-wrap gap-2">
+              {" "}
+              <FormInput
+                label="Type"
+                title="master.type"
+                value={formState.dispatch.type || ""}
+                onChange={(e) => updateDispatch({ type: e.target.value })}
+                className="uppercase  w-[150px] h-9 text-[14px]"
+                placeholder="Type"
+                onKeyDown={(e) => handleKeyDown(e, "type")}
+                ref={inputRefs.type}
+              />
+              <YearSlects
+                label="Year"
+                placeholder="Year"
+                className="h-9 w-[150px] text-[14px]"
+                title="master.yearcar"
+                value={formState.dispatch.yearcar || ""}
+                onChange={(value) => updateDispatch({ yearcar: value })}
+                onKeyDown={(e: any) => handleKeyDown(e, "yearcar")}
+                ref={inputRefs.yearcar}
+              />
+            </div>
+
             <CarMake
               className="h-15 w-full min-w-[170px] text-[14px]"
               label="Make"
@@ -768,32 +774,34 @@ const InvoiceForm = () => {
               onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
               ref={inputRefs.modelcar}
             />
-            <div className="flex flex-nowrap sm:flex-wrap gap-2">    <ColorSelect
-              label="Color"
-              className="w-[150px]"
-              title="master.colorcar"
-              value={formState.dispatch.colorcar || ""}
-              onChange={(value) => updateDispatch({ colorcar: value })}
-              ref={inputRefs.colorcar}
-              onKeyDown={(e: any) => handleKeyDown(e, "colorcar")}
-              size="md"
-            />
-            <FormInput
-              label="Body"
-              title="master.bodytype"
-              className="h-9 w-[150px] text-[14px]"
-              value={formState?.dispatch.bodytype || ""}
-              onChange={(e) => updateDispatch({ bodytype: e.target.value })}
-              placeholder="Body type"
-              ref={inputRefs.bodytype}
-              onKeyDown={(e) => handleKeyDown(e, "bodytype")}
-            /></div>
-         
+            <div className="flex flex-nowrap sm:flex-wrap gap-2">
+              {" "}
+              <ColorSelect
+                label="Color"
+                className="w-[150px]"
+                title="master.colorcar"
+                value={formState.dispatch.colorcar || ""}
+                onChange={(value) => updateDispatch({ colorcar: value })}
+                ref={inputRefs.colorcar}
+                onKeyDown={(e: any) => handleKeyDown(e, "colorcar")}
+                size="md"
+              />
+              <FormInput
+                label="Body"
+                title="master.bodytype"
+                className="h-9 w-[150px] text-[14px]"
+                value={formState?.dispatch.bodytype || ""}
+                onChange={(e) => updateDispatch({ bodytype: e.target.value })}
+                placeholder="Body type"
+                ref={inputRefs.bodytype}
+                onKeyDown={(e) => handleKeyDown(e, "bodytype")}
+              />
+            </div>
           </div>
 
           <div className="py-3  space-y-2">
-          <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-          {/* State Select */}
+            <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
+              {/* State Select */}
               <StateSelect
                 className="w-[250px] text-[14px]"
                 label="State"
@@ -864,8 +872,8 @@ const InvoiceForm = () => {
             {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
           </div>
           <FormSection title="C - Vehicle Details">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-          {/* Odometer Input */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+              {/* Odometer Input */}
               <NumberInput
                 label="Odometer"
                 className="h-9 w-full text-[14px]"
@@ -939,7 +947,7 @@ const InvoiceForm = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
-              <FormInput
+                <FormInput
                   ref={inputRefs?.lotsection}
                   size="address"
                   label="Lot Section"
@@ -986,7 +994,7 @@ const InvoiceForm = () => {
                   title="master.holdnote"
                   value={
                     formState?.dispatch.holdnote === true ||
-                    formState?.dispatch.holdnote === "true" 
+                    formState?.dispatch.holdnote === "true"
                   }
                   onChange={(value: boolean) =>
                     updateDispatch({ holdnote: value })
@@ -1008,8 +1016,8 @@ const InvoiceForm = () => {
 
           <FormSection title="F - Invoice Information">
             <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
-            <FormInput
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                <FormInput
                   ref={inputRefs?.invoicenum}
                   label="Inv #"
                   title="master.invoicenum"
@@ -1058,7 +1066,7 @@ const InvoiceForm = () => {
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 w-full">
-              <FormInput
+                <FormInput
                   ref={inputRefs?.billtoname}
                   label="Name"
                   title="master.billtoname"
@@ -1081,76 +1089,73 @@ const InvoiceForm = () => {
                   className="h-9 w-full"
                   placeholder="PO number"
                 />
-
-<div className="flex w-full items-center gap-6">
-  {/* Left Side - Textarea */}
-  <div className="w-full">
-    <label htmlFor="message" className="text-lg font-semibold text-gray-700 mb-2 block">
-      Your Message
-    </label>
-    <textarea
-      id="message"
-      placeholder="Type your message here..."
-      className="w-[600px] h-[150px] p-3 text-gray-800 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
-    ></textarea>
-  </div>
-
-  {/* Right Side - Inputs */}
-  <div className="w-full flex  flex-wrap gap-2">
-<div className="flex gap-2">
-<FormInput
-      ref={inputRefs?.releaselic}
-      label="RelLic#"
-      title="master.releaselic"
-      value={formState.invoice.releaselic || ""}
-      onChange={(e) => updateInvoice({ releaselic: e.target.value })}
-      onKeyDown={(e) => handleKeyDown(e, "releaselic")}
-      className="h-9 w-[300px]"
-      placeholder="Release license"
-    />
-
-    <StateSelect
-      ref={inputRefs?.billtost}
-      label="State"
-      title="master.billtost"
-      value={formState.invoice.billtost || ""}
-      onChange={(value) => updateInvoice({ billtost: value })}
-      onKeyDown={(e) => handleKeyDown(e, "billtost")}
-      className="h-9 w-[300px]"
-    />
-</div>
-<div className="flex gap-2">
-
-    <PhoneInput
-      ref={inputRefs?.billtophone}
-      label="Phone"
-      title="master.billtophone"
-      size="md"
-      className="h-9 w-[300px]"
-      value={formState.invoice.billtophone || ""}
-      onChange={(value) => updateInvoice({ billtophone: value })}
-      onKeyDown={(e) => handleKeyDown(e, "billtophone")}
-    />
-
-    <FormInput
-      ref={inputRefs?.billtocont}
-      label="Contact"
-      title="master.billtocont"
-      value={formState.invoice.billtocont || ""}
-      onChange={(e) => updateInvoice({ billtocont: e.target.value })}
-      onKeyDown={(e) => handleKeyDown(e, "billtocont")}
-     className="h-9 w-[300px]"
-      placeholder="Contact name"
-    />
-</div>
-  </div>
-</div>
-
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full ">
+                <div className="">
+                  <AddressSection
+                    ref={inputRefs?.billtoaddr1}
+                    value={formState.dispatch.billtoaddr1 || ""}
+                    onChange={(notes) => updateDispatch({ billtoaddr1: notes })}
+                    onKeyDown={(e) => handleKeyDown(e, "billtoaddr1")}
+                  />
+                </div>
+                {/* <div className=""> */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-4 ">
+                    <FormInput
+                      ref={inputRefs?.releaselic}
+                      label="RelLic#"
+                      title="master.releaselic"
+                      value={formState.invoice.releaselic || ""}
+                      onChange={(e) =>
+                        updateInvoice({ releaselic: e.target.value })
+                      }
+                      onKeyDown={(e) => handleKeyDown(e, "releaselic")}
+                      className="h-9 w-full"
+                      placeholder="Release license"
+                    />
 
-                  {/* <FormInput
+                    <StateSelect
+                      // ref={inputRefs?.billtost}
+                      ref={inputRefs?.billtoaddr2}
+                      label="State"
+                      title="master.billtoaddr2"
+                      value={formState.invoice.billtoaddr2 || ""}
+                      onChange={(value) => updateInvoice({ billtoaddr2: value })}
+                      onKeyDown={(e) => handleKeyDown(e, "billtoaddr2")}
+                      className="h-9 w-full"
+                    />
+
+                    <PhoneInput
+                      ref={inputRefs?.billtophone}
+                      label="Phone"
+                      title="master.billtophone"
+                      size="md"
+                      className="h-9 w-full"
+                      value={formState.invoice.billtophone || ""}
+                      onChange={(value) =>
+                        updateInvoice({ billtophone: value })
+                      }
+                      onKeyDown={(e) => handleKeyDown(e, "billtophone")}
+                    />
+
+                    <FormInput
+                      ref={inputRefs?.billtocont}
+                      label="Contact"
+                      title="master.billtocont"
+                      value={formState.invoice.billtocont || ""}
+                      onChange={(e) =>
+                        updateInvoice({ billtocont: e.target.value })
+                      }
+                      onKeyDown={(e) => handleKeyDown(e, "billtocont")}
+                      className="h-9 w-full"
+                      placeholder="Contact name"
+                    />
+                  </div>
+                {/* </div> */}
+              </div>
+              <div>
+                {/* <FormInput
                   ref={inputRefs?.billtoaddr1}
                   label="Address 1"
                   title="master.billtoaddr1"
@@ -1199,7 +1204,7 @@ const InvoiceForm = () => {
                   className="h-9 w-full"
                   placeholder="City"
                 /> */}
-                   {/* <FormInput
+                {/* <FormInput
                   ref={inputRefs?.billtocont}
                   label="Contact"
                   title="master.billtocont"
@@ -1213,8 +1218,8 @@ const InvoiceForm = () => {
                 />  */}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 w-full">
-              <FormInput
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-2 w-full">
+                <FormInput
                   ref={inputRefs?.billtocity}
                   label="City"
                   title="master.billtocity"
@@ -1225,8 +1230,8 @@ const InvoiceForm = () => {
                   onKeyDown={(e: any) => handleKeyDown(e, "billtocity")}
                   className="h-9 w-full"
                   placeholder="City"
-                /> 
-               <StateSelect
+                />
+                <StateSelect
                   ref={inputRefs?.billtost}
                   label="State"
                   title="master.billtost"
@@ -1234,9 +1239,7 @@ const InvoiceForm = () => {
                   onChange={(value) => updateInvoice({ billtost: value })}
                   onKeyDown={(e: any) => handleKeyDown(e, "billtost")}
                   className="h-9 w-full"
-
-
-                /> 
+                />
 
                 <ZipInput
                   ref={inputRefs?.billtozip}
@@ -1264,8 +1267,8 @@ const InvoiceForm = () => {
           </FormSection>
           <FormSection title="G - Registration Information">
             <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-            <FormInput
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                <FormInput
                   ref={inputRefs?.regname}
                   label="Registered Owner"
                   title="master.regname"
@@ -1299,54 +1302,53 @@ const InvoiceForm = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-              <FormInput
-    ref={inputRefs?.regaddr1}
-    label="Address"
-    title="master.regaddr1"
-    value={formState.invoice.regaddr1 || ""}
-    onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
-    onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
-    className="h-9 w-full md:w-[480px]"
-    placeholder="Enter registration address"
-  />
+                <FormInput
+                  ref={inputRefs?.regaddr1}
+                  label="Address"
+                  title="master.regaddr1"
+                  value={formState.invoice.regaddr1 || ""}
+                  onChange={(e) => updateInvoice({ regaddr1: e.target.value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "regaddr1")}
+                  className="h-9 w-full md:w-[480px]"
+                  placeholder="Enter registration address"
+                />
 
-  <FormInput
-    ref={inputRefs?.regcity}
-    label="City"
-    title="master.regcity"
-    value={formState.invoice.regcity || ""}
-    onChange={(e) => updateInvoice({ regcity: e.target.value })}
-    onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-    className="h-9 w-full md:w-[480px]"
-    placeholder="Enter city"
-  />
+                <FormInput
+                  ref={inputRefs?.regcity}
+                  label="City"
+                  title="master.regcity"
+                  value={formState.invoice.regcity || ""}
+                  onChange={(e) => updateInvoice({ regcity: e.target.value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
+                  className="h-9 w-full md:w-[480px]"
+                  placeholder="Enter city"
+                />
 
-  <StateSelect
-    ref={inputRefs?.regstate}
-    label="State"
-    title="master.regstate"
-    value={formState.invoice.regstate || ""}
-    onChange={(value) => updateInvoice({ regstate: value })}
-    onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
-    className="h-9 w-[150px]"
-  />
+                <StateSelect
+                  ref={inputRefs?.regstate}
+                  label="State"
+                  title="master.regstate"
+                  value={formState.invoice.regstate || ""}
+                  onChange={(value) => updateInvoice({ regstate: value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "regstate")}
+                  className="h-9 w-[150px]"
+                />
 
-  <ZipInput
-    ref={inputRefs?.regzip}
-    label="Zip"
-    title="master.regzip"
-    value={formState.invoice.regzip || ""}
-    onChange={(value) => updateInvoice({ regzip: value })}
-    onKeyDown={(e: any) => handleKeyDown(e, "regzip")}
-    className="h-9 w-[150px]"
-  />
-</div>
-
+                <ZipInput
+                  ref={inputRefs?.regzip}
+                  label="Zip"
+                  title="master.regzip"
+                  value={formState.invoice.regzip || ""}
+                  onChange={(value) => updateInvoice({ regzip: value })}
+                  onKeyDown={(e: any) => handleKeyDown(e, "regzip")}
+                  className="h-9 w-[150px]"
+                />
+              </div>
             </div>
           </FormSection>
-          <FormSection title="H - Storage Information"> 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 w-full">
-          <DateInput
+          <FormSection title="H - Storage Information">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 w-full">
+              <DateInput
                 label="Storage In"
                 title="master.storagein"
                 size="sm"
@@ -1363,7 +1365,7 @@ const InvoiceForm = () => {
                 ref={inputRefs?.dateout}
                 label="Storage Out"
                 title="master.storageout"
-                   className="w-full h-9"
+                className="w-full h-9"
                 size="sm"
                 value={formState.dispatch.dateout || ""}
                 onChange={(value) => updateDispatch({ dateout: value })}
@@ -1376,9 +1378,9 @@ const InvoiceForm = () => {
           </FormSection>
 
           <FormSection title="I - Lien Information">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 w-full items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 w-full items-center">
               <BooleanSelect
-                className=" w-full  text-[14px]"  
+                className=" w-full  text-[14px]"
                 label="Commission"
                 ref={inputRefs?.commission}
                 value={formState.dispatch.commission || false}
