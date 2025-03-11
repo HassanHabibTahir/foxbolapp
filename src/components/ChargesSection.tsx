@@ -9,6 +9,7 @@ import FormInput from "./common/FormInput";
 import ExtendedCurrencyInput from "./common/ExtendedCurrenctInput";
 
 interface LineItem {
+  itemId?: any;
   id: number;
   description: string;
   quantity: number;
@@ -94,24 +95,136 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
-
   // Create refs for keyboard navigation
   const itemRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // useEffect(() => {
+  //   if (transactionItems.length > 0) {
+  //     const updatedItems = INITIAL_ITEMS.map((initialItem: any) => {
+  //       const transaction = transactionItems.find(
+  //         (t: any) => t.itemId === initialItem.id
+  //       );
+  //       return transaction
+  //         ? {
+  //             ...transaction,
+  //             id: transaction.itemId, 
+  //             extended:
+  //               transaction.extended ||
+  //               transaction.price * transaction.quantity,
+  //             description: initialItem.description || transaction.description, 
+  //             price:
+  //               transaction.price?.toString() ||
+  //               initialItem.price?.toString() ||
+  //               "", 
+  //           }
+  //         : { ...initialItem };
+  //     });
+
+  //     setItems(updatedItems);
+  //   } else {
+  //     setItems(INITIAL_ITEMS);
+  //   }
+  // }, [transactionItems]);
+
+  // useEffect(() => {
+  //   if (transactionItems.length > 0) {
+  //     const transactions = transactionItems.map((item) => ({
+        
+  //       ...item,
+  //       extended: item.extended || item.price * item.quantity,
+  //     }));
+  //     setItems([
+  //       ...transactions,
+  //       ...INITIAL_ITEMS.slice(transactionItems.length),
+  //     ]);
+  //   } else {
+  //     setItems(INITIAL_ITEMS);
+  //   }
+  // }, [transactionItems]);
   useEffect(() => {
     if (transactionItems.length > 0) {
-      const transactions = transactionItems.map((item) => ({
-        ...item,
-        extended: item.extended || item.price * item.quantity,
-      }));
-      setItems([
-        ...transactions,
-        ...INITIAL_ITEMS.slice(transactionItems.length),
-      ]);
+      setItems((prevItems) =>
+        prevItems.map((item) => {
+          const matchingTransaction = transactionItems.find(
+            (transItem) => transItem.itemId === item.id
+          );
+  
+          return matchingTransaction
+            ? { 
+                ...item,  // Existing state preserve karna
+                ...matchingTransaction,  
+                extended: matchingTransaction.extended || matchingTransaction.price * matchingTransaction.quantity 
+              }
+            : item;
+        })
+      );
     } else {
       setItems(INITIAL_ITEMS);
     }
   }, [transactionItems]);
+  
+  // useEffect(() => {
+  //   if (transactionItems.length > 0) {
+  //     // Create a map of transactionItems indexed by their ID for faster lookup
+  //     const transactionItemsMap = transactionItems.reduce((map:any, item) => {
+  //       map[item.id] = {
+  //         ...item,
+  //         extended: item.extended || item.price * item.quantity,
+  //       };
+  //       return map;
+  //     }, {});
+      
+  //     // Map INITIAL_ITEMS to corresponding transactionItems if they exist
+  //     const updatedItems = INITIAL_ITEMS.map(initialItem => {
+  //       // If there's a matching transaction item, use it; otherwise use the initial item
+  //       return transactionItemsMap[initialItem.id] || initialItem;
+  //     });
+      
+  //     setItems(updatedItems);
+  //   } else {
+  //     setItems(INITIAL_ITEMS);
+  //   }
+  // }, [transactionItems]);
+// useEffect(() => {
+//   if (transactionItems.length > 0) {
+//     // Start with a copy of INITIAL_ITEMS
+//     const updatedItems = [...INITIAL_ITEMS];
+    
+//     // Keep track of which transaction items were matched
+//     const matchedTransactionItems = new Set();
+    
+//     // For each transaction item, find matching position in initial items
+//     transactionItems.forEach(transItem => {
+//       // Find the index of the initial item where id matches the transaction's itemId
+//       const indexToUpdate = INITIAL_ITEMS.findIndex(initialItem => initialItem.id === transItem.itemId);
+      
+//       // If a match is found, replace that item
+//       if (indexToUpdate !== -1) {
+//         updatedItems[indexToUpdate] = {
+//           ...transItem,
+//           extended: transItem.extended || transItem.price * transItem.quantity
+//         };
+//         matchedTransactionItems.add(transItem.id);
+//       }
+//     });
+    
+//     // Add new transaction items that don't have a match in initial state
+//     const newTransactionItems = transactionItems
+//       .filter(item => !matchedTransactionItems.has(item.id))
+//       .map(item => ({
+//         ...item,
+//         extended: item.extended || item.price * item.quantity
+//       }));
+    
+//     // Combine updated initial items with new transaction items
+//     setItems([...updatedItems, ...newTransactionItems]);
+//   } else {
+//     setItems(INITIAL_ITEMS);
+//   }
+// }, [transactionItems]);
+
+
+
 
   const calculateExtended = (
     item: LineItem,
@@ -141,6 +254,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handleQuantityChange = (id: number, value = 0) => {
+    console.log(id, value,"this is teh vaues");
     const updatedItems = items.map((item) => {
       if (item.id === id) {
         const extended = calculateExtended(item, value, item.price);
@@ -153,6 +267,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       }
       return item;
     });
+    console.log(updatedItems,"updateItems ")
     updateItemAndNotify(updatedItems);
   };
 
@@ -260,11 +375,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
     onInvoiceChange({ ...invoice, total });
   }, [total]);
 
-
-
-
-
-  
   // Initialize refs before rendering
   useEffect(() => {
     if (!refs.current) return; // Prevent undefined error
@@ -278,7 +388,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       }
     });
   }, [items]);
-
   return (
     <>
       <FormSection title="Charges">
@@ -314,15 +423,17 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                         />
                       ) : (
                         <ItemDescriptionCombobox
-                        ref={descriptionRef}
-                        value={item.description}
-                        onChange={(value) => handleItemChange(item.id, value)}
-                        onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
-                        inputRefs={descriptionRef}
-                        onKeyDown={(e: React.KeyboardEvent<Element>) =>
-                          onKeyDown(e, `description${baseRef}`)
-                        }
-                      />
+                          ref={descriptionRef}
+                          value={item.description}
+                          onChange={(value) => handleItemChange(item.id, value)}
+                          onItemSelect={(selectedItem) =>
+                            handleItemSelect(item.id, selectedItem)
+                          }
+                          inputRefs={descriptionRef}
+                          onKeyDown={(e: React.KeyboardEvent<Element>) =>
+                            onKeyDown(e, `description${baseRef}`)
+                          }
+                        />
                         // <FormInput
                         //   ref={descriptionRef}
                         //   label="City"
@@ -330,16 +441,16 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                         //   type="text"
                         //   className="w-full p-2 border rounded"
                         //   placeholder="Enter city"
-                          // onKeyDown={(e) =>
-                          //   onKeyDown(e, `description${baseRef}`)
-                          // }
+                        // onKeyDown={(e) =>
+                        //   onKeyDown(e, `description${baseRef}`)
+                        // }
                         // />
                       )}
                     </td>
                     <td className="p-1">
                       {!item.isDiscount && (
                         <QuantityInput
-                        className="h-9"
+                          className="h-9"
                           ref={sectionRef}
                           value={item.quantity}
                           onChange={(value) =>
@@ -367,7 +478,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                     </td>
                     <td className="p-1">
                       <ExtendedCurrencyInput
-                     
                         value={item.extended}
                         onChange={() => {}} // Read-only
                         disabled={true}
@@ -398,7 +508,8 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 export default ChargesSection;
 
 // import React from 'react';
-{/* <FormInput
+{
+  /* <FormInput
                         // ref={refs.}
                           label="City"
                           title="master.regcity"
@@ -413,16 +524,19 @@ export default ChargesSection;
                           // onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
                           // className="w-48"
                           // placeholder="Enter city"
-                        /> */}
+                        /> */
+}
 
-            {/* <ItemDescriptionCombobox
+{
+  /* <ItemDescriptionCombobox
                           ref={refs.description69}
                           onKeyDown={(e) => onKeyDown(e, "description69")}
                           value={''}
                           // onChange={(value) => handleItemChange(item.id, value)}
                           // onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
                           // onEnterPress={() => itemRefs.current[index * 3 + 1]?.focus()}
-                        /> */}
+                        /> */
+}
 
 // // Define the props interface
 // interface ChargesSectionProps {

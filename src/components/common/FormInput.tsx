@@ -42,6 +42,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({
       onKeyDown(e)
     }
   }
+ 
   return (
     <div className={isMobile ? 'w-full' : ''}>
       <label className="block text-sm font-medium text-gray-700 mobile-text-sm mb-1">

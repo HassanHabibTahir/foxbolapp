@@ -285,39 +285,105 @@ function Impounds() {
     setSelectedFields(newSelectedFields);
   };
 
+  // const fetchImpounds = async (page: number, vinSearch?: string, callType?: string) => {
+  //   setIsSearching(true);
+    
+  //   let query = supabase
+  //     .from('towmast')
+  //     .select('*, towtrans(price,quantity)', { count: 'exact' }) // Include all fields from `towtrans`
+  //     .eq('foxtow_id', foxtow_id);
+  
+  //   if (vinSearch) {
+  //     query = query.or(`vin.ilike.%${vinSearch}%, licensenum.ilike.%${vinSearch}%`);
+  //   }
+  
+  //   if (callType && callType !== 'all') {
+  //     query = query.eq('calltype', callType);
+  //   }
+  
+  //   try {
+  //     const { count } = await supabase
+  //       .from('towmast')
+  //       .select(undefined, { count: 'exact' }) 
+  //       .eq('foxtow_id', foxtow_id);
+ 
+  //     setTotalCount(count || 0);
+  
+  //     const { data, error } = await query
+  //       .range((page - 1) * recordsPerPage, page * recordsPerPage - 1)
+  //       .order('dispnum', { ascending: false });
+  
+  //     if (error) {
+  //       console.error('Error fetching data:', error);
+  //     } else {
+  //       setRecords(data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Unexpected error:', error);
+  //   }
+  
+  //   setIsSearching(false);
+  // };
+  
+
+  // Debounced search function
+ 
+ 
   const fetchImpounds = async (page: number, vinSearch?: string, callType?: string) => {
     setIsSearching(true);
-    
-    let query = supabase
-      .from('towmast')
-      .select('*, towtrans(price,quantity)', { count: 'exact' }) // Include all fields from `towtrans`
-      .eq('foxtow_id', foxtow_id);
-  
-    if (vinSearch) {
-      query = query.or(`vin.ilike.%${vinSearch}%, licensenum.ilike.%${vinSearch}%`);
-    }
-  
-    if (callType && callType !== 'all') {
-      query = query.eq('calltype', callType);
-    }
   
     try {
+      // Fetch `towmast` count
       const { count } = await supabase
         .from('towmast')
-        .select(undefined, { count: 'exact' }) // Only count, no need to select fields
+        .select(undefined, { count: 'exact' }) // Only count
         .eq('foxtow_id', foxtow_id);
- 
+  
       setTotalCount(count || 0);
   
-      const { data, error } = await query
+      // Fetch `towmast` data
+      let query = supabase
+        .from('towmast')
+        .select('*') // Fetch all fields from towmast
+        .eq('foxtow_id', foxtow_id)
         .range((page - 1) * recordsPerPage, page * recordsPerPage - 1)
         .order('dispnum', { ascending: false });
   
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        setRecords(data);
+      // Apply vinSearch filter if provided
+      if (vinSearch) {
+        query = query.or(`vin.ilike.%${vinSearch}%, licensenum.ilike.%${vinSearch}%`);
       }
+  
+      // Apply callType filter if provided
+      if (callType && callType !== 'all') {
+        query = query.eq('calltype', callType);
+      }
+  
+      const { data: towmastData, error: towmastError } = await query;
+  
+      if (towmastError) {
+        console.error('Error fetching towmasters:', towmastError);
+        setIsSearching(false);
+        return;
+      }
+  
+      // Fetch `towtrans` data separately
+      const { data: towtransData, error: towtransError } = await supabase
+        .from('towtrans')
+        .select('price, quantity, foxtow_id')
+        .eq('foxtow_id', foxtow_id);
+  
+      if (towtransError) {
+        console.error('Error fetching towtrans:', towtransError);
+      }
+  
+      // Merge towtrans data into corresponding towmast records
+      const mergedData = towmastData.map((towmast) => ({
+        ...towmast,
+        towtrans: towtransData.filter((trans) => trans.foxtow_id === towmast.foxtow_id),
+      }));
+  
+      setRecords(mergedData);
     } catch (error) {
       console.error('Unexpected error:', error);
     }
@@ -325,8 +391,7 @@ function Impounds() {
     setIsSearching(false);
   };
   
-
-  // Debounced search function
+  
   const debouncedSearch = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout;

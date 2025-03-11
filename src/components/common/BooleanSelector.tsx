@@ -138,6 +138,11 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     onMenuClose: () => setMenuIsOpen(false),
     openMenuOnFocus: true,
   };
+
+
+ console.log(value,"value--commition")
+
+
   return (
     <div className={className}>
       <label className="block text-sm font-medium text-gray-700 mb-0">

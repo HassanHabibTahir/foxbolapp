@@ -174,6 +174,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   }, [init,carMakeId]);
 
 
+  console.log(carMakeId,"carMakeId")
 
   return (
     <div className={className}>

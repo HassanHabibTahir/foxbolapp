@@ -94,7 +94,7 @@ const FIELD_INDEXES: any = {
   ponumber: 46,
   billtoaddr1: 47,
   releaselic: 48,
-  billtoaddr2: 49,
+  rellicState: 49,
   billtophone: 50,
   billtocont: 51,
   billtocity: 52,
@@ -196,7 +196,7 @@ const InvoiceForm = () => {
   const ponumberRef = useRef(null);
   const billtoaddr1Ref = useRef(null);
   const releaselicRef = useRef(null);
-  const billtoaddr2Ref = useRef(null);
+  const rellicStateRef = useRef(null);
   const billtophoneRef = useRef(null);
   const billtocityRef = useRef(null);
   const billtostRef = useRef(null);
@@ -282,7 +282,7 @@ const InvoiceForm = () => {
     ponumber: ponumberRef,
     billtoaddr1: billtoaddr1Ref,
     releaselic: releaselicRef,
-    billtoaddr2: billtoaddr2Ref,
+    rellicState: rellicStateRef,
     billtophone: billtophoneRef,
     billtocity: billtocityRef,
     billtost: billtostRef,
@@ -327,8 +327,8 @@ const InvoiceForm = () => {
         .select()
         .eq("dispnum", dispatchNum)
         .maybeSingle();
-
       if (!error && data) {
+        console.log(error,"error")
         handleInvoiceFound(data.dispnum, foxtow_id);
       }
     };
@@ -428,8 +428,7 @@ const InvoiceForm = () => {
         formState.dispatch.licensest
       );
       if (details) {
-        console.log(details, "details");
-        // onPlateDetails(details);
+       
         updateDispatch((prev: any) => ({
           ...prev,
           vin: details.vin,
@@ -499,7 +498,9 @@ const InvoiceForm = () => {
 
   const isDesktopOrLaptop = isClient && showDesktop;
   const isDesktopOrLaptop2 = isClient && showDesktop2;
-  console.log(isDesktopOrLaptop,isDesktopOrLaptop2,"isDesktopOrLaptop")
+
+
+  console.log(formState,"fromState the")
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -1145,12 +1146,12 @@ const InvoiceForm = () => {
 
                     <StateSelect
                       // ref={inputRefs?.billtost}
-                      ref={inputRefs?.billtoaddr2}
+                      ref={inputRefs?.rellicState}
                       label="State"
-                      title="master.billtoaddr2"
-                      value={formState.invoice.billtoaddr2 || ""}
-                      onChange={(value) => updateInvoice({ billtoaddr2: value })}
-                      onKeyDown={(e:any) => handleKeyDown(e, "billtoaddr2")}
+                      title="master.rellicState"
+                      value={formState.invoice.rellicState || ""}
+                      onChange={(value) => updateInvoice({ rellicState: value })}
+                      onKeyDown={(e:any) => handleKeyDown(e, "rellicState")}
                       className="h-9 w-full"
                     />
 
@@ -1197,15 +1198,15 @@ const InvoiceForm = () => {
                   placeholder="Street address"
                 /> */}
                 {/* <FormInput
-                  ref={inputRefs?.billtoaddr2}
+                  ref={inputRefs?.rellicState}
                   label="Address 2"
-                  title="master.billtoaddr2"
+                  title="master.rellicState"
                   size="full"
-                  value={formState.invoice.billtoaddr2 || ""}
+                  value={formState.invoice.rellicState || ""}
                   onChange={(e) =>
-                    updateInvoice({ billtoaddr2: e.target.value })
+                    updateInvoice({ rellicState: e.target.value })
                   }
-                  onKeyDown={(e: any) => handleKeyDown(e, "billtoaddr2")}
+                  onKeyDown={(e: any) => handleKeyDown(e, "rellicState")}
                   className="h-9 w-full"
                   placeholder="Apt, Suite, etc."
                 /> */}
@@ -1414,10 +1415,14 @@ const InvoiceForm = () => {
                 className=" w-full  text-[14px]"
                 label="Commission"
                 ref={inputRefs?.commission}
-                value={formState.dispatch.commission || false}
+                   value={
+                    formState.dispatch.commission === true ||
+                    formState.dispatch.commission=== "true"
+                  }
+                // value={formState.dispatch.commission || false}
                 onChange={(value: boolean) =>
                   updateDispatch({ commission: value })
-                }
+                } 
                 onKeyDown={(e: any) => handleKeyDown(e, "commission")}
                 size="lg"
                 // onEnterPress={() => lienStartRef.current?.focus()}

@@ -60,6 +60,9 @@ const CarMake = forwardRef<any, CarMakeProps>(({
 //     // { value: 'Yellow', label: 'Yellow' }
 // ];
 
+
+console.log(value,"value")
+
   const selectedOption = options.find(option => option.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
   const handleChange = (option: Option | null) => {
@@ -177,6 +180,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
           }))
         );
       }
+
     } catch (e) {
       console.error("Fetch error:", e);
     } finally {
@@ -184,9 +188,21 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     }
   }, [setOptions]);
 
+
+
+  const init2 =  useCallback(async() => {
+    if(value){
+      const selectedOption = options.find(option => option.value === value)
+      if(selectedOption){
+        setCarMakeId(selectedOption?.id)
+        onChange(selectedOption?.value);
+      }
+    }
+  },[ value]);
   useEffect(() => {
     init();
-  }, [init]);
+    init2()
+  }, [init,init2]);
 
 
   return (

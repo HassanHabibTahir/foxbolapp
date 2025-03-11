@@ -14,6 +14,7 @@ import './i18n'
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import Newimpound from './pages/Newimpound';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
     const { i18n } = useTranslation();
@@ -23,6 +24,11 @@ function App() {
       i18n.changeLanguage(storedLanguage);
     }, [i18n]);
   return (
+    <>
+    <Toaster
+  position="top-right"
+  reverseOrder={false}
+/>
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100">
         <TopNav />
@@ -44,6 +50,7 @@ function App() {
         </main>
       </div>
     </BrowserRouter>
+    </>
   );
 }
 

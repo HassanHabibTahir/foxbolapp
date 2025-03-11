@@ -1,7 +1,7 @@
 import React from 'react';
 import { Save } from 'lucide-react';
 import { saveDispatch, SavePayload } from '../lib/saveHandlers';
-
+import toast from 'react-hot-toast';
 interface SaveButtonProps {
   onSave: () => SavePayload;
   className?: string;
@@ -15,15 +15,20 @@ const SaveButton: React.FC<SaveButtonProps> = ({ onSave, className = '' }) => {
       setSaving(true);
       const payload = onSave();
 
-      const result = await saveDispatch(payload);
+      const result:any = await saveDispatch(payload);
       
       if (result.success) {
-        // You might want to show a success message or update UI
+        toast.success(`aved successfully with foxtow_id:`+ result.foxtow_id);
+
         console.log('Saved successfully with foxtow_id:', result.foxtow_id);
       } else {
-        // Handle error
-        console.error('Save failed:', result.error);
+        toast.error(result.error?.message||'');
+        // console.error('Save failed:', result.error?.message        );
       }
+    }catch(e:any){
+      console.log(e,"error")
+      toast.error(e?.message );
+      // Handle error
     } finally {
       setSaving(false);
     }
