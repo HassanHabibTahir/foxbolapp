@@ -1,4 +1,3 @@
-"use client"
 
 import type React from "react"
 import { useState, useEffect, forwardRef } from "react"
@@ -26,13 +25,14 @@ interface ItemDescriptionComboboxProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   inputRefs?: any
   index?: number
+  placeholder?:string
 }
 
 const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
-  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs,index }, ref) => {
+  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs, index,placeholder }, ref) => {
     const [selectedOption, setSelectedOption] = useState<ItemOption | null>(null)
     const [options, setOptions] = useState<ItemOption[]>([])
-const [menuIsOpen, setMenuIsOpen] = useState(false);
+    const [menuIsOpen, setMenuIsOpen] = useState(false)
     useEffect(() => {
       const fetchOptions = async () => {
         const { data, error } = await supabase.from("items").select("description, shortcut1, shortcut2").limit(100) // Adjust the limit as needed
@@ -59,50 +59,49 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     const handleChange = (option: ItemOption | null) => {
       setSelectedOption(option)
       if (option) {
-        onChange?.(option.value) // Ensure value is updated
-        onItemSelect?.(option.item)
+        // Ensure value is updated
+        if (onChange) {
+          onChange(option.value)
+        }
+        // Call onItemSelect if provided
+        if (onItemSelect) {
+          onItemSelect(option.item)
+        }
+        // Call onEnterPress if provided
         if (onEnterPress) {
           setTimeout(onEnterPress, 0)
         }
       } else {
-        onChange?.("") // Clear value if no option is selected
+        // Clear value if no option is selected
+        if (onChange) {
+          onChange("")
+        }
       }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-      // if (e.key === "Enter" && selectedOption) {
-      //   e.preventDefault()
-      //   handleChange(selectedOption)
-      //   if (onEnterPress) {
-      //     onEnterPress()
-      //   }
-      // }
-      // if (onKeyDown) {
-      //   onKeyDown(e)
-      // }
       if (e.key === "Enter" || e.key === " ") {
-        const focusedOption = document.querySelector(
-          ".react-select__option--is-focused"
-        );
-     
-        if (focusedOption) {
-          e.preventDefault();
-          const selectedOptionText = focusedOption.textContent;
-          console.log(selectedOptionText , "focused option");
-          console.log(selectedOptionText, "selectedOptionText",options);
-          const _selectedOption = options?.find(
-            (opt: { label: string | null }) => opt.label === selectedOptionText
-          );
+        const focusedOption = document.querySelector(".react-select__option--is-focused")
 
-          console.log(_selectedOption, "selectedOptions-->",);
-  
+        if (focusedOption) {
+          e.preventDefault()
+          const selectedOptionText = focusedOption.textContent
+
+          // Find the option by comparing the formatted label text
+          const _selectedOption = options.find((opt) => formatLabel(opt.item) === selectedOptionText)
+
           if (_selectedOption) {
-            handleChange(_selectedOption);
-            setMenuIsOpen(false);
+            handleChange(_selectedOption)
+            setMenuIsOpen(false)
+
+            // Call onEnterPress if provided
+            if (onEnterPress) {
+              setTimeout(onEnterPress, 0)
+            }
           }
         }
       }
-      onKeyDown?.(e);
+      onKeyDown?.(e)
     }
 
     const customStyles = {
@@ -114,7 +113,7 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
           borderColor: "#9CA3AF",
         },
         minHeight: "35px",
-        height:"34px"
+        height: "34px",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
@@ -166,34 +165,32 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
       onMenuClose: () => setMenuIsOpen(false),
       openMenuOnFocus: true,
     }
-// Add this useEffect to sync the value prop with selectedOption state
-useEffect(() => {
-  if (value && options.length > 0) {
-    const matchingOption = options.find(option => option.value === value);
-    if (matchingOption && (!selectedOption || selectedOption.value !== value)) {
-      setSelectedOption(matchingOption);
-    }
-  } else if (!value) {
-    setSelectedOption(null);
-  }
-}, [value, options, selectedOption]);
-
+    // Add this useEffect to sync the value prop with selectedOption state
+    useEffect(() => {
+      if (value && options.length > 0) {
+        const matchingOption = options.find((option) => option.value === value)
+        if (matchingOption && (!selectedOption || selectedOption.value !== value)) {
+          setSelectedOption(matchingOption)
+        }
+      } else if (value === "" || value === undefined) {
+        // setSelectedOption(null)
+      }
+    }, [value, options])
 
     return (
       <div className={className}>
-     
-      <Select
-        {...selectProps}
-        ref={ref}
-        styles={customStyles}
-        placeholder="Select..."
-        menuPlacement="auto"
-        blurInputOnSelect
-        components={{
-          IndicatorSeparator: null
-        }}
-      />
-    </div>
+        <Select
+          {...selectProps}
+          ref={ref}
+          styles={customStyles}
+          placeholder={placeholder}
+          menuPlacement="auto"
+          blurInputOnSelect
+          components={{
+            IndicatorSeparator: null,
+          }}
+        />
+      </div>
     )
   },
 )

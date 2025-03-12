@@ -327,8 +327,8 @@ const InvoiceForm = () => {
         .select()
         .eq("dispnum", dispatchNum)
         .maybeSingle();
-
       if (!error && data) {
+        console.log(error,"error")
         handleInvoiceFound(data.dispnum, foxtow_id);
       }
     };
@@ -428,8 +428,7 @@ const InvoiceForm = () => {
         formState.dispatch.licensest
       );
       if (details) {
-        console.log(details, "details");
-        // onPlateDetails(details);
+       
         updateDispatch((prev: any) => ({
           ...prev,
           vin: details.vin,
