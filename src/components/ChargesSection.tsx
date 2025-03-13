@@ -379,7 +379,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                 const descriptionRef = refs[`description${baseRef}`];
                 const sectionRef = refs[`description${baseRef + 1}`];
                 const priceRef = refs[`description${baseRef + 2}`];
-                console.log(item, "item");
+              
                 return (
                   <tr
                     key={item.id}

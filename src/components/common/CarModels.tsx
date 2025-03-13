@@ -144,30 +144,41 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   const init = useCallback(async () => {
     setLoading(true);
     try {
-        if(carMakeId){
+      if (carMakeId) {
         const { data, error } = await supabase
-        .from("carmodels")
-        .select("*")
-        .eq("makeid", carMakeId); 
-      if (error) {
-        console.error("Supabase error:", error);
-        return;
+          .from("carmodels")
+          .select("*")
+          .eq("makeid", carMakeId);
+  
+        if (error) {
+          console.error("Supabase error:", error);
+          return;
+        }
+  
+        if (data && data.length > 0) {
+          const formatText = (text: string) => {
+            if (!text) return '';
+            return text
+              .split(' ')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+              .join(' ');
+          };
+  
+          setOptions(
+            data.map((carmake: { makeid: string; name: string }) => ({
+              value: formatText(carmake.name),
+              label: formatText(carmake.name),
+            }))
+          );
+        }
       }
-      if (data && data.length > 0) {
-        setOptions(
-          data.map((carmake: { makeid: string; name: string }) => ({
-            value: carmake.name,
-            label: carmake.name,
-          }))
-        );
-      }
-    }
     } catch (e) {
       console.error("Fetch error:", e);
     } finally {
       setLoading(false);
     }
   }, [carMakeId]);
+  
 
   useEffect(() => {
     init();
