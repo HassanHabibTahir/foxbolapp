@@ -26,31 +26,32 @@ interface ItemDescriptionComboboxProps {
   inputRefs?: any
   index?: number
   placeholder?:string
+  options?: any
 }
 
 const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
-  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs, index,placeholder }, ref) => {
+  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs, index,placeholder,options }, ref) => {
     const [selectedOption, setSelectedOption] = useState<ItemOption | null>(null)
-    const [options, setOptions] = useState<ItemOption[]>([])
+    // const [options, setOptions] = useState<ItemOption[]>([])
     const [menuIsOpen, setMenuIsOpen] = useState(false)
-    useEffect(() => {
-      const fetchOptions = async () => {
-        const { data, error } = await supabase.from("items").select("description, shortcut1, shortcut2").limit(100) // Adjust the limit as needed
+    // useEffect(() => {
+    //   const fetchOptions = async () => {
+    //     const { data, error } = await supabase.from("items").select("description, shortcut1, shortcut2").limit(100) // Adjust the limit as needed
 
-        if (!error && data) {
-          const newOptions = data.map((item) => ({
-            value: item.description,
-            label: formatLabel(item),
-            item,
-          }))
-          setOptions(newOptions)
-        } else {
-          console.error("Error fetching items:", error)
-        }
-      }
+    //     if (!error && data) {
+    //       const newOptions = data.map((item) => ({
+    //         value: item.description,
+    //         label: formatLabel(item),
+    //         item,
+    //       }))
+    //       setOptions(newOptions)
+    //     } else {
+    //       console.error("Error fetching items:", error)
+    //     }
+    //   }
 
-      fetchOptions()
-    }, [])
+    //   fetchOptions()
+    // }, [])
 
     const formatLabel = (item: Item): string => {
       return `${item.description} ${item.shortcut1 ? `(${item.shortcut1})` : ""} ${item.shortcut2 ? `(${item.shortcut2})` : ""}`.trim()
