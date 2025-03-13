@@ -380,7 +380,7 @@ function Impounds() {
       // Merge towtrans data into corresponding towmast records
       const mergedData = towmastData.map((towmast) => ({
         ...towmast,
-        towtrans: towtransData.filter((trans) => trans.foxtow_id === towmast.foxtow_id),
+        towtrans: towtransData?.filter((trans) => trans.foxtow_id === towmast.foxtow_id),
       }));
   
       setRecords(mergedData);

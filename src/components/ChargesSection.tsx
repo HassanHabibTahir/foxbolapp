@@ -7,10 +7,12 @@ import InvoiceTotals from "./InvoiceTotals";
 import { lookupPrice } from "../lib/priceService";
 import FormInput from "./common/FormInput";
 import ExtendedCurrencyInput from "./common/ExtendedCurrenctInput";
+import { supabase } from "../lib/supabase";
 
 interface LineItem {
   itemId?: any;
-  id: number;
+  id?: number;
+  _id?: string;
   description: string;
   quantity: number;
   price: number;
@@ -23,51 +25,14 @@ interface LineItem {
   hasActualItem: boolean;
 }
 
-const INITIAL_ITEMS: LineItem[] = [
+const INITIAL_ITEMS: any[] = [
   {
     id: 1,
     description: "",
-    quantity: 0,
+    quantity: 1,
     price: 0,
     extended: 0,
     itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 2,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 3,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 4,
-    description: "",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    hasActualItem: false,
-  },
-  {
-    id: 5,
-    description: "DISCOUNT",
-    quantity: 0,
-    price: 0,
-    extended: 0,
-    itemgroup: "",
-    isDiscount: true,
     hasActualItem: false,
   },
 ];
@@ -89,142 +54,99 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   refs,
   onKeyDown,
 }) => {
-  const [items, setItems] = useState<LineItem[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [taxRate, setTaxRate] = useState(8.25);
   const [amountReceived, setAmountReceived] = useState(0);
-  const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
-  // Create refs for keyboard navigation
-  const itemRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // useEffect(() => {
-  //   if (transactionItems.length > 0) {
-  //     const updatedItems = INITIAL_ITEMS.map((initialItem: any) => {
-  //       const transaction = transactionItems.find(
-  //         (t: any) => t.itemId === initialItem.id
-  //       );
-  //       return transaction
-  //         ? {
-  //             ...transaction,
-  //             id: transaction.itemId, 
-  //             extended:
-  //               transaction.extended ||
-  //               transaction.price * transaction.quantity,
-  //             description: initialItem.description || transaction.description, 
-  //             price:
-  //               transaction.price?.toString() ||
-  //               initialItem.price?.toString() ||
-  //               "", 
-  //           }
-  //         : { ...initialItem };
-  //     });
+  const [transaction, setTransactions] = useState<any>([]);
+  const [isInitialSet, setIsInitialSet] = React.useState(false);
+  const [discountPrice, setDiscountPrice] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
 
-  //     setItems(updatedItems);
-  //   } else {
-  //     setItems(INITIAL_ITEMS);
-  //   }
-  // }, [transactionItems]);
-
-  // useEffect(() => {
-  //   if (transactionItems.length > 0) {
-  //     const transactions = transactionItems.map((item) => ({
-        
-  //       ...item,
-  //       extended: item.extended || item.price * item.quantity,
-  //     }));
-  //     setItems([
-  //       ...transactions,
-  //       ...INITIAL_ITEMS.slice(transactionItems.length),
-  //     ]);
-  //   } else {
-  //     setItems(INITIAL_ITEMS);
-  //   }
-  // }, [transactionItems]);
   useEffect(() => {
-    if (transactionItems.length > 0) {
-      setItems((prevItems) =>
-        prevItems.map((item) => {
-          const matchingTransaction = transactionItems.find(
-            (transItem) => transItem.itemId === item.id
-          );
-  
-          return matchingTransaction
-            ? { 
-                ...item,  // Existing state preserve karna
-                ...matchingTransaction,  
-                extended: matchingTransaction.extended || matchingTransaction.price * matchingTransaction.quantity 
-              }
-            : item;
-        })
-      );
-    } else {
-      setItems(INITIAL_ITEMS);
+    let updatedSubtotal = calculateSubtotal();
+    let _calculateTaxAmount = calculateTaxAmount(updatedSubtotal);
+    let _calculateTotal = calculateTotal(updatedSubtotal, _calculateTaxAmount);
+    if (discountPrice) {
+      updatedSubtotal -= discountPrice;
+      _calculateTaxAmount -= discountPrice;
+      _calculateTotal -= discountPrice;
     }
+    setTaxAmount(_calculateTaxAmount);
+    setSubtotal(updatedSubtotal);
+    setTotal(_calculateTotal);
+  }, [items, discountPrice]);
+
+  React.useEffect(() => {
+    let updatedItems: any = [];
+
+    if (!isInitialSet) {
+      updatedItems = [...INITIAL_ITEMS];
+      setIsInitialSet(true);
+    } else if (transactionItems.length > 0) {
+      // First map all actual items from the backend
+      const actualItems = transactionItems
+        .filter((item) => item.description && item.description !== "DISCOUNT")
+        .map((item, index) => ({
+          ...item,
+          _id: item.id,
+          id: index,
+          extended: item.extended || item.price * item.quantity,
+          hasActualItem: Boolean(item.description),
+        }));
+      updatedItems = [...actualItems];
+      const emptyRow = createEmptyRow();
+      emptyRow.id = updatedItems.length;
+      updatedItems.push(emptyRow);
+    }
+    setTransactions(updatedItems);
   }, [transactionItems]);
-  
-  // useEffect(() => {
-  //   if (transactionItems.length > 0) {
-  //     // Create a map of transactionItems indexed by their ID for faster lookup
-  //     const transactionItemsMap = transactionItems.reduce((map:any, item) => {
-  //       map[item.id] = {
-  //         ...item,
-  //         extended: item.extended || item.price * item.quantity,
-  //       };
-  //       return map;
-  //     }, {});
-      
-  //     // Map INITIAL_ITEMS to corresponding transactionItems if they exist
-  //     const updatedItems = INITIAL_ITEMS.map(initialItem => {
-  //       // If there's a matching transaction item, use it; otherwise use the initial item
-  //       return transactionItemsMap[initialItem.id] || initialItem;
-  //     });
-      
-  //     setItems(updatedItems);
-  //   } else {
-  //     setItems(INITIAL_ITEMS);
-  //   }
-  // }, [transactionItems]);
-// useEffect(() => {
-//   if (transactionItems.length > 0) {
-//     // Start with a copy of INITIAL_ITEMS
-//     const updatedItems = [...INITIAL_ITEMS];
-    
-//     // Keep track of which transaction items were matched
-//     const matchedTransactionItems = new Set();
-    
-//     // For each transaction item, find matching position in initial items
-//     transactionItems.forEach(transItem => {
-//       // Find the index of the initial item where id matches the transaction's itemId
-//       const indexToUpdate = INITIAL_ITEMS.findIndex(initialItem => initialItem.id === transItem.itemId);
-      
-//       // If a match is found, replace that item
-//       if (indexToUpdate !== -1) {
-//         updatedItems[indexToUpdate] = {
-//           ...transItem,
-//           extended: transItem.extended || transItem.price * transItem.quantity
-//         };
-//         matchedTransactionItems.add(transItem.id);
-//       }
-//     });
-    
-//     // Add new transaction items that don't have a match in initial state
-//     const newTransactionItems = transactionItems
-//       .filter(item => !matchedTransactionItems.has(item.id))
-//       .map(item => ({
-//         ...item,
-//         extended: item.extended || item.price * item.quantity
-//       }));
-    
-//     // Combine updated initial items with new transaction items
-//     setItems([...updatedItems, ...newTransactionItems]);
-//   } else {
-//     setItems(INITIAL_ITEMS);
-//   }
-// }, [transactionItems]);
+  const createEmptyRow = (): any => {
+    const newId =
+      items.length > 0 ? Math.max(...items.map((item) => item.id)) + 1 : 1;
 
+    return {
+      _id: "",
+      id: newId,
+      description: "",
+      quantity: 0,
+      price: 0,
+      extended: 0,
+      itemgroup: invoice.group || "",
+      hasActualItem: false,
+    };
+  };
 
+  useEffect(() => {
+    if (transaction.length > 0) {
+      // Map transaction items to your format
+      const newItems = transactionItems.map((item, index) => ({
+        ...item,
+        _id: item._id || item.id,
+        id: index,
+        extended: item.extended || item.price * item.quantity,
+        hasActualItem: Boolean(item.description),
+      }));
 
+      const hasEmptyRow = newItems.some(
+        (item) => item.description === "" && !item.isDiscount
+      );
+      if (!hasEmptyRow) {
+        newItems.push(createEmptyRow());
+      }
+      const sortedItems = newItems.sort((a, b) => {
+        if (a.description === "DISCOUNT") return 1;
+        if (b.description === "DISCOUNT") return -1;
+        return 0;
+      });
+
+      setItems(sortedItems);
+    } else {
+      setItems([...INITIAL_ITEMS]);
+    }
+  }, [transaction]);
 
   const calculateExtended = (
     item: LineItem,
@@ -233,7 +155,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   ) => {
     const qty = quantity || 1;
     const prc = price || 0;
-    return item.isDiscount ? -qty * prc : qty * prc;
+    return qty * prc;
   };
 
   const calculateSubtotal = () => {
@@ -254,7 +176,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   };
 
   const handleQuantityChange = (id: number, value = 0) => {
-    console.log(id, value,"this is teh vaues");
     const updatedItems = items.map((item) => {
       if (item.id === id) {
         const extended = calculateExtended(item, value, item.price);
@@ -267,7 +188,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       }
       return item;
     });
-    console.log(updatedItems,"updateItems ")
+
     updateItemAndNotify(updatedItems);
   };
 
@@ -348,16 +269,23 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
     const updatedItems = items.map((item) => {
       if (item.id === id) {
         const price = selectedItem.price?.toString() || "";
-        const extended = calculateExtended(item, item.quantity, price);
+        const quantity = item.quantity || 1; // Default quantity 1 رکھیں
+        const extended = calculateExtended(item, quantity, price);
         return {
           ...item,
           description: selectedItem.description,
           price,
+          quantity,
           extended,
         };
       }
       return item;
     });
+
+    if (id === items[items.length - 1].id) {
+      updatedItems.push(createEmptyRow());
+    }
+
     updateItemAndNotify(updatedItems);
   };
 
@@ -388,6 +316,50 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       }
     });
   }, [items]);
+
+  const [options, setOptions] = useState<any[]>([]);
+  const formatLabel = (item: any): string => {
+    return `${item.description} ${
+      item.shortcut1 ? `(${item.shortcut1})` : ""
+    } ${item.shortcut2 ? `(${item.shortcut2})` : ""}`.trim();
+  };
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      const { data, error } = await supabase
+        .from("items")
+        .select("description, shortcut1, shortcut2")
+        .limit(100); // Adjust the limit as needed
+
+      if (!error && data) {
+        const newOptions = data.map((item) => ({
+          value: item.description,
+          label: formatLabel(item),
+          item,
+        }));
+        setOptions(newOptions);
+      } else {
+        console.error("Error fetching items:", error);
+      }
+    };
+
+    fetchOptions();
+  }, []);
+
+  const handleDiscountPriceChange = (value = 0) => {
+    if (!value) {
+      setDiscountPrice(0);
+      return;
+    } else {
+      setDiscountPrice(value);
+    }
+  };
+  const sortedItems = items.sort((a, b) => {
+    if (a.description === "DISCOUNT") return 1;
+    if (b.description === "DISCOUNT") return -1;
+    return 0;
+  });
+
   return (
     <>
       <FormSection title="Charges">
@@ -402,12 +374,12 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
               </tr>
             </thead>
             <tbody>
-              {items.map((item, index) => {
+              {sortedItems.map((item, index) => {
                 const baseRef = 69 + index * 3;
                 const descriptionRef = refs[`description${baseRef}`];
                 const sectionRef = refs[`description${baseRef + 1}`];
                 const priceRef = refs[`description${baseRef + 2}`];
-
+                console.log(item, "item");
                 return (
                   <tr
                     key={item.id}
@@ -415,36 +387,24 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                   >
                     <td className="p-1">
                       {item.isDiscount ? (
-                        <input
-                          type="text"
-                          className="w-full h-9 rounded-md border border-gray-300 p-2 bg-gray-50"
-                          value={item.description}
-                          disabled
-                        />
+                        <></>
                       ) : (
                         <ItemDescriptionCombobox
+                          options={options}
                           ref={descriptionRef}
                           value={item.description}
                           onChange={(value) => handleItemChange(item.id, value)}
                           onItemSelect={(selectedItem) =>
                             handleItemSelect(item.id, selectedItem)
                           }
+                          placeholder={
+                            "click here and choose an item from the list"
+                          }
                           inputRefs={descriptionRef}
                           onKeyDown={(e: React.KeyboardEvent<Element>) =>
                             onKeyDown(e, `description${baseRef}`)
                           }
                         />
-                        // <FormInput
-                        //   ref={descriptionRef}
-                        //   label="City"
-                        //   title="master.regcity"
-                        //   type="text"
-                        //   className="w-full p-2 border rounded"
-                        //   placeholder="Enter city"
-                        // onKeyDown={(e) =>
-                        //   onKeyDown(e, `description${baseRef}`)
-                        // }
-                        // />
                       )}
                     </td>
                     <td className="p-1">
@@ -487,6 +447,32 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
                   </tr>
                 );
               })}
+              <tr className="bg-gray-50">
+                <td className="p-1">
+                  <input
+                    type="text"
+                    className="w-full h-9 rounded-md border border-gray-300 p-2 bg-gray-50"
+                    value="DISCOUNT"
+                    disabled
+                  />
+                </td>
+
+                <td className="p-1" colSpan={2}>
+                  <CurrencyInput
+                    className="h-9"
+                    value={discountPrice}
+                    onChange={handleDiscountPriceChange}
+                  />
+                </td>
+                <td className="p-1">
+                  <ExtendedCurrencyInput
+                    value={discountPrice}
+                    onChange={() => {}} // Read-only
+                    disabled={true}
+                    className="text-red-600 h-9"
+                  />
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -506,118 +492,3 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
 };
 
 export default ChargesSection;
-
-// import React from 'react';
-{
-  /* <FormInput
-                        // ref={refs.}
-                          label="City"
-                          title="master.regcity"
-                          // onKeyDown={onKeyDown}
-                          ref={refs.description69}
-              type="text"
-              className="w-full p-2 border rounded"
-              placeholder="Enter city"
-              onKeyDown={(e) => onKeyDown(e, "description69")}
-                          // value={formState.invoice.regcity || ''}
-                          // onChange={(e) => updateInvoice({ regcity: e.target.value })}
-                          // onKeyDown={(e: any) => handleKeyDown(e, "regcity")}
-                          // className="w-48"
-                          // placeholder="Enter city"
-                        /> */
-}
-
-{
-  /* <ItemDescriptionCombobox
-                          ref={refs.description69}
-                          onKeyDown={(e) => onKeyDown(e, "description69")}
-                          value={''}
-                          // onChange={(value) => handleItemChange(item.id, value)}
-                          // onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
-                          // onEnterPress={() => itemRefs.current[index * 3 + 1]?.focus()}
-                        /> */
-}
-
-// // Define the props interface
-// interface ChargesSectionProps {
-//   invoice: any;
-//   transactionItems: any[];
-//   onInvoiceChange: (updates: any) => void;
-//   onItemsChange: (items: any[]) => void;
-//   refs:any
-//   onKeyDown: (e: React.KeyboardEvent, fieldName: string) => void;
-// }
-
-// const ChargesSection: React.FC<ChargesSectionProps> = ({
-//   invoice,
-//   transactionItems,
-//   onInvoiceChange,
-//   onItemsChange,
-//   refs,
-//   onKeyDown
-// }) => {
-//   return (
-//     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-//       <h2 className="text-lg font-medium mb-4">Charges Section</h2>
-
-//       <div className="space-y-4">
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-//           <input
-// ref={refs.description69}
-// type="text"
-// className="w-full p-2 border rounded"
-// placeholder="Enter city"
-// onKeyDown={(e) => onKeyDown(e, "description69")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-//           <input
-//             ref={refs.description70}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter state"
-//             onKeyDown={(e) => onKeyDown(e, "description70")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
-//           <input
-//             ref={refs.description71}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter zip code"
-//             onKeyDown={(e) => onKeyDown(e, "description71")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-//           <input
-//             ref={refs.description72}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter country"
-//             onKeyDown={(e) => onKeyDown(e, "description72")}
-//           />
-//         </div>
-
-//         <div className="form-field">
-//           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-//           <input
-//             ref={refs.description73}
-//             type="text"
-//             className="w-full p-2 border rounded"
-//             placeholder="Enter phone"
-//             onKeyDown={(e) => onKeyDown(e, "description73")}
-//           />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChargesSection;

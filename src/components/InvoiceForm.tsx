@@ -126,11 +126,64 @@ const FIELD_INDEXES: any = {
   description78: 78,
   description79: 79,
   description80: 80,
+  description81: 81,
+  description82: 82,
+  description83: 83,
+  description84: 84,
+  description85: 85,
+  description86: 86,
+  description87: 87,
+  description88: 88,
+  description89: 89,
+  description90: 90,
+  description91: 91,
+  description92: 92,
+  description93: 93,
+  description94: 94,
+  description95: 95,
+  description96: 96,
+  description97: 97,
+  description98: 98,
+  description99: 99,
+  description100: 100,
+  description101: 101,
+  description102: 102,
+  description103: 103,
+  description104: 104,
+  description105: 105,
+  description106: 106,
+  description107: 107,
+  description108: 108,
+  description109: 109,
+  description110: 110,
+  description111: 111,
+  description112: 112,
+  description113: 113,
+  description114: 114,
+  description115: 115,
+  description116: 116,
+  description117: 117,
+  description118: 118,
+  description119: 119,
+  description120: 120,
+  description121: 121,
+  description122: 122,
+  description123: 123,
+  description124: 124,
+  description125: 125,
+  description126: 126,
+  description127: 127,
+  description128: 128,
+  description129: 129,
+  description130: 130,
+  // commit both
+  // description84: 84,
+  // description85: 85,
   //commit both
   // description81: 81,
   // description82: 82,
   //
-  description83: 83,
+  // description83: 83,
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -228,9 +281,64 @@ const InvoiceForm = () => {
   const description78Ref = useRef(null);
   const description79Ref = useRef(null);
   const description80Ref = useRef(null);
+  const description81Ref = useRef(null);
+  const description82Ref = useRef(null);
+  const description83Ref = useRef(null);
+  const description84Ref = useRef(null);
+  const description85Ref = useRef(null);
+  const description86Ref = useRef(null);
+  const description87Ref = useRef(null);
+  const description88Ref = useRef(null);
+  const description89Ref = useRef(null);
+  const description90Ref = useRef(null);
+  const description91Ref = useRef(null);
+  const description92Ref = useRef(null);
+  const description93Ref = useRef(null);
+  const description94Ref = useRef(null);
+  const description95Ref = useRef(null);
+  const description96Ref = useRef(null);
+  const description97Ref = useRef(null);
+  const description98Ref = useRef(null);
+  const description99Ref = useRef(null);
+  const description100Ref = useRef(null);
+  const description101Ref = useRef(null);
+  const description102Ref = useRef(null);
+  const description103Ref = useRef(null);
+  const description104Ref = useRef(null);
+  const description105Ref = useRef(null);
+  const description106Ref = useRef(null);
+  const description107Ref = useRef(null);
+  const description108Ref = useRef(null);
+  const description109Ref = useRef(null);
+  const description110Ref = useRef(null);
+  const description111Ref = useRef(null);
+  const description112Ref = useRef(null);
+  const description113Ref = useRef(null);
+  const description114Ref = useRef(null);
+  const description115Ref = useRef(null);
+  const description116Ref = useRef(null);
+  const description117Ref = useRef(null);
+  const description118Ref = useRef(null);
+  const description119Ref = useRef(null);
+  const description120Ref = useRef(null);
+  const description121Ref = useRef(null);
+  const description122Ref = useRef(null);
+  const description123Ref = useRef(null);
+  const description124Ref = useRef(null);
+  const description125Ref = useRef(null);
+  const description126Ref = useRef(null);
+  const description127Ref = useRef(null);
+  const description128Ref = useRef(null);
+  const description129Ref=useRef(null);
+  const  description130Ref= useRef(null);
+
+
+
+
+
   // const description81Ref = useRef(null);
   // const description82Ref = useRef(null);
-  const description83Ref = useRef(null);
+  // const description83Ref = useRef(null);
 
   const inputRefs: any = {
     driver: driverRef,
@@ -314,9 +422,59 @@ const InvoiceForm = () => {
     description78: description78Ref,
     description79: description79Ref,
     description80: description80Ref,
+    description81: description81Ref,
+    description82: description82Ref,
+    description83: description83Ref,
+    description84: description84Ref,
+    description85: description85Ref,
+    description86: description86Ref,
+    description87: description87Ref,
+    description88: description88Ref,
+    description89: description89Ref,
+    description90: description90Ref,
+    description91: description91Ref,
+    description92: description92Ref,
+    description93: description93Ref,
+    description94: description94Ref,
+    description95: description95Ref,
+    description96: description96Ref,
+    description97: description97Ref,
+    description98: description98Ref,
+    description99: description99Ref,
+    description100: description100Ref,
+    description101: description101Ref,
+    description102: description102Ref,
+    description103: description103Ref,
+    description104: description104Ref,
+    description105: description105Ref,
+    description106: description106Ref,
+    description107: description107Ref,
+    description108: description108Ref,
+    description109: description109Ref,
+    description110: description110Ref,
+    description111: description111Ref,
+    description112: description112Ref,
+    description113: description113Ref,
+    description114: description114Ref,
+    description115: description115Ref,
+    description116: description116Ref,
+    description117: description117Ref,
+    description118: description118Ref,
+    description119: description119Ref,
+    description120: description120Ref,
+    description121: description121Ref,
+    description122: description122Ref,
+    description123: description123Ref,
+    description124: description124Ref,
+    description125: description125Ref,
+    description126: description126Ref,
+    description127: description127Ref,
+    description128: description128Ref,
+    description129: description129Ref,
+    description130: description130Ref,
     // description81: description81Ref,
     // description82: description82Ref,
-    description83: description83Ref,
+    // description83: description83Ref,
   };
 
   useEffect(() => {
@@ -507,7 +665,7 @@ const InvoiceForm = () => {
         onInvoiceFound={handleInvoiceFound}
         className="flex-1 min-w-[200px]"
       />
-      <NewButton onNew={handleNew} />
+      {/* <NewButton onNew={handleNew} /> */}
       <SaveButton onSave={handleSave} />
       <PrintButton onPrint={handlePrint} />
     </div>,
