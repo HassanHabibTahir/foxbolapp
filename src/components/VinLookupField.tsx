@@ -58,6 +58,7 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
       //   setError('VIN not found in database');
       // }
     } catch (err) {
+      setLoading(false);  
       setError('Error looking up VIN');
       console.error('VIN lookup error:', err);
     } finally {

@@ -86,11 +86,12 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       updatedItems = [...INITIAL_ITEMS];
       setIsInitialSet(true);
     } else if (transactionItems.length > 0) {
+      console.log(transactionItems , "transactionItems,")
       // First map all actual items from the backend
       const actualItems = transactionItems
         .filter((item) => item.description && item.description !== "DISCOUNT")
         .map((item, index) => ({
-          ...item,
+          ...item,  
           _id: item.id,
           id: index,
           extended: item.extended || item.price * item.quantity,
