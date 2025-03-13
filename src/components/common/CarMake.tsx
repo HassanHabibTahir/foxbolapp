@@ -173,14 +173,19 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
       }
       if (data && data.length > 0) {
         setOptions(
-          data.map((carmake: { id: string; name: string }) => ({
-            id: carmake.id.toString(),
-            value: carmake.name,
-            label: carmake.name,
-          }))
+          data.map((carmake: { id: string; name: string }) => {
+            const formattedName = carmake.name
+              .split(' ')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+              .join(' ');
+            return {
+              id: carmake.id.toString(),
+              value: formattedName,
+              label: formattedName,
+            };
+          })
         );
       }
-
     } catch (e) {
       console.error("Fetch error:", e);
     } finally {
