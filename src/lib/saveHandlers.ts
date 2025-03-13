@@ -19,6 +19,7 @@ export interface SavePayload {
   items?: Array<{
     itemId?: string;
     id?: any;
+    _id?:any;
     description: string;
     quantity: number;
     price: number;
@@ -74,10 +75,10 @@ export const saveDispatch = async (payload: SavePayload) => {
           if (item.description === "DISCOUNT" || item.description === "") {
             continue; // Skip discount or empty description items
           }
-          const isNumber = typeof item.id === "number";
+          const isNumber = typeof item._id === "number";
           const isUUID =
             typeof item.id === "string" && /^[0-9a-fA-F-]{36}$/.test(item.id);
-          const itemId = isUUID ? item.id : isNumber ? uid : item.id;
+          const itemId = isUUID ? item._id : isNumber ? uid : item._id;
           const { data: existingItem, error: fetchError } = await supabase
             .from("towtrans")
             .select("id")

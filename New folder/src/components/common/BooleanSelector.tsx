@@ -140,8 +140,6 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   };
 
 
- console.log(value,"value--commition")
-
 
   return (
     <div className={className}>
