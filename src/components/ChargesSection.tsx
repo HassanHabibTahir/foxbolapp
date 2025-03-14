@@ -449,7 +449,7 @@ try{
                         {!item.isDiscount && item.description && (
                           <button
                             type="button"
-                            className="p-0.5 rounded-full w-4 hover:bg-red-100 transition-colors"
+                            className="p-0.5 rounded-full w-4  transition-colors"
                             onClick={() => handleDeleteItem(item.id)}
                             disabled={!item.description}
                             title="Delete item"
