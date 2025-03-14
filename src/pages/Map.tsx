@@ -33,6 +33,7 @@ function MappingPage() {
     setLoader(newLoader);
   }, []);
 
+
   // Initialize map after loader is set
   useEffect(() => {
     if (!loader || !mapRef.current) return;
@@ -45,14 +46,16 @@ function MappingPage() {
           zoom: 10,
         });
         setMap(newMap);
-        setGeocoder(new google.maps.Geocoder());
+        const newGeocoder = new google.maps.Geocoder();
+        setGeocoder(newGeocoder);
       } catch (error) {
         console.error('Error loading Google Maps:', error);
       }
     };
 
-    initMap();
+    void initMap();
   }, [loader]);
+
 
   useEffect(() => {
     const fetchCalls = async () => {
@@ -75,10 +78,10 @@ function MappingPage() {
     // Set up real-time subscription
     const subscription = supabase
       .channel('towmast_changes')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'towmast' 
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'towmast'
       }, payload => {
         if (payload.eventType === 'INSERT') {
           setCalls(prev => [payload.new as TowCall, ...prev]);
@@ -95,40 +98,43 @@ function MappingPage() {
   const geocodeLocations = async (callsToGeocode: TowCall[]) => {
     if (!geocoder || !map) return;
 
-    callsToGeocode.forEach(async call => {
+    callsToGeocode.forEach(async (call) => {
       if (call.location) {
         try {
-          const result = await geocoder.geocode({ address: call.location });
-          if (result.results[0]?.geometry?.location) {
-            const position = result.results[0].geometry.location;
-            
-            const marker = new google.maps.Marker({
-              position,
-              map,
-              title: `Call #${call.dispnum}`,
-              icon: {
-                url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-              }
-            });
+          geocoder.geocode({ address: call.location }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              const position = results[0].geometry.location;
 
-            const infoWindow = new google.maps.InfoWindow({
-              content: `
+              const marker = new google.maps.Marker({
+                position,
+                map,
+                title: `Call #${call.dispnum}`,
+                icon: {
+                  url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                },
+              });
+
+              const infoWindow = new google.maps.InfoWindow({
+                content: `
                 <div class="p-2">
                   <h3 class="font-bold">Call #${call.dispnum}</h3>
                   <p>${call.account}</p>
                   <p>${call.location}</p>
                   <p>Created: ${new Date(call.created_at).toLocaleString()}</p>
                 </div>
-              `
-            });
+              `,
+              });
 
-            marker.addListener('click', () => {
-              infoWindow.open(map, marker);
-              setSelectedCall(call);
-            });
+              marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+                setSelectedCall(call);
+              });
 
-            setMarkers(prev => [...prev, marker]);
-          }
+              setMarkers((prev) => [...prev, marker]);
+            } else {
+              console.error('Geocoding failed:', status, results);
+            }
+          });
         } catch (error) {
           console.error('Geocoding error:', error);
         }
@@ -136,7 +142,7 @@ function MappingPage() {
     });
   };
 
-  const filteredCalls = calls.filter(call => 
+  const filteredCalls = calls.filter(call =>
     String(call.dispnum).includes(searchTerm.toLowerCase()) ||
     call.account.toLowerCase().includes(searchTerm.toLowerCase()) ||
     call.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -189,4 +195,5 @@ function MappingPage() {
   );
 }
 
+MappingPage.displayName = 'MappingPage'
 export default MappingPage;
