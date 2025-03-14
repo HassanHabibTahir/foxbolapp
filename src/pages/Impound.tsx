@@ -452,8 +452,8 @@ function Impounds() {
     }
   };
 
-  const handleDetailView = (dispatchNum: any) => {
-    navigate('/impound/detail', { state: { dispatchNum: dispatchNum } });
+  const handleDetailView = (dispatchNum: any,foxtow_id:any) => {
+    navigate('/impound/detail', { state: { dispatchNum: dispatchNum ,foxtow_id:foxtow_id} });
   };
 
   const handleModifyImpound = (dispatchNum: any) => {
@@ -648,7 +648,7 @@ function Impounds() {
                     <tr>
                       <td colSpan={orderedFields.length + 1} className="bg-gray-50 px-4 py-3 border border-gray-300">
                         <div className="flex gap-4">
-                          <button onClick={() => handleDetailView(record.dispnum)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                          <button onClick={() => handleDetailView(record.dispnum,record?.foxtow_id)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
                             <Eye size={18} /> {t('impounds.actions.viewImpound')}
                           </button>
                           <button onClick={() => handleModifyImpound(record.dispnum)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">

@@ -134,7 +134,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           type="text"
           className={`
           mt-1 h-9 block rounded-md border border-gray-300
-          focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm
           ${isMobile ? "w-full" : `p-2 w-[${width}]`}
           ${className} ${height}
         `}

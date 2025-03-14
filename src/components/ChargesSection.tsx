@@ -9,8 +9,8 @@ import InvoiceTotals from "./InvoiceTotals"
 import { lookupPrice } from "../lib/priceService"
 import ExtendedCurrencyInput from "./common/ExtendedCurrenctInput"
 import { supabase } from "../lib/supabase"
-import { Trash2 } from "lucide-react"
-import toast from "react-hot-toast"
+import { XCircle  } from 'lucide-react';
+import { useMediaQuery } from 'react-responsive';
 
 interface LineItem {
   itemId?: any
@@ -67,6 +67,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
   const [isInitialSet, setIsInitialSet] = React.useState(false)
   const [discountPrice, setDiscountPrice] = useState(0)
   const [subtotal, setSubtotal] = useState(0)
+  const isSmallToMediumScreen = useMediaQuery({ maxWidth: 1024 });
 
   useEffect(() => {
     let updatedSubtotal = calculateSubtotal()
@@ -89,7 +90,6 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
       updatedItems = [...INITIAL_ITEMS]
       setIsInitialSet(true)
     } else if (transactionItems.length > 0) {
-      console.log(transactionItems, "transactionItems,")
       // First map all actual items from the backend
       const actualItems = transactionItems
         .filter((item) => item.description && item.description !== "DISCOUNT")
@@ -171,7 +171,7 @@ const ChargesSection: React.FC<ChargesSectionProps> = ({
     setItems(updatedItems)
     onItemsChange(updatedItems)
   }
-  console.log(items, "items-->")
+
   const handleQuantityChange = (id: number, value = 0) => {
     const updatedItems = items.map((item) => {
       if (item.id === id) {
@@ -295,7 +295,7 @@ try{
       }
     const iDforDelete= itemToDelete._id;
     if (iDforDelete && typeof iDforDelete === 'string') {
-      console.log(itemToDelete, "itemToDelete ===>");
+    
       const { error } = await supabase
     .from('towtrans')
     .delete()
@@ -429,11 +429,11 @@ try{
                 <th className="px-4 py-2 w-32">Quantity</th>
                 <th className="px-4 py-2 w-40">Price</th>
                 <th className="px-4 py-2 w-40">Extended</th>
-                <th className="px-4 py-2 w-16">Actions</th>
+              
               </tr>
             </thead>
             <tbody>
-              {sortedItems.map((item, index) => {
+              {items.map((item, index) => {
                 const baseRef = 69 + index * 3
                 const descriptionRef = refs[`description${baseRef}`]
                 const sectionRef = refs[`description${baseRef + 1}`]
@@ -445,16 +445,42 @@ try{
                       {item.isDiscount ? (
                         <></>
                       ) : (
-                        <ItemDescriptionCombobox
-                          options={options}
-                          ref={descriptionRef}
-                          value={item.description}
-                          onChange={(value) => handleItemChange(item.id, value)}
-                          onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
-                          placeholder={"click here and choose an item from the list"}
-                          inputRefs={descriptionRef}
-                          onKeyDown={(e: React.KeyboardEvent<Element>) => onKeyDown(e, `description${baseRef}`)}
-                        />
+                        <div className="flex items-center gap-1">
+                        {!item.isDiscount && item.description && (
+                          <button
+                            type="button"
+                            className="p-0.5 rounded-full w-4  transition-colors"
+                            onClick={() => handleDeleteItem(item.id)}
+                            disabled={!item.description}
+                            title="Delete item"
+                          >
+                            <XCircle   className=" w-4 text-red-500" />
+                          </button>
+                        )}
+                        <div className="flex-1">
+                          <ItemDescriptionCombobox
+                            options={options}
+                            ref={descriptionRef}
+                            value={item.description}
+                            onChange={(value) => handleItemChange(item.id, value)}
+                            onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
+                            placeholder={isSmallToMediumScreen?"click..":"click here and choose an item from the list"}
+                            inputRefs={descriptionRef}
+                            onKeyDown={(e: React.KeyboardEvent<Element>) => onKeyDown(e, `description${baseRef}`)}
+                            className={`${!item?.description?"ml-5":""}`}
+                          />
+                        </div>
+                      </div>
+                        // <ItemDescriptionCombobox
+                        //   options={options}
+                        //   ref={descriptionRef}
+                        //   value={item.description}
+                        //   onChange={(value) => handleItemChange(item.id, value)}
+                        //   onItemSelect={(selectedItem) => handleItemSelect(item.id, selectedItem)}
+                        //   placeholder={"click here and choose an item from the list"}
+                        //   inputRefs={descriptionRef}
+                        //   onKeyDown={(e: React.KeyboardEvent<Element>) => onKeyDown(e, `description${baseRef}`)}
+                        // />
                       )}
                     </td>
                     <td className="p-1">
@@ -486,7 +512,7 @@ try{
                         className={item.isDiscount ? "text-red-600 h-9" : ""}
                       />
                     </td>
-                    <td className="p-1">
+                    {/* <td className="p-1">
                       {!item.isDiscount && item.description&& (
                         <div className="flex items-center justify-center">
                           <button
@@ -500,7 +526,7 @@ try{
                           </button>
                         </div>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 )
               })}
@@ -508,7 +534,8 @@ try{
                 <td className="p-1">
                   <input
                     type="text"
-                    className="w-full h-9 rounded-md border border-gray-300 p-2 bg-gray-50"
+                    
+                    className={`ml-5 mr-4 ${isSmallToMediumScreen?'w-[85%]':'w-[97%]'} h-9 rounded-md border border-gray-300 p-2 bg-gray-50 text-sm`}
                     value="DISCOUNT"
                     disabled
                   />
