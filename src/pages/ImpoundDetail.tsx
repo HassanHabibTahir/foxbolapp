@@ -10,7 +10,7 @@ function ImpoundDetail() {
   const [transaction, setTransaction] = useState<any>([]);
   const location = useLocation();
   const { dispatchNum ,foxtow_id} = location.state;
-console.log(foxtow_id,"foxtow_id==>",location.state)
+
   const fetchDispatch = async (dispatchNum: string) => {
     const { data, error } = await supabase
       .from('towmast')
@@ -76,6 +76,29 @@ console.log(foxtow_id,"foxtow_id==>",location.state)
     }
   }, [dispatchNum]);
 
+  const [selectedOption, setSelectedOption] = useState<any | null>(null)
+  useEffect(() => {
+      if (driver?.driver) {
+        const fetchDriver = async () => {
+          const { data, error } = await supabase.from("drivers").select().eq("driver_num", driver?.driver).single()
+
+          if (!error && data) {
+            setSelectedOption({
+              value: data.driver_num,
+              label: `${data.driver_fir} ${data.driver_las}`,
+              driver: data,
+            })
+          }
+        }
+
+        fetchDriver()
+      } else {
+        setSelectedOption(null)
+      }
+    }, [driver?.driver])
+
+
+
   const formatVehicleDescription = (record: any) => {
     if (!record) return '';
     
@@ -116,6 +139,9 @@ console.log(foxtow_id,"foxtow_id==>",location.state)
     return transaction.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0);
   };
 
+
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Action Buttons */}
@@ -124,7 +150,7 @@ console.log(foxtow_id,"foxtow_id==>",location.state)
         <ActionButton icon={<FileText size={16} />} label="Record Payment" />
         <ActionButton icon={<FileText size={16} />} label="Release Vehicle" />
         <ActionButton icon={<FileText size={16} />} label="Auction" />
-        <ActionButton icon={<FileText size={16} />} label="Tow from Storage" />
+        <ActionButton icon={<FileText size={16} />} label="Tow from Storage"   />
         <ActionButton icon={<Camera size={16} />} label="Upload Photos" />
         <ActionButton icon={<Folder size={16} />} label="Upload Files" />
         <ActionButton icon={<FileText size={16} />} label="Add Note" />
@@ -151,22 +177,22 @@ console.log(foxtow_id,"foxtow_id==>",location.state)
                 label="Impound Total" 
                 value={invoice ? `$${invoice?.total?.toFixed(2)} as of ${formatDate(invoice?.invdate)}` : '-'} 
               />
-              <DetailRow label="Storage Lot" value={dispatch?.storagelot || '-'} />
+              <DetailRow label="Storage Lot" value={dispatch?.lotsection || '-'} />
               <DetailRow 
                 label="Date Impounded" 
-                value={dispatch?.dateimpounded ? 
-                  `${formatDate(dispatch.dateimpounded)} ${calculateDaysSince(dispatch.dateimpounded)}` : 
+                value={invoice?.dateStored ? 
+                  `    ${formatDate(invoice.dateStored)} ${calculateDaysSince(invoice.dateStored)}` : 
                   '-'
                 } 
               />
               <DetailRow label="Towed From" value={dispatch?.towedfrom || '-'} />
-              <DetailRow label="Driver" value={driver?.drivername || '-'} />
-              <DetailRow label="Reason for Impound" value={dispatch?.reasonimpound || '-'} />
+              <DetailRow label="Driver" value={selectedOption?.label || '-'} />
+              <DetailRow label="Reason for Impound" value={dispatch?.reason || '-'} />
               <DetailRow label="Account" value={dispatch?.callname || '-'} />
-              <DetailRow label="Call Number" value={dispatch?.callnum || '-'} />
-              <DetailRow label="Stock Number" value={dispatch?.stocknum || '-'} />
+              <DetailRow label="Call Number" value={dispatch?.callphone || '-'} />
+              <DetailRow label="Stock Number" value={invoice?.invoicenum || '-'} />
               <DetailRow label="Lien Start" value={dispatch?.liendin ? formatDate(dispatch.liendin) : '-'} />
-              <DetailRow label="Lien Clear" value={dispatch?.lienclear ? formatDate(dispatch.lienclear) : '-'} />
+              <DetailRow label="Lien Clear" value={dispatch?.liendout ? formatDate(dispatch.liendout) : '-'} />
               <DetailRow label="Lien Type" value={dispatch?.lientype || '-'} />
             </div>
           </div>
@@ -207,13 +233,13 @@ console.log(foxtow_id,"foxtow_id==>",location.state)
           {/* Vehicle Details */}
           <div className="bg-white rounded-lg shadow">
             <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Vehicle Details</h2>
+              <h2 className="font-semibold">Vehicle Details</h2> 
             </div>
             <div className="p-4">
               <DetailRow label="Vehicle Description" value={formatVehicleDescription(dispatch)} />
               <DetailRow label="Plate #" value={dispatch?.licensenum || '-'} />
               <DetailRow label="VIN" value={dispatch?.vin || '-'} />
-              <DetailRow label="Drive Type" value={dispatch?.drivetype || '-'} />
+              <DetailRow label="Drive Type" value={dispatch?.type || '-'} />
               <DetailRow label="Have Keys" value={dispatch?.havekeys ? 'Yes' : 'No'} />
               <DetailRow label="Drivable" value={dispatch?.drivable ? 'Yes' : 'No'} />
             </div>
