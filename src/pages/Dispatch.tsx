@@ -1,9 +1,10 @@
-import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
-import { Truck, FileDown, Printer, Search, ChevronLeft, ChevronRight, Power } from 'lucide-react';
+import { useState, useEffect, KeyboardEvent } from 'react';
+import { Truck, FileDown, Printer, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import DriverModal from '../components/dispatch/DriverModal';
 import toast, { Toaster } from 'react-hot-toast';
+import {DispatchHeader} from "../components/DispatchHeader";
 
 interface Driver {
   id: string;
@@ -24,6 +25,7 @@ interface TowRecord {
   timeinrt?: string;
   timearrive?: string;
   timeintow?: string;
+  timeclear?: string;
   towmast: {
     priority: number;
     callname?: string;
@@ -72,7 +74,7 @@ function Dispatch() {
 
   const handleTimeFieldRightClick = async (e: React.MouseEvent<HTMLInputElement>, recordId: string, field: string) => {
     e.preventDefault();
-    
+
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
@@ -99,7 +101,7 @@ function Dispatch() {
     }
   };
 
-  const handleDriverAssignment = async (driverId: string, driverNum: string, truckNum: string) => {
+  const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
     if (!selectedRow) {
       toast.error('Please select a dispatch row first');
       return;
@@ -135,7 +137,7 @@ function Dispatch() {
       // Refresh the records
       await fetchTowRecords(currentPage);
       setSelectedRow(null);
-      
+
       toast.dismiss(loadingToast);
       toast.success(`Driver ${driverNum} assigned successfully`);
     } catch (error) {
@@ -144,7 +146,6 @@ function Dispatch() {
       toast.error('Failed to assign driver. Please try again.');
     }
   };
-
 
   const fetchDrivers = async () => {
     const { data, error } = await supabase
@@ -161,7 +162,7 @@ function Dispatch() {
   };
 
   useEffect(() => {
-    fetchDrivers();
+    void fetchDrivers();
   }, []);
 
   const fetchTowRecords = async (page: number) => {
@@ -171,7 +172,7 @@ function Dispatch() {
         const { count } = await supabase
           .from('towdrive')
           .select('*', { count: 'exact', head: true });
-        
+
         if (count !== null) {
           setTotalRecords(count);
         }
@@ -291,9 +292,10 @@ function Dispatch() {
     setTowRecords(prevRecords =>
       prevRecords.map(record => {
         if (record.id !== recordId) return record;
-        
+
         // Handle nested towmast fields
         if (field.startsWith('towmast.')) {
+
           const nestedField = field.split('.')[1];
           return {
             ...record,
@@ -303,7 +305,7 @@ function Dispatch() {
             }
           };
         }
-        
+
         // Handle top-level fields
         return {
           ...record,
@@ -316,7 +318,7 @@ function Dispatch() {
   const handleInputKeyDown = async (e: KeyboardEvent<HTMLInputElement>, recordId: string, field: string, value: string) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      
+
       // Handle nested towmast fields
       if (field.startsWith('towmast.')) {
         const nestedField = field.split('.')[1];
@@ -348,6 +350,8 @@ function Dispatch() {
   return (
     <div className="container mx-auto p-4">
       <Toaster position="top-right" />
+      <DispatchHeader />
+
       <div className="grid grid-cols-12 gap-1 mb-6">
         {drivers.map((driver) => (
           <div
@@ -361,6 +365,7 @@ function Dispatch() {
               <Truck size={24} className="text-gray-700" />
               <div className="text-center mt-1">
                 <div className="text-sm font-medium">{driver.driver_fir}</div>
+
                 <div className="text-xs text-gray-600">{driver.def_truckn}</div>
               </div>
             </button>
@@ -380,7 +385,7 @@ function Dispatch() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
         </div>
         <div className="flex items-center space-x-2">
-          <button 
+          <button
             onClick={handleDriverButtonClick}
             className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50"
           >
@@ -431,9 +436,9 @@ function Dispatch() {
                 </td>
               </tr>
             ) : (
-              towRecords.map((record) => (
-                <tr 
-                  key={record.towmast.dispnum} 
+              towRecords.filter(record => !record.timeclear).map((record) => (
+                <tr
+                  key={record.towmast.dispnum}
                   className={`hover:bg-gray-50 cursor-pointer ${
                     selectedRow === record.id ? 'bg-blue-50' : ''
                   }`}
@@ -442,8 +447,8 @@ function Dispatch() {
                   onDoubleClick={() => handleRowDoubleClick(record)}
                 >
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.priority || ''} 
+                    <input
+                      value={record.towmast.priority || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.priority', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.priority', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
@@ -453,8 +458,8 @@ function Dispatch() {
                   <td className="px-4 py-2 border border-gray-300">{record.trucknum}</td>
                   <td className="px-4 py-2 border border-gray-300">{record.driver}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.timerec || ''} 
+                    <input
+                      value={record.timerec || ''}
                       onChange={(e) => handleInputChange(record.id, 'timerec', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'timerec', e.currentTarget.value)}
                       onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, 'timerec')}
@@ -462,8 +467,8 @@ function Dispatch() {
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.timeinrt || ''} 
+                    <input
+                      value={record.timeinrt || ''}
                       onChange={(e) => handleInputChange(record.id, 'timeinrt', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'timeinrt', e.currentTarget.value)}
                       onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, 'timeinrt')}
@@ -471,8 +476,8 @@ function Dispatch() {
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.timearrive || ''} 
+                    <input
+                      value={record.timearrive || ''}
                       onChange={(e) => handleInputChange(record.id, 'timearrive', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'timearrive', e.currentTarget.value)}
                       onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, 'timearrive')}
@@ -480,8 +485,8 @@ function Dispatch() {
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.timeintow || ''} 
+                    <input
+                      value={record.timeintow || ''}
                       onChange={(e) => handleInputChange(record.id, 'timeintow', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'timeintow', e.currentTarget.value)}
                       onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, 'timeintow')}
@@ -489,56 +494,56 @@ function Dispatch() {
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.account || ''} 
+                    <input
+                      value={record.towmast.account || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.account', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.account', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.licensenum || ''} 
+                    <input
+                      value={record.towmast.licensenum || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.licensenum', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.licensenum', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.yearcar || ''} 
+                    <input
+                      value={record.towmast.yearcar || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.yearcar', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.yearcar', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.makecar || ''} 
+                    <input
+                      value={record.towmast.makecar || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.makecar', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.makecar', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.colorcar || ''} 
+                    <input
+                      value={record.towmast.colorcar || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.colorcar', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.colorcar', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.callphone || ''} 
+                    <input
+                      value={record.towmast.callphone || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.callphone', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.callphone', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.reason || ''} 
+                    <input
+                      value={record.towmast.reason || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.reason', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.reason', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
@@ -546,24 +551,24 @@ function Dispatch() {
                   </td>
                   <td className="px-4 py-2 border border-gray-300">{record.towmast.location}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.destination || ''} 
+                    <input
+                      value={record.towmast.destination || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.destination', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.destination', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.equipment || ''} 
+                    <input
+                      value={record.towmast.equipment || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.equipment', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.equipment', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <input 
-                      value={record.towmast.zone || ''} 
+                    <input
+                      value={record.towmast.zone || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.zone', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.zone', e.currentTarget.value)}
                       className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"

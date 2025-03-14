@@ -114,12 +114,9 @@ export const saveDispatch = async (payload: SavePayload) => {
             foxtow_id,
             invoicenum: invoice.invoicenum,
           };
-          console.log(itemData,"itemData====>",existingItem)
           
           let upsertError;
           if (existingItem) {
-            console.log("his is for update")
-            // Update existing item
             const { error } = await supabase
               .from("towtrans")
               .update(itemData)

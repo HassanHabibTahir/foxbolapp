@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   FileText,
   Building2,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import {cloneElement, ReactElement} from "react";
 
 interface SettingsSidebarProps {
   currentPage: string;
@@ -157,7 +157,7 @@ const SettingsSidebar = ({ currentPage, onPageChange }: SettingsSidebarProps) =>
 };
 
 interface SidebarItemProps {
-  icon: React.ReactElement;
+  icon: ReactElement;
   label: string;
   id: string;
   active?: boolean;
@@ -171,7 +171,7 @@ const SidebarItem = ({ icon, label, active = false, onClick }: SidebarItemProps)
       className={`flex items-center p-2 rounded-lg mb-1 cursor-pointer ${active ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-100'
         }`}
     >
-      {React.cloneElement(icon, { className: active ? 'text-blue-600 w-5 h-5 mr-3' : 'w-5 h-5 mr-3' })}
+      {cloneElement(icon, { className: active ? 'text-blue-600 w-5 h-5 mr-3' : 'w-5 h-5 mr-3' })}
       <span className="text-sm">{label}</span>
     </div>
   );

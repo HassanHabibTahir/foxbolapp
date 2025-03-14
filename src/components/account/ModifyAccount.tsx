@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AccountBasicInfo } from './AccountBasicInfo';
 import { ContactInfo } from './ContactInfo';
 import { AccountOptions } from './AccountOptions';
@@ -95,15 +95,15 @@ export function ModifyAccount() {
             city={formData.physicalAddress.city}
             state={formData.physicalAddress.state}
             zipCode={formData.physicalAddress.zipCode}
-            onChange={(field, value) => 
+            onChange={(field, value) =>
               setFormData({
-                ...formData, 
+                ...formData,
                 physicalAddress: {...formData.physicalAddress, [field]: value}
               })
             }
             showPickupOption={true}
             isPickupLocation={formData.physicalAddress.isPickupLocation}
-            onPickupLocationChange={(value) => 
+            onPickupLocationChange={(value) =>
               setFormData({
                 ...formData,
                 physicalAddress: {...formData.physicalAddress, isPickupLocation: value}
@@ -117,9 +117,9 @@ export function ModifyAccount() {
             city={formData.billingAddress.city}
             state={formData.billingAddress.state}
             zipCode={formData.billingAddress.zipCode}
-            onChange={(field, value) => 
+            onChange={(field, value) =>
               setFormData({
-                ...formData, 
+                ...formData,
                 billingAddress: {...formData.billingAddress, [field]: value}
               })
             }
@@ -155,7 +155,7 @@ export function ModifyAccount() {
             >
               Delete
             </button>
-            
+
             <div className="flex space-x-4">
               <button
                 type="button"
