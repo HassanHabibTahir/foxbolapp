@@ -530,7 +530,7 @@ try{
                   </tr>
                 )
               })}
-              <tr className="bg-gray-50">
+              <tr className="">
                 <td className="p-1">
                   <input
                     type="text"
