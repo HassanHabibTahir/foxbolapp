@@ -9,13 +9,14 @@ function ImpoundDetail() {
   const [invoice, setInvoice] = useState<any>(null);
   const [transaction, setTransaction] = useState<any>([]);
   const location = useLocation();
-  const { dispatchNum } = location.state;
-
+  const { dispatchNum ,foxtow_id} = location.state;
+console.log(foxtow_id,"foxtow_id==>",location.state)
   const fetchDispatch = async (dispatchNum: string) => {
     const { data, error } = await supabase
       .from('towmast')
       .select('*')
       .eq('dispnum', dispatchNum)
+      .eq('foxtow_id',foxtow_id)
       .maybeSingle();
 
     if (error) {

@@ -107,12 +107,14 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
         },
         minHeight: "35px",
         height: "34px",
+        fontSize: "13.5px",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
         backgroundColor: state.isSelected ? "#E5E7EB" : state.isFocused ? "#F3F4F6" : "white",
         color: "#111827",
         cursor: "pointer",
+        fontSize: "13.5px",
         "&:hover": {
           backgroundColor: "#F3F4F6",
         },
@@ -126,6 +128,7 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
       input: (provided: any) => ({
         ...provided,
         color: "#111827",
+        fontSize: "13.5px",
       }),
       singleValue: (provided: any) => ({
         ...provided,
