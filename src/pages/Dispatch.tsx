@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import DriverModal from '../components/dispatch/DriverModal';
 import toast, { Toaster } from 'react-hot-toast';
-import {DispatchHeader} from "../components/DispatchHeader";
+import { DispatchHeader } from '../components/DispatchHeader/DispatchHeader';
+// import {DispatchHeader} from "../components/DispatchHeader";
 
 interface Driver {
   id: string;
@@ -351,7 +352,7 @@ function Dispatch() {
     <div className="container mx-auto p-4">
       <Toaster position="top-right" />
       <DispatchHeader />
-
+{/* 
       <div className="grid grid-cols-12 gap-1 mb-6">
         {drivers.map((driver) => (
           <div
@@ -371,7 +372,7 @@ function Dispatch() {
             </button>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="flex justify-between items-center mb-4">
         <div className="relative w-96">
@@ -390,6 +391,7 @@ function Dispatch() {
             className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50"
           >
             <Truck size={16} className="text-gray-700" />
+            
             <span>Drivers</span>
           </button>
           <button className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50">
@@ -451,7 +453,7 @@ function Dispatch() {
                       value={record.towmast.priority || ''}
                       onChange={(e) => handleInputChange(record.id, 'towmast.priority', e.target.value)}
                       onKeyDown={(e) => handleInputKeyDown(e, record.id, 'towmast.priority', e.currentTarget.value)}
-                      className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                      className="bg-transparent  w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                     />
                   </td>
                   <td className="px-4 py-2 border border-gray-300">{record.towmast.dispnum}</td>

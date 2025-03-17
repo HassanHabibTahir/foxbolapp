@@ -1,63 +1,63 @@
 export const DispatchedHeaderConstant = [
     {
-        name: "Humberto",
+        name: "WESTLEY",
         image: "/icons/humberto.svg",
-        type: "L22",
+        type: "6670",
     },
     {
-        name: "Alcy",
+        name: "JERRY",
         image: "/icons/alcy.svg",
-        type: "L9",
+        type: "6622",
     },
     {
-        name: "David",
+        name: "JEREMY",
         image: "/icons/david.svg",
-        type: "L4",
+        type: "6620",
     },
     {
-        name: "Carlos",
+        name: "DAVE",
         image: "/icons/carlos.svg",
-        type: "M1",
+        type: "6601",
     },
-    {
-        name: "Kane",
-        image: "/icons/kane.svg",
-        type: "H51",
-    },
-    {
-        name: "Jaime",
-        image: "/icons/jaime.svg",
-        type: "M3",
-    },
-    {
-        name: "Darrell",
-        image: "/icons/darrell.svg",
-        type: "L5",
-    },
-    {
-        name: "Harry",
-        image: "/icons/harry.svg",
-        type: "L30",
-    },
-    {
-        name: "Mike",
-        image: "/icons/mike.svg",
-        type: "M11",
-    },
-    {
-        name: "Malek",
-        image: "/icons/malek.svg",
-        type: "M2",
-    },
-    {
-        name: "Joe",
-        image: "/icons/joe.svg",
-        type: "M51",
-    },
-    {
-        name: "Petro",
-        image: "/icons/pedro.svg",
-        type: "l20",
-    },
+    // {
+    //     name: "Kane",
+    //     image: "/icons/kane.svg",
+    //     type: "H51",
+    // },
+    // {
+    //     name: "Jaime",
+    //     image: "/icons/jaime.svg",
+    //     type: "M3",
+    // },
+    // {
+    //     name: "Darrell",
+    //     image: "/icons/darrell.svg",
+    //     type: "L5",
+    // },
+    // {
+    //     name: "Harry",
+    //     image: "/icons/harry.svg",
+    //     type: "L30",
+    // },
+    // {
+    //     name: "Mike",
+    //     image: "/icons/mike.svg",
+    //     type: "M11",
+    // },
+    // {
+    //     name: "Malek",
+    //     image: "/icons/malek.svg",
+    //     type: "M2",
+    // },
+    // {
+    //     name: "Joe",
+    //     image: "/icons/joe.svg",
+    //     type: "M51",
+    // },
+    // {
+    //     name: "Petro",
+    //     image: "/icons/pedro.svg",
+    //     type: "l20",
+    // },
 ]
 
