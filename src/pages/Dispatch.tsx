@@ -70,6 +70,7 @@ function Dispatch() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
+  
   const recordsPerPage = 25;
   const foxtow_id = localStorage.getItem('foxtow_id');
 
@@ -102,51 +103,51 @@ function Dispatch() {
     }
   };
 
-  const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
-    if (!selectedRow) {
-      toast.error('Please select a dispatch row first');
-      return;
-    }
+  // const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
+  //   if (!selectedRow) {
+  //     toast.error('Please select a dispatch row first');
+  //     return;
+  //   }
 
-    const loadingToast = toast.loading('Assigning driver...');
+  //   const loadingToast = toast.loading('Assigning driver...');
 
-    try {
-      const now = new Date().toISOString();
-      const nowDate = new Date(now);
-      const timeInRoute = `${nowDate.getHours().toString().padStart(2, '0')}:${nowDate.getMinutes().toString().padStart(2, '0')}`;
+  //   try {
+  //     const now = new Date().toISOString();
+  //     const nowDate = new Date(now);
+  //     const timeInRoute = `${nowDate.getHours().toString().padStart(2, '0')}:${nowDate.getMinutes().toString().padStart(2, '0')}`;
 
-      // Update the towdrive record
-      const { error: updateError } = await supabase
-        .from('towdrive')
-        .update({
-          driver: driverNum,
-          trucknum: truckNum,
-          timeinrt: timeInRoute
-        })
-        .eq('id', selectedRow);
+  //     // Update the towdrive record
+  //     const { error: updateError } = await supabase
+  //       .from('towdrive')
+  //       .update({
+  //         driver: driverNum,
+  //         trucknum: truckNum,
+  //         timeinrt: timeInRoute
+  //       })
+  //       .eq('id', selectedRow);
 
-      if (updateError) throw updateError;
+  //     if (updateError) throw updateError;
 
-      // Update the towmast record to mark it as dispatched
-      const { error: towmastError } = await supabase
-        .from('towmast')
-        .update({ dispatched: true })
-        .eq('dispnum', towRecords.find(r => r.id === selectedRow)?.towmast.dispnum);
+  //     // Update the towmast record to mark it as dispatched
+  //     const { error: towmastError } = await supabase
+  //       .from('towmast')
+  //       .update({ dispatched: true })
+  //       .eq('dispnum', towRecords.find(r => r.id === selectedRow)?.towmast.dispnum);
 
-      if (towmastError) throw towmastError;
+  //     if (towmastError) throw towmastError;
 
-      // Refresh the records
-      await fetchTowRecords(currentPage);
-      setSelectedRow(null);
+  //     // Refresh the records
+  //     await fetchTowRecords(currentPage);
+  //     setSelectedRow(null);
 
-      toast.dismiss(loadingToast);
-      toast.success(`Driver ${driverNum} assigned successfully`);
-    } catch (error) {
-      console.error('Error assigning driver:', error);
-      toast.dismiss(loadingToast);
-      toast.error('Failed to assign driver. Please try again.');
-    }
-  };
+  //     toast.dismiss(loadingToast);
+  //     toast.success(`Driver ${driverNum} assigned successfully`);
+  //   } catch (error) {
+  //     console.error('Error assigning driver:', error);
+  //     toast.dismiss(loadingToast);
+  //     toast.error('Failed to assign driver. Please try again.');
+  //   }
+  // };
 
   const fetchDrivers = async () => {
     const { data, error } = await supabase
@@ -348,10 +349,70 @@ function Dispatch() {
 
   const totalPages = Math.ceil(totalRecords / recordsPerPage);
 
+
+  //  show drivers 
+  const [activeDrivers, setActiveDrivers] = useState<any[]>([])
+  
+   useEffect(() => {
+     fetchActiveDrivers()
+   }, [])
+ 
+   const fetchActiveDrivers = async () => {
+     setIsLoading(true)
+     try {
+       // Fetch all active drivers
+       const { data: drivers, error } = await supabase
+         .from("drivers")
+         .select("id, driver_fir, driver_las, def_truckn, driver_num, driver_ond")
+         .eq("foxtow_id", foxtow_id)
+         .eq("driver_ond", true)
+         .order("driver_fir", { ascending: true })
+ 
+       if (error) {
+         throw error
+       }
+ 
+       // Fetch images for each driver
+       const driversWithImages: any[] = []
+ 
+       for (const driver of drivers || []) {
+         const { data: svgData, error: svgError } = await supabase
+           .from("truck_svgs")
+           .select("svg_urls")
+           .eq("id", driver.id)
+           .single()
+ 
+         if (svgError && svgError.code !== "PGRST116") {
+           console.error(`Error fetching SVGs for driver ${driver.id}:`, svgError)
+         }
+ 
+         driversWithImages.push({
+           driverId: driver.id,
+           driverName: `${driver.driver_fir} ${driver.driver_las}`,
+           truckNumber: driver.def_truckn || "No Truck",
+           driverNumber: driver.driver_num || "No Number",
+           images: svgData?.svg_urls || [],
+         })
+       }
+ 
+       setActiveDrivers(driversWithImages)
+     } catch (error) {
+       console.error("Error fetching active drivers:", error)
+       toast.error("Failed to load active drivers")
+     } finally {
+       setIsLoading(false)
+     }
+   }
+ 
+ 
+
+
+
+
   return (
     <div className="container mx-auto p-4">
       <Toaster position="top-right" />
-      <DispatchHeader />
+      <DispatchHeader activeDrivers={activeDrivers}  />
 {/* 
       <div className="grid grid-cols-12 gap-1 mb-6">
         {drivers.map((driver) => (
@@ -629,6 +690,7 @@ function Dispatch() {
         isOpen={isDriverModalOpen}
         onClose={() => setIsDriverModalOpen(false)}
         onDriverUpdate={handleDriverUpdate}
+        fetchActiveDrivers={fetchActiveDrivers}
       />
     </div>
   );
