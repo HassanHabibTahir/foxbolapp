@@ -579,10 +579,10 @@ function Impounds() {
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full min-w-full divide-y divide-gray-300 ">
             <thead className="bg-gray-50">
               <tr>
-                <th className="w-10 px-4 py-3 sticky left-0 bg-gray-50 border border-gray-300">
+                <th className=" group text-sm    w-40 px-4 py-3 sticky text-left left-0 bg-gray-50 border-t border-b border-gray-300 border-x-0">
                   <input 
                     type="checkbox" 
                     checked={isAllSelected}
@@ -593,7 +593,7 @@ function Impounds() {
                 {orderedFields.map((field) => (
                   <th 
                     key={field} 
-                    className="py-3 text-left group relative text-sm border border-gray-300"
+                    className="py-3 text-left group relative text-xs border-t border-b border-gray-300 border-x-0"
                     style={{ width: columnWidths[field] || 200 }}
                   >
                     <div
@@ -603,7 +603,7 @@ function Impounds() {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={(e) => handleDrop(e, field)}
-                      className="flex items-center gap-2 cursor-move px-4"
+                      className="flex items-left gap-2 cursor-move px-2"
                     >
                       <GripVertical size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       {field}
@@ -623,9 +623,9 @@ function Impounds() {
                 <React.Fragment key={record.id}>
                   <tr 
                     onClick={() => handleRowClick(record.id)}
-                    className={`hover:bg-gray-50 cursor-pointer ${selectedRow === record.id ? 'bg-blue-50' : ''}`}
+                    className={`hover:bg-gray-50  text-center cursor-pointer ${selectedRow === record.id ? 'bg-blue-50' : ''}`}
                   >
-                    <td className="px-4 py-3 sticky left-0 bg-white border border-gray-300">
+                    <td className="px-4 py-2 sticky left-0 bg-white border-t border-b border-gray-300 border-x-0">
                       <input 
                         type="checkbox" 
                         checked={selectedRows.has(record.id)}
@@ -637,7 +637,7 @@ function Impounds() {
                     {orderedFields.map((field) => (
                       <td 
                         key={field} 
-                        className="px-4 py-3 whitespace-wrap overflow-hidden text-ellipsis border border-gray-300"
+                        className="px-4 py-2 whitespace-wrap overflow-hidden text-xs text-ellipsis border-t border-b border-gray-300 border-x-0"
                         style={{ width: columnWidths[field] || 200 }}
                       >
                         {getFieldValue(record, field)}
@@ -646,7 +646,7 @@ function Impounds() {
                   </tr>
                   {selectedRow === record.id && (
                     <tr>
-                      <td colSpan={orderedFields.length + 1} className="bg-gray-50 px-4 py-3 border border-gray-300">
+                      <td colSpan={orderedFields.length + 1} className="bg-gray-50 px-4 text-xs py-3 border-t border-b border-gray-300 border-x-0">
                         <div className="flex gap-4">
                           <button onClick={() => handleDetailView(record.dispnum,record?.foxtow_id)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
                             <Eye size={18} /> {t('impounds.actions.viewImpound')}
