@@ -614,7 +614,7 @@ const InvoiceForm = () => {
         // yearcar: details.year,
         // makecar: details.make,
         // modelcar: details.model,
-        bodytype: "hassanhabibtahirb",
+        // bodytype: details?.bodytype,
       })
     } catch (e) {
       console.log(e);
