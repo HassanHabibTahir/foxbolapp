@@ -402,7 +402,7 @@ function Dispatch() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className=" mx-auto p-0">
       <Toaster position="top-right" />
       <DispatchHeader activeDrivers={activeDrivers} />
       {/* 
@@ -627,8 +627,8 @@ function Dispatch() {
                         className="bg-transparent w-[28] text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-2 py-2 border border-gray-300 min-w-[170px]">{record.towmast.location}</td>
-                    <td className="px-2 py-2 border border-gray-300 min-w-[170px]">
+                    <td className="px-2 py-2 border border-gray-300 min-w-[200px]">{record.towmast.location}</td>
+                    <td className="px-2 py-2 border border-gray-300 min-w-[200px]">
                       <input
                         value={record.towmast.destination || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.destination", e.target.value)}

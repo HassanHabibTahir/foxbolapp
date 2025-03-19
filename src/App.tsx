@@ -32,7 +32,8 @@ function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100">
         <TopNav />
-        <main className="container mx-auto mt-6">
+        <main className="w-full max-w-[1800px] mx-auto mt-6 px-4">
+
           <Routes>
             <Route path="/" element={<Navigate to="/impound" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
