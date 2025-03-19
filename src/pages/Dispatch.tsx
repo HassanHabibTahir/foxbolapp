@@ -526,7 +526,7 @@ function Dispatch() {
                         value={record.towmast.priority || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
                         onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)}
-                        className="bg-transparent  w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded "
+                        className="bg-transparent  w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded "
                       />
                     </td>
                     <td className="px-0 py-2 border border-gray-300">{record.towmast.dispnum}</td>
