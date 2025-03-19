@@ -617,7 +617,7 @@ function Dispatch() {
                         value={record.towmast.callphone || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.callphone", e.target.value)}
                         onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)}
-                        className="bg-transparent text-center w-28 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                        className="bg-transparent text-center w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
                     <td className="px-1 py-2 border border-gray-300">
