@@ -102,6 +102,7 @@ function Dispatch() {
       toast.error("Failed to update time")
     }
   }
+  console.log(towRecords,"towRecords")
 
   // const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
   //   if (!selectedRow) {
@@ -427,8 +428,8 @@ function Dispatch() {
         ))}
       </div> */}
 
-      <div className="flex justify-between items-center mb-4">
-        <div className="relative w-96">
+      <div className="flex justify-between items-center mb-4 mt-4">
+        {/* <div className="relative w-96">
           <input
             type="text"
             placeholder="Search records..."
@@ -437,21 +438,21 @@ function Dispatch() {
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-        </div>
-        <div className="flex items-center space-x-2">
+        </div> */}
+        <div className="flex flex-wrap items-center space-x-2">
           <button
             onClick={handleDriverButtonClick}
-            className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50"
+            className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50"
           >
             <Truck size={16} className="text-gray-700" />
 
             <span>Drivers</span>
           </button>
-          <button className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50">
+          <button className="flex items-center space-x-1 px-5 py-1 border rounded hover:bg-gray-50">
             <FileDown size={16} />
             <span>Export</span>
           </button>
-          <button className="flex items-center space-x-1 px-3 py-1 border rounded hover:bg-gray-50">
+          <button className="flex items-center space-x-1 px-5 py-1 border rounded hover:bg-gray-50">
             <Printer size={16} />
             <span>Print</span>
           </button>
@@ -462,25 +463,25 @@ function Dispatch() {
         <table className="w-full  border-collapse">
           <thead>
             <tr className="bg-gray-50">
-            <th className="px-4 py-2  text-center text-[13px] border border-gray-300">P</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Disp #</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Trk #</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Driver</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Rec</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Inrt</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Arvd</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">ITow</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Company</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Lic #</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Year</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Make</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Color</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Phone</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Reason</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Location</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Destination</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">E</th>
-              <th className="px-4 py-2 text-center text-[13px] border border-gray-300">Z</th>
+            <th className="px-1 py-2  text-center text-[13px] border border-gray-300">P</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Disp #</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Trk #</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Driver</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Rec</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Inrt</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Arvd</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">ITow</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Company</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Lic #</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Year</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Make</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Color</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Phone</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Reason</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Location</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Destination</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">E</th>
+              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Z</th>
               {/* <th className="px-0 py-2 text-left border border-gray-300 w-8">Pri</th>
               <th className="px-1 py-2 text-left border border-gray-300">Disp#</th>
               <th className="px-1 py-2 text-left border border-gray-300">Trk#</th>
@@ -521,12 +522,12 @@ function Dispatch() {
                     onClick={() => setSelectedRow(record.id)}
                     onDoubleClick={() => handleRowDoubleClick(record)}
                   >
-                    <td className="px-3 text-center align-middle  py-2 border border-gray-300 w-4">
+                    <td className="px-1 text-center align-middle  py-2 border border-gray-300 w-4">
                       <input
                         value={record.towmast.priority || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
                         onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)}
-                        className="bg-transparent  w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded "
+                        className="bg-transparent  w-4 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded "
                       />
                     </td>
                     <td className="px-0 py-2 border border-gray-300">{record.towmast.dispnum}</td>
@@ -571,12 +572,12 @@ function Dispatch() {
                         className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px- py-2 border border-gray-300">
+                    <td className="px-1 py-2 border border-gray-300">
                       <input
                         value={(record.towmast.callname || "").substring(0, 15)}
                         onChange={(e) => handleInputChange(record.id, "towmast.callname", e.target.value)}
                         onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)}
-                        className="bg-transparent w-36 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                        className="bg-transparent w-28 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
                     <td className="px-1 py-2 border border-gray-300">
@@ -624,11 +625,11 @@ function Dispatch() {
                         value={record.towmast.reason || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.reason", e.target.value)}
                         onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)}
-                        className="bg-transparent w-[28] text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                        className="bg-transparent w-24 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-2 py-2 border border-gray-300 min-w-[200px]">{record.towmast.location}</td>
-                    <td className="px-2 py-2 border border-gray-300 min-w-[200px]">
+                    <td className="px-1 py-2 border border-gray-300 min-w-[200px]">{record.towmast.location}</td>
+                    <td className="px-1 py-2 border border-gray-300 min-w-[200px]">
                       <input
                         value={record.towmast.destination || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.destination", e.target.value)}
