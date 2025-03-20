@@ -102,7 +102,6 @@ function Dispatch() {
       toast.error("Failed to update time")
     }
   }
-  console.log(towRecords,"towRecords")
 
   // const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
   //   if (!selectedRow) {
@@ -402,6 +401,7 @@ function Dispatch() {
     }
   }
 
+
   return (
     <div className=" mx-auto p-0">
       <Toaster position="top-right" />
@@ -428,7 +428,7 @@ function Dispatch() {
         ))}
       </div> */}
 
-      <div className="flex justify-between items-center mb-4 mt-4">
+      <div className="flex justify-end items-center mb-4 mt-4">
         {/* <div className="relative w-96">
           <input
             type="text"
@@ -535,8 +535,7 @@ function Dispatch() {
                     <td className="px-2 py-2 border border-gray-300">
                       {record.driver ? record.driver.substring(0, 10) : ""}
                     </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      
+                    <td className="px-1 py-2 w-10 border border-gray-300">
                       <input
                         value={record.timerec || ""}
                         onChange={(e) => handleInputChange(record.id, "timerec", e.target.value)}
@@ -545,7 +544,7 @@ function Dispatch() {
                         className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-1 py-2 border border-gray-300">
+                    <td className="px-1 py-2 border w-10 border-gray-300">
                       <input
                         value={record.timeinrt || ""}
                         onChange={(e) => handleInputChange(record.id, "timeinrt", e.target.value)}
@@ -554,7 +553,7 @@ function Dispatch() {
                         className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-2 py-2 border border-gray-300">
+                    <td className="px-1 py-2  w-8 border border-gray-300">
                       <input
                         value={record.timearrive || ""}
                         onChange={(e) => handleInputChange(record.id, "timearrive", e.target.value)}
@@ -563,7 +562,7 @@ function Dispatch() {
                         className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-1 py-2 border border-gray-300">
+                    <td className="px-1 py-2 w-8 border border-gray-300">
                       <input
                         value={record.timeintow || ""}
                         onChange={(e) => handleInputChange(record.id, "timeintow", e.target.value)}
@@ -580,7 +579,7 @@ function Dispatch() {
                         className="bg-transparent w-28 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-1 py-2 border border-gray-300">
+                    <td className="px-1 py-2 w-16 border border-gray-300">
                       <input
                         value={record.towmast.licensenum ? record.towmast.licensenum.slice(-7) : ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.licensenum", e.target.value)}
@@ -588,7 +587,7 @@ function Dispatch() {
                         className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                       />
                     </td>
-                    <td className="px-1 py-2 border border-gray-300">
+                    <td className="px-1 py-2 w-10 border border-gray-300">
                       <input
                         value={record.towmast.yearcar || ""}
                         onChange={(e) => handleInputChange(record.id, "towmast.yearcar", e.target.value)}
