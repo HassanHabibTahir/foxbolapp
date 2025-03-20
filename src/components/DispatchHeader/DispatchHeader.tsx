@@ -74,9 +74,6 @@ export const DispatchHeader = ({activeDrivers}:any) => {
 
 
 
-    console.log(activeDrivers,"activeDrivers")
-  
-
 
     return (
         <div className="relative w-full">
