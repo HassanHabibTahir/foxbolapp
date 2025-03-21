@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { useState, useEffect, type KeyboardEvent } from "react"
-import { Truck, FileDown, Printer, Search, ChevronLeft, ChevronRight } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Truck, FileDown, Printer, Search, ChevronLeft, ChevronRight, CarFront } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import DriverModal from "../components/dispatch/DriverModal"
 import toast, { Toaster } from "react-hot-toast"
@@ -360,7 +360,7 @@ function Dispatch() {
       // Fetch all active drivers
       const { data: drivers, error } = await supabase
         .from("drivers")
-        .select("id, driver_fir, driver_las, def_truckn, driver_num, driver_ond")
+        .select("id, driver_fir, driver_las, def_truckn, driver_num, driver_ond, svg_urls ")
         .eq("foxtow_id", foxtow_id)
         .eq("driver_ond", true)
         .order("driver_fir", { ascending: true })
@@ -368,27 +368,14 @@ function Dispatch() {
       if (error) {
         throw error
       }
-
-      // Fetch images for each driver
       const driversWithImages: any[] = []
-
       for (const driver of drivers || []) {
-        const { data: svgData, error: svgError } = await supabase
-          .from("truck_svgs")
-          .select("svg_urls")
-          .eq("id", driver.id)
-          .single()
-
-        if (svgError && svgError.code !== "PGRST116") {
-          console.error(`Error fetching SVGs for driver ${driver.id}:`, svgError)
-        }
-
         driversWithImages.push({
           driverId: driver.id,
           driverName: `${driver.driver_fir} ${driver.driver_las}`,
           truckNumber: driver.def_truckn || "No Truck",
           driverNumber: driver.driver_num || "No Number",
-          images: svgData?.svg_urls || [],
+          images: driver?.svg_urls || [],
         })
       }
 
@@ -440,11 +427,16 @@ function Dispatch() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
         </div> */}
         <div className="flex flex-wrap items-center space-x-2">
+<Link to="/truks">
+          <button className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50" >
+<Truck size={16} className="text-gray-700" /> {" "} Trucks
+          </button>
+</Link>
           <button
             onClick={handleDriverButtonClick}
             className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50"
           >
-            <Truck size={16} className="text-gray-700" />
+            <CarFront  size={16} className="text-gray-700" />
 
             <span>Drivers</span>
           </button>

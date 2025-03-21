@@ -1,77 +1,72 @@
-import { useState, useEffect } from "react"
-import { Edit, Plus, Truck } from "lucide-react"
-import { supabase } from "../lib/supabase"
-import TruckEditModal from "../components/trucks/truck-edit-modal"
+import { useState, useEffect } from "react";
+import { Edit, Plus, Truck } from "lucide-react";
+import { supabase } from "../lib/supabase";
+import TruckEditModal from "../components/trucks/truck-edit-modal";
 
 export default function TrucksPage() {
-  const [trucks, setTrucks] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedTruck, setSelectedTruck] = useState<any | null>(null)
-  const foxtow_id = typeof window !== "undefined" ? localStorage.getItem("foxtow_id") : null
+  const [trucks, setTrucks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTruck, setSelectedTruck] = useState<any | null>(null);
+  const foxtow_id =
+    typeof window !== "undefined" ? localStorage.getItem("foxtow_id") : null;
 
   useEffect(() => {
     if (foxtow_id) {
-      fetchTrucks()
+      fetchTrucks();
     }
-  }, [foxtow_id])
+  }, [foxtow_id]);
 
   const fetchTrucks = async () => {
-    setIsLoading(true)
-    const { data, error } = await supabase.from("truck_svgs").select("*").eq("foxtow_id", foxtow_id)
-
-    console.log(data, "data")
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("drivers")
+      .select("*")
+      .eq("foxtow_id", foxtow_id)
+      .order("def_truckn", { ascending: true });
+    console.log(data, "data");
     if (error) {
-      console.error("Error fetching trucks:", error)
+      console.error("Error fetching trucks:", error);
     } else {
-      setTrucks(data || [])
+      setTrucks(data || []);
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleEditTruck = (truck: any) => {
-    setSelectedTruck(truck)
-    setIsModalOpen(true)
-  }
+    setSelectedTruck(truck);
+    setIsModalOpen(true);
+  };
 
   const handleAddTruck = () => {
     // Create a new empty truck object
     const newTruck: any = {
       id: crypto.randomUUID(),
       trucknum: "",
-    }
-    setSelectedTruck(newTruck)
-    setIsModalOpen(true)
-  }
+    };
+    setSelectedTruck(newTruck);
+    setIsModalOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedTruck(null)
-  }
+    setIsModalOpen(false);
+    setSelectedTruck(null);
+  };
 
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800"
-      case "maintenance":
-        return "bg-yellow-100 text-yellow-800"
-      case "inactive":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
+  const getStatusColor = (status?: boolean) => {
+    return status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Trucks</h1>
-        <button
+        {/* <button
           onClick={handleAddTruck}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
         >
           <Plus className="w-4 h-4 mr-2" /> Add Truck
-        </button>
+        </button> */}
       </div>
 
       {isLoading ? (
@@ -81,8 +76,12 @@ export default function TrucksPage() {
       ) : trucks.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Truck className="w-12 h-12 mx-auto text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No trucks found</h3>
-          <p className="mt-2 text-gray-500">Get started by adding your first truck.</p>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            No trucks found
+          </h3>
+          <p className="mt-2 text-gray-500">
+            Get started by adding your first truck.
+          </p>
           <button
             onClick={handleAddTruck}
             className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
@@ -113,6 +112,14 @@ export default function TrucksPage() {
                 >
                   Trucks
                 </th>
+
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Active Driver
+                </th>
+
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -131,10 +138,15 @@ export default function TrucksPage() {
               {trucks.map((truck) => (
                 <tr key={truck.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{truck?.truck_number}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {truck?.def_truckn}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{truck?.driver_name}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {truck?.driver_fir ? truck?.driver_fir : ""}{" "}
+                      {truck?.driver_las ? truck?.driver_las : ""}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2 overflow-x-auto max-w-xs md:max-w-md lg:max-w-lg scrollbar-hide">
@@ -146,15 +158,29 @@ export default function TrucksPage() {
                           >
                             <img
                               src={item || "/placeholder.svg"}
-                              alt={`${truck?.driver_name || "Truck"} ${index + 1}`}
+                              alt={`${truck?.driver_name || "Truck"} ${
+                                index + 1
+                              }`}
                               className="h-10 w-auto object-contain"
                             />
                           </div>
                         ))}
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                        truck.driver_ond
+                      )}`}
+                    >
+                      {truck.driver_ond ? "active driver" : "inactive driver"}
+                    </span>
+                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {truck.created_at ? new Date(truck.created_at).toLocaleDateString() : "Unknown"}
+                    {truck.creationda
+                      ? new Date(truck.creationda).toLocaleDateString()
+                      : "Unknown"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
@@ -180,6 +206,5 @@ export default function TrucksPage() {
         />
       )}
     </div>
-  )
+  );
 }
-
