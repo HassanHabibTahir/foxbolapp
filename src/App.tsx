@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import Newimpound from './pages/Newimpound';
 import { Toaster } from 'react-hot-toast';
+import TrucksPage from './pages/Trucks';
 
 function App() {
     const { i18n } = useTranslation();
@@ -46,6 +47,7 @@ function App() {
             <Route path="/report" element={<Report />} />
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/setting" element={<Setting />} />
+             <Route path="/truks" element={<TrucksPage/>}/>
             <Route path="/quick-call" element={<QuickPage />} />
           </Routes>
         </main>

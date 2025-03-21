@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ModifyAccount } from '../components/account/ModifyAccount';
 import { PricingView } from '../components/pricing/PricingView';
 import { RulesView } from '../components/rules/RulesView';

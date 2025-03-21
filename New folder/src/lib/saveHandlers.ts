@@ -69,43 +69,54 @@ export const saveDispatch = async (payload: SavePayload) => {
 
       if (invoiceError) throw invoiceError;
       if (payload.items && payload.items.length > 0) {
+        console.log(payload?.items,"items==>")
+        // const itemsData = payload?.items
+        // ?.filter(item => item.description !== "DISCOUNT" && item.description !== "")
+        // .map((item, index) => ({
+        //   // ...item,
+        //   _id: item.id,
+        //   id: index,
+        // }));
+      
+      //  console.log(itemsData,"itemsData-->")
         // Process each item in the payload
         for (const item of payload.items) {
-          const uid = uuidv4();
-          if (item.description === "DISCOUNT" || item.description === "") {
+               if (item?.description === "DISCOUNT" || item?.description === "") {
             continue; // Skip discount or empty description items
           }
-          const isNumber = typeof item._id === "number";
-          const isUUID =
-            typeof item.id === "string" && /^[0-9a-fA-F-]{36}$/.test(item.id);
-          const itemId = isUUID ? item._id : isNumber ? uid : item._id;
+        const uid = uuidv4();
+          const uniqueId = item._id || item.id || uuidv4();
+          const uuids = typeof uniqueId === "number"?uid:uniqueId;
+         console.log(uuids);
+      
+          
           const { data: existingItem, error: fetchError } = await supabase
             .from("towtrans")
             .select("id")
-            .eq("id", itemId)
+            .eq("id", uuids)
             .eq("dispnumtrs", dispatch.dispnum)
             .eq("foxtow_id", foxtow_id)
             .single();
-          console.log(existingItem, "ExistingIen");
+          // console.log(existingItem, "ExistingIen");
           if (fetchError && fetchError.code !== "PGRST116") {
             // Error code for 'no rows returned'
             throw fetchError;
           }
           const itemData = {
-            itemId: existingItem ? item?.itemId : item?.id,
-            id: itemId,
+            // itemId: existingItem ? item?.itemId : item?.id,
+            id: uuids,
             dispnumtrs: dispatch.dispnum,
-            description: item.description,
-            quantity: item.quantity,
-            price: item.price,
+            description: item?.description,
+            quantity: item?.quantity,
+            price: item?.price,
             driver: towdrive.driver,
             trucknum: towdrive.trucknum,
             foxtow_id,
             invoicenum: invoice.invoicenum,
           };
+          
           let upsertError;
           if (existingItem) {
-            // Update existing item
             const { error } = await supabase
               .from("towtrans")
               .update(itemData)
@@ -113,6 +124,7 @@ export const saveDispatch = async (payload: SavePayload) => {
 
             upsertError = error;
           } else {
+            console.log("his is for new")
             const { error } = await supabase.from("towtrans").insert(itemData);
             upsertError = error;
           }

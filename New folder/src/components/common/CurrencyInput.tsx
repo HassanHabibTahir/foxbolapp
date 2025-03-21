@@ -239,7 +239,7 @@ const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           className={`
                     block w-full rounded-md border border-gray-300 p-2 text-right
         focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-        disabled:bg-gray-100 disabled:cursor-not-allowed
+        disabled:bg-gray-100 disabled:cursor-not-allowed text-sm 
       
           ${className} ${height}
         `}

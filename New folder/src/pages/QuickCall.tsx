@@ -42,7 +42,7 @@ function QuickPage() {
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [loader, setLoader] = useState<Loader | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [formData, setFormData] = useState<FormData>({
     truck: 'Flatbed',
     callType: 'Private Property',
@@ -177,7 +177,7 @@ function QuickPage() {
     });
 
     setDestinationMarker(newMarker);
-    
+
     // If both markers exist, fit bounds to show both
     if (pickupMarker) {
       const bounds = new google.maps.LatLngBounds();
@@ -262,7 +262,7 @@ function QuickPage() {
       };
 
       let dispnum: number;
-      
+
       if (recordData) {
         // Update existing record
         const { error: towmastError } = await supabase
@@ -319,12 +319,11 @@ function QuickPage() {
     }
   };
 
-  const ButtonGroup = ({ 
-    name, 
-    options, 
-    value, 
-    onChange 
-  }: { 
+  const ButtonGroup = ({
+    options,
+    value,
+    onChange
+  }: {
     name: 'truck' | 'callType' | 'size';
     options: string[];
     value: string;
@@ -402,7 +401,7 @@ function QuickPage() {
       <h1 className="text-2xl font-bold mb-6">
         {recordData ? 'Edit Call' : 'Quick New Call'}
       </h1>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
           <div className="space-y-4">

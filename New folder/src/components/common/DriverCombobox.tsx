@@ -49,7 +49,6 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       const foxtow_id = localStorage.getItem("foxtow_id")
       const fetchDrivers = async () => {
         const { data, error } = await supabase.from("drivers").select().eq("foxtow_id", foxtow_id)
-
         if (!error && data) {
           setDrivers(data)
         }

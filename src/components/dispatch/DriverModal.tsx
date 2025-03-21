@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useEffect, useState } from "react"
 import { X } from "lucide-react"
@@ -32,27 +30,16 @@ interface DriverModalProps {
   isOpen: boolean
   onClose: () => void
   onDriverUpdate: () => void
-  fetchActiveDrivers?: any
+  fetchActiveDrivers?:any
 }
 
-export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActiveDrivers }: DriverModalProps) {
+export default function DriverModal({ isOpen, onClose, onDriverUpdate ,fetchActiveDrivers}: DriverModalProps) {
   const [drivers, setDrivers] = useState<Driver[]>([])
   const [trucks, setTrucks] = useState<Truck[]>([])
   const [currentDriver, setCurrentDriver] = useState<Driver | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
-  // Track both the URL and the file path for each image
-  const [images, setImages] = useState<{ url: string | null; path: string | null }[]>([
-    { url: null, path: null },
-    { url: null, path: null },
-    { url: null, path: null },
-  ])
-
+  const [images, setImages] = useState<any[]>([null,null,null])
   const [isLoading, setIsLoading] = useState(false)
   const foxtow_id = localStorage.getItem("foxtow_id")
-
-  const [activeTab, setActiveTab] = useState("current")
-  const [selectedCategory, setSelectedCategory] = useState<any>("")
-  const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   useEffect(() => {
     if (isOpen) {
@@ -84,17 +71,8 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
 
   const fetchExistingSvgs = async (driverId: string) => {
     // Always reset images when changing drivers
-    setImages([
-      { url: null, path: null },
-      { url: null, path: null },
-      { url: null, path: null },
-      { url: null, path: null },
-    ])
-
-    const { data, error } = await supabase.from("truck_svgs").select("svg_urls, svg_paths").eq("id", driverId).single()
-
-    console.log("Fetched SVGs for driver:", driverId, data)
-
+    setImages([null,null,null])
+    const { data, error } = await supabase.from("drivers").select("svg_urls").eq("id", driverId).single()
     if (error) {
       if (error.code !== "PGRST116") {
         console.error("Error fetching SVGs:", error)
@@ -104,48 +82,15 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
 
     if (data && data.svg_urls && data.svg_urls.length > 0) {
       const svgUrls = data.svg_urls
-      const svgPaths = data.svg_paths || Array(svgUrls.length).fill(null)
-
-      const newImages = [
-        { url: null, path: null },
-        { url: null, path: null },
-        { url: null, path: null },
-        { url: null, path: null },
-      ]
+      const newImages = []
 
       for (let i = 0; i < Math.min(svgUrls.length, 3); i++) {
-        newImages[i] = {
-          url: svgUrls[i],
-          path: svgPaths[i] || extractPathFromUrl(svgUrls[i]),
-        }
+        newImages[i] =  svgUrls[i]
       }
-
       setImages(newImages)
     }
   }
 
-  // Helper function to extract path from URL if path is not stored
-  const extractPathFromUrl = (url: string): string | null => {
-    if (!url) return null
-
-    try {
-      // Extract the path portion from the URL
-      // Example: https://example.supabase.co/storage/v1/object/public/trucksvgs/truck-svgs/abc-123.png
-      const urlObj = new URL(url)
-      const pathParts = urlObj.pathname.split("/")
-
-      // Find the bucket name and everything after it
-      const bucketIndex = pathParts.findIndex((part) => part === "trucksvgs")
-      if (bucketIndex !== -1) {
-        return pathParts.slice(bucketIndex + 1).join("/")
-      }
-
-      return null
-    } catch (e) {
-      console.error("Error extracting path from URL:", e)
-      return null
-    }
-  }
 
   const fetchTrucks = async () => {
     const { data, error } = await supabase.from("trucks").select("id, trucknum").eq("foxtow_id", foxtow_id)
@@ -222,127 +167,6 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
     }
   }
 
-  const deleteImageFromStorage = async (path: string): Promise<boolean> => {
-    if (!path) return false
-
-    try {
-      const { error } = await supabase.storage.from("trucksvgs").remove([path])
-
-      if (error) {
-        console.error("Error deleting file from storage:", error)
-        return false
-      }
-
-      return true
-    } catch (error) {
-      console.error("Error in deleteImageFromStorage:", error)
-      return false
-    }
-  }
-
-  const clearImage = async (index: number) => {
-    // If there's a stored image (with a path), delete it from storage
-    const imagePath = images[index].path
-
-    if (imagePath) {
-      setIsDeleting(true)
-      const deleted = await deleteImageFromStorage(imagePath)
-
-      if (deleted) {
-        // Update the database to remove this image
-        if (currentDriver) {
-          // Get current URLs and paths
-          const currentUrls = images.map((img) => img.url).filter(Boolean)
-          const currentPaths = images.map((img) => img.path).filter(Boolean)
-
-          // Remove the deleted image
-          const updatedUrls = [...currentUrls]
-          const updatedPaths = [...currentPaths]
-
-          // Find the index in the filtered arrays
-          const filteredIndex = currentUrls.findIndex((url) => url === images[index].url)
-          if (filteredIndex !== -1) {
-            updatedUrls.splice(filteredIndex, 1)
-            updatedPaths.splice(filteredIndex, 1)
-
-            // Update the database
-            const { error } = await supabase.from("truck_svgs").upsert({
-              id: currentDriver.id,
-              driver_name: currentDriver.driver_fir,
-              truck_number: currentDriver.def_truckn,
-              foxtow_id: foxtow_id,
-              driver_num: currentDriver.driver_num,
-              svg_urls: updatedUrls,
-              svg_paths: updatedPaths,
-            })
-
-            if (error) {
-              console.error("Error updating database after image deletion:", error)
-              toast.error("Failed to update database after deleting image")
-            } else {
-              toast.success("Image deleted successfully")
-            }
-          }
-        }
-      } else {
-        toast.error("Failed to delete image from storage")
-      }
-      setIsDeleting(false)
-    }
-
-    // Update the UI
-    const updatedImages = [...images]
-    updatedImages[index] = { url: null, path: null }
-    setImages(updatedImages)
-  }
-
-  const handleImageSelect = (url: string) => {
-    setSelectedImages((prev) => {
-      // If already selected, remove it
-      if (prev.includes(url)) {
-        return prev.filter((item) => item !== url)
-      }
-
-      // If we already have 3 images selected, replace the last one
-      if (prev.length >= 3) {
-        const newSelection = [...prev]
-        newSelection[prev.length - 1] = url
-        return newSelection
-      }
-
-      // Otherwise add it to selection
-      return [...prev, url]
-    })
-  }
-
-  const applySelectedImages = () => {
-    if (selectedImages.length === 0) return
-
-    // Create new images array with selected images
-    const newImages = [...images]
-
-    // Clear existing images first if we have selections
-    if (selectedImages.length > 0) {
-      for (let i = 0; i < Math.min(3, selectedImages.length); i++) {
-        newImages[i] = { url: null, path: null }
-      }
-    }
-
-    // Add selected images
-    selectedImages.forEach((url, index) => {
-      if (index < 3) {
-        newImages[index] = {
-          url,
-          path: extractPathFromUrl(url),
-        }
-      }
-    })
-
-    setImages(newImages)
-    toast.success(`${selectedImages.length} image${selectedImages.length > 1 ? "s" : ""} applied`)
-    setActiveTab("current")
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!currentDriver) return
@@ -351,7 +175,6 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
     setIsLoading(true)
 
     try {
-      // Update driver details
       const { error } = await supabase.from("drivers").upsert({
         id: currentDriver.id,
         driver_fir: currentDriver.driver_fir,
@@ -361,30 +184,8 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
         driver_ond: currentDriver.driver_ond,
         def_truckn: currentDriver.def_truckn,
       })
-
       if (error) throw error
-
-      // Save image URLs and paths to truck_svgs table
-      if (images.some((img) => img.url !== null)) {
-        // Get all non-null image URLs and paths
-        const finalUrls = images.map((img) => img.url).filter(Boolean) as string[]
-
-        const finalPaths = images.map((img) => img.path).filter(Boolean) as string[]
-
-        const { error: svgError } = await supabase.from("truck_svgs").upsert({
-          id: currentDriver.id,
-          driver_name: currentDriver.driver_fir,
-          truck_number: currentDriver.def_truckn,
-          foxtow_id: foxtow_id,
-          driver_num: currentDriver.driver_num,
-          svg_urls: finalUrls,
-          svg_paths: finalPaths,
-        })
-
-        if (svgError) throw svgError
-      }
-
-      await fetchActiveDrivers()
+       await fetchActiveDrivers();
       toast.dismiss(loadingToast)
       toast.success("Driver details saved successfully")
       onDriverUpdate()
@@ -397,40 +198,6 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
       setIsLoading(false)
     }
   }
-
-  const [imagesByFolder, setImagesByFolder] = useState<any>({})
-  const subfolders = ["blue_flat_bed", "flat_bed_icons","heavy_duty_wrecker","medium_truck","others","wrecker_truck"]
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      const folderImages: any = {}
-
-      for (const folder of subfolders) {
-        const { data, error } = await supabase.storage.from("trucksvgs").list(`alltrucks/${folder}`, { limit: 100 })
-
-        if (error) {
-          console.error(`Error fetching images from ${folder}:`, error)
-          continue
-        }
-
-        // Filter only SVG files
-        const svgFiles = data.filter((file) => file.name.endsWith(".svg"))
-
-        // Get public URLs
-        const urls = svgFiles.map(
-          (file) => supabase.storage.from("trucksvgs").getPublicUrl(`alltrucks/${folder}/${file.name}`).data.publicUrl,
-        )
-
-        folderImages[folder] = urls
-      }
-
-      setImagesByFolder(folderImages)
-    }
-
-    fetchImages()
-  }, [])
-
-  console.log(imagesByFolder, "imageUrls")
 
   if (!isOpen) return null
   return (
@@ -497,8 +264,7 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
                   onChange={handleTruckChange}
                   options={getTruckOptions()}
                   isClearable
-              
-                  className="mt-1 relative z-50"
+                  className="mt-1"
                   classNamePrefix="react-select"
                   placeholder="Select a truck..."
                 />
@@ -515,194 +281,56 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
               </div>
             </div>
             <div className="p-4 bg-white rounded-lg mx-auto">
-              {/* Tabs for Current/Select */}
-              <div className="flex border-b mb-4">
-                <button
-                  type="button"
-                  className={`px-4 py-2 ${activeTab === "current" ? "border-b-2 border-blue-500 font-medium" : "text-gray-500"}`}
-                  onClick={() => setActiveTab("current")}
-                >
-                  Current Images
-                </button>
-                <button
-                  type="button"
-                  className={`px-4 py-2 ${activeTab === "select" ? "border-b-2 border-blue-500 font-medium" : "text-gray-500"}`}
-                  onClick={() => setActiveTab("select")}
-                >
-                  Select From Library
-                </button>
-              </div>
-
-              {/* Current Images Tab */}
-              {activeTab === "current" && (
-                <div className="flex flex-col md:flex-row gap-4">
-                  {/* Larger box on the left */}
-                  <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-42 w-44 aspect-square">
-                    {images[0].url ? (
-                      <div className="relative w-full h-full">
-                        <img
-                          src={images[0].url || "/placeholder.svg"}
-                          alt="First uploaded image"
-                          className="object-contain w-full h-full"
-                        />
-                        <button
-                          onClick={() => clearImage(0)}
-                          disabled={isDeleting}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          {isDeleting ? "..." : "×"}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-center text-gray-400">
-                        <p>Main image</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Two smaller boxes on the right, stacked vertically */}
-                  <div className="flex flex-col gap-3">
-                    {/* Top small box */}
-                    <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-20 w-20 aspect-square">
-                      {images[1].url ? (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={images[1].url || "/placeholder.svg"}
-                            alt="Second uploaded image"
-                            className="object-contain w-full h-full"
-                          />
-                          <button
-                            onClick={() => clearImage(1)}
-                            disabled={isDeleting}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                          >
-                            {isDeleting ? "." : "×"}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400 text-xs">
-                          <p>Image 2</p>
-                        </div>
-                      )}
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* Larger box on the left */}
+                <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-42 w-44 aspect-square">
+                  {images[0] ? (
+                    <div className="relative w-full h-full">
+                      <img
+                        src={images[0] || "/placeholder.svg"}
+                        alt="First uploaded image"
+                        className="object-contain w-full h-full"
+                      />
                     </div>
-
-                    {/* Bottom small box */}
-                    <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-20 w-20 aspect-square">
-                      {images[2].url ? (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={images[2].url || "/placeholder.svg"}
-                            alt="Third uploaded image"
-                            className="object-contain w-full h-full"
-                          />
-                          <button
-                            onClick={() => clearImage(2)}
-                            disabled={isDeleting}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                          >
-                            {isDeleting ? "." : "×"}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400 text-xs">
-                          <p>Image 3</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Select From Library Tab */}
-              {activeTab === "select" && (
-                <div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Image Category</label>
-                    <Select
-                      value={
-                        selectedCategory
-                          ? { value: selectedCategory, label: selectedCategory.replace(/_/g, " ") }
-                          : null
-                      }
-                      onChange={(option) => {
-                        setSelectedCategory(option?.value || "")
-                        setSelectedImages([])
-                      }}
-                      options={subfolders.map((folder) => ({ value: folder, label: folder.replace(/_/g, " ") }))}
-                      className="basic-single"
-                      classNamePrefix="select"
-                      placeholder="Select a category..."
-                    />
-                  </div>
-
-                  {selectedCategory && (
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-sm font-medium text-gray-700">
-                          Select Images ({selectedImages.length} selected)
-                        </h3>
-                        {selectedImages.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setSelectedImages([])}
-                            className="text-xs text-red-600 hover:text-red-800"
-                          >
-                            Clear Selection
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto p-2 border rounded-md">
-                        {imagesByFolder[selectedCategory]?.map((url:any, index:any) => (
-                          <div
-                            key={index}
-                            className={`relative border-2 rounded-md p-1 cursor-pointer transition-all ${
-                              selectedImages.includes(url)
-                                ? "border-blue-500 ring-2 ring-blue-300 bg-blue-50 scale-105 z-10"
-                                : "border-gray-200 hover:border-blue-300"
-                            }`}
-                            onClick={() => handleImageSelect(url)}
-                          >
-                            <img
-                              src={url || "/placeholder.svg"}
-                              alt={`Library image ${index}`}
-                              className="w-full h-16 object-contain"
-                            />
-                            {selectedImages.includes(url) && (
-                              <div className="absolute top-1 right-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                {selectedImages.indexOf(url) + 1}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                        {(!imagesByFolder[selectedCategory] || imagesByFolder[selectedCategory].length === 0) && (
-                          <p className="text-sm text-gray-500 col-span-full p-4 text-center">
-                            No images found in this category
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="mt-4 flex justify-between">
-                        <div>
-                          <span className="text-sm text-gray-500">
-                            {selectedImages.length > 0
-                              ? `${selectedImages.length} image${selectedImages.length > 1 ? "s" : ""} selected`
-                              : "No images selected"}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={applySelectedImages}
-                          disabled={selectedImages.length === 0}
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded text-sm disabled:bg-blue-400"
-                        >
-                          Apply Selected Images
-                        </button>
-                      </div>
+                  ) : (
+                    <div className="text-center text-gray-400">
+                      <p>Main image</p>
                     </div>
                   )}
                 </div>
-              )}
+                <div className="flex flex-col gap-3">
+                  <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-20 w-20 aspect-square">
+                    {images[1] ? (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={images[1] || "/placeholder.svg"}
+                          alt="Second uploaded image"
+                          className="object-contain w-full h-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-400 text-xs">
+                        <p>Image 2</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center h-20 w-20 aspect-square">
+                    {images[2] ? (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={images[2] || "/placeholder.svg"}
+                          alt="Third uploaded image"
+                          className="object-contain w-full h-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-400 text-xs">
+                        <p>Image 3</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex justify-between items-center pt-4">
               <div className="space-x-2">
@@ -724,7 +352,7 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate, fetchActi
               <div className="space-x-2">
                 <button
                   type="submit"
-                  disabled={isLoading || isDeleting}
+                  disabled={isLoading  }
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-300"
                 >
                   {isLoading ? "Saving..." : "Save Changes"}

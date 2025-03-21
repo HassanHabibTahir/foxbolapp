@@ -1,6 +1,7 @@
 import React, { useState, forwardRef } from 'react';
 import { Search } from 'lucide-react';
 import { lookupVinDetails, VinDetails } from '../lib/vinLookup';
+import getVehicleInfoByVIN from '../lib/services/vin';
 
 interface VinLookupFieldProps {
   value: string;
@@ -9,6 +10,7 @@ interface VinLookupFieldProps {
   onEnterPress?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   className?: string;
+  updateDispatch?:any;
 }
 
 const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
@@ -17,7 +19,8 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
   onVinDetails,
   onEnterPress,
   onKeyDown,
-  className
+  className,
+  updateDispatch
 }, ref) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,14 +34,31 @@ const VinLookupField = forwardRef<HTMLInputElement, VinLookupFieldProps>(({
     try {
       setLoading(true);
       setError(null);
-      
-      const details = await lookupVinDetails(value);
-      if (details) {
-        onVinDetails?.(details);
-      } else {
-        setError('VIN not found in database');
-      }
+      const vinDetails = await getVehicleInfoByVIN(value);
+      console.log(vinDetails,"vinDetails")
+      const formatText = (text: string) => {
+        if (!text) return '';
+        return text
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+      };
+      updateDispatch({
+
+        yearcar: vinDetails?.year ||'',
+        makecar: formatText(vinDetails?.make) || '',
+        modelcar: formatText(vinDetails?.model) || '',
+        bodytype: vinDetails?.bodyType || "",
+        odometer: vinDetails?.odometer || 'N/A'
+      });
+      // const details = await lookupVinDetails(value);
+      // if (details) {
+        // onVinDetails?.(details);
+      // } else {
+      //   setError('VIN not found in database');
+      // }
     } catch (err) {
+      setLoading(false);  
       setError('Error looking up VIN');
       console.error('VIN lookup error:', err);
     } finally {

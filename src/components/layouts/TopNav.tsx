@@ -64,6 +64,7 @@ const TopNav = () => {
     { to: "/account", icon: <Building2 size={20} />, label: t("nav.accounts") },
     { to: "/report", icon: <FileText size={20} />, label: t("nav.reports") },
     { to: "/setting", icon: <Settings size={20} />, label: t("nav.settings") },
+    // {to:"/truks",   label: t("trucks")}
   ]
 
   return (
