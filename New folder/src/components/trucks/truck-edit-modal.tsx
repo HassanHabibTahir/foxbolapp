@@ -61,11 +61,13 @@ export default function TruckEditModal({ isOpen, onClose, onTruckUpdate, initial
           cacheControl: "3600",
           upsert: true,
         })
+
         if (error) {
           console.error(`Error uploading file ${i}:`, error)
           uploadedUrls.push("")
           continue
         }
+
         const { data: urlData } = supabase.storage.from("trucksvgs").getPublicUrl(filePath)
         uploadedUrls[i] = urlData.publicUrl
       }
@@ -292,6 +294,11 @@ else {
     }
   }, [isOpen])
 
+
+
+
+
+
   if (!isOpen) return null
 
   return (
@@ -493,7 +500,7 @@ else {
                       <div
                         key={idx}
                         className="border rounded p-2 cursor-pointer hover:border-blue-500"
-                        onClick={() => selectImageFromLibrary(imageUrl)}
+                        onClick={() => selectImageFromLibrary(imageUrl, 0)}
                       >
                         <img
                           src={imageUrl || "/placeholder.svg"}

@@ -3,47 +3,6 @@ import { Edit, Plus, Truck } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import TruckEditModal from "../components/trucks/truck-edit-modal";
 
-
-
-
-
-
-const ImageLoader = ({ src,name }: { src: string,name:string}) => {
-    const [loading, setLoading] = useState(true);
-  
-    return (
-      <div className="relative h-10 w-auto flex items-center justify-center">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-gray-400"></div>
-          </div>
-        )}
-        <img
-          src={src || "/placeholder.svg"}
-          alt={name}
-          className={`h-10 w-auto object-contain transition-opacity duration-300 ${
-            loading ? "opacity-0" : "opacity-100"
-          }`}
-          onLoad={() => setLoading(false)}
-          onError={() => setLoading(false)}
-        />
-      </div>
-    );
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export default function TrucksPage() {
   const [trucks, setTrucks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -197,15 +156,13 @@ export default function TrucksPage() {
                             key={index}
                             className="flex-shrink-0 rounded border border-gray-200 p-1 bg-white shadow-sm hover:shadow-md transition-shadow"
                           >
-                         <ImageLoader src={item}  name={truck?.driver_name} />
-
-                            {/* <img
-                              src={item || "/placeholder.png"}
+                            <img
+                              src={item || "/placeholder.svg"}
                               alt={`${truck?.driver_name || "Truck"} ${
                                 index + 1
                               }`}
                               className="h-10 w-auto object-contain"
-                            /> */}
+                            />
                           </div>
                         ))}
                     </div>

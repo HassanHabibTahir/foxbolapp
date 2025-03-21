@@ -1,8 +1,7 @@
-import React from "react";
 import DesktopLayout from "../components/layouts/DesktopLayout";
-import NewButton from "../components/NewButton";
-import SaveButton from "../components/SaveButton";
-import { Save, SendToBack } from 'lucide-react';
+// import NewButton from "../components/NewButton";
+// import SaveButton from "../components/SaveButton";
+import { Save } from 'lucide-react';
 const Newimpound = () => {
 
 
@@ -10,7 +9,7 @@ const Newimpound = () => {
         // Implement save functionality here
         console.log("Saving impound data...")
       }
-    
+
       const fields = [
         "Stock",
         "Dispatch",
@@ -47,7 +46,7 @@ const Newimpound = () => {
                     name="storageLot"
                     // value={formData.storageLot}
                     // onChange={handleInputChange}
-                    id={field.toLowerCase().replace(" ", "-")} placeholder={`Enter ${field}`} 
+                    id={field.toLowerCase().replace(" ", "-")} placeholder={`Enter ${field}`}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
             {/* <label htmlFor={field.toLowerCase().replace(" ", "-")}>{field}</label>

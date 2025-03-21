@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import OverviewPage from '../components/Settings/Overview/OverviewPage';
 import CompanyProfilePage from '../components/Settings/CompanyProfile/CompanyProfilePage';
 import NotificationsPage from '../components/Settings/Notifications/NotificationsPage';
@@ -14,7 +14,7 @@ import QuickBooksSetupPage from '../components/Settings/QuickBooks/QuickBooksSet
 import SquareSetupPage from '../components/Settings/Square/SquareSetupPage';
 import StatementsPage from '../components/Settings/Statements/StatementsPage';
 import SettingsSidebar from '../components/Settings/SettingsSidebar';
-import Header from '../components/layouts/Header';
+// import Header from '../components/layouts/Header';
 import KitsPage from '../components/Settings/Kits/KitsPage';
 import ItemsPage from '../components/Settings/Items/ItemsPage';
 
@@ -62,12 +62,13 @@ const Setting = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* <Header/> */}
+       {/*<Header/>*/}
       <div className="container mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          <div className="w-64">
+        <div className="flex gap-3 md:gap-6">
+          <div className="md:w-64">
             <SettingsSidebar currentPage={currentPage} onPageChange={setCurrentPage} />
           </div>
+
           <div className="flex-1">
             {renderPage()}
           </div>

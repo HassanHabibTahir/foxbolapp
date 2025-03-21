@@ -1,4 +1,3 @@
-
 import type React from "react"
 import { useState, useEffect, forwardRef } from "react"
 import Select from "react-select"
@@ -25,33 +24,14 @@ interface ItemDescriptionComboboxProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   inputRefs?: any
   index?: number
-  placeholder?:string
-  options?: any
+  placeholder?: string
+  options?: ItemOption[]
 }
 
 const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
-  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs, index,placeholder,options }, ref) => {
+  ({ value, onChange, onItemSelect, onEnterPress, className = "", onKeyDown, inputRefs, index, placeholder, options = [] }, ref) => {
     const [selectedOption, setSelectedOption] = useState<ItemOption | null>(null)
-    // const [options, setOptions] = useState<ItemOption[]>([])
     const [menuIsOpen, setMenuIsOpen] = useState(false)
-    // useEffect(() => {
-    //   const fetchOptions = async () => {
-    //     const { data, error } = await supabase.from("items").select("description, shortcut1, shortcut2").limit(100) // Adjust the limit as needed
-
-    //     if (!error && data) {
-    //       const newOptions = data.map((item) => ({
-    //         value: item.description,
-    //         label: formatLabel(item),
-    //         item,
-    //       }))
-    //       setOptions(newOptions)
-    //     } else {
-    //       console.error("Error fetching items:", error)
-    //     }
-    //   }
-
-    //   fetchOptions()
-    // }, [])
 
     const formatLabel = (item: Item): string => {
       return `${item.description} ${item.shortcut1 ? `(${item.shortcut1})` : ""} ${item.shortcut2 ? `(${item.shortcut2})` : ""}`.trim()
@@ -92,7 +72,19 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
           const _selectedOption = options.find((opt) => formatLabel(opt.item) === selectedOptionText)
 
           if (_selectedOption) {
-            handleChange(_selectedOption)
+            // Important: Update both the selectedOption state and call onChange
+            setSelectedOption(_selectedOption)
+            
+            // Explicitly call onChange with the selected value
+            if (onChange) {
+              onChange(_selectedOption.value)
+            }
+            
+            // Call onItemSelect if provided
+            if (onItemSelect) {
+              onItemSelect(_selectedOption.item)
+            }
+            
             setMenuIsOpen(false)
 
             // Call onEnterPress if provided
@@ -115,12 +107,14 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
         },
         minHeight: "35px",
         height: "34px",
+        fontSize: "13.5px",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
         backgroundColor: state.isSelected ? "#E5E7EB" : state.isFocused ? "#F3F4F6" : "white",
         color: "#111827",
         cursor: "pointer",
+        fontSize: "13.5px",
         "&:hover": {
           backgroundColor: "#F3F4F6",
         },
@@ -134,6 +128,7 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
       input: (provided: any) => ({
         ...provided,
         color: "#111827",
+        fontSize: "13.5px",
       }),
       singleValue: (provided: any) => ({
         ...provided,
@@ -149,23 +144,6 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
       }),
     }
 
-    const selectProps = {
-      id: "select",
-      name: "select",
-
-      options: options,
-      value: selectedOption,
-      onChange: handleChange,
-      onKeyDown: handleKeyDown,
-      className: "react-select-container",
-      classNamePrefix: "react-select",
-      menuPortalTarget: document.body,
-      blurInputOnSelect: true,
-      menuIsOpen: menuIsOpen,
-      onMenuOpen: () => setMenuIsOpen(true),
-      onMenuClose: () => setMenuIsOpen(false),
-      openMenuOnFocus: true,
-    }
     // Add this useEffect to sync the value prop with selectedOption state
     useEffect(() => {
       if (value && options.length > 0) {
@@ -174,19 +152,31 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
           setSelectedOption(matchingOption)
         }
       } else if (value === "" || value === undefined) {
-        // setSelectedOption(null)
+        setSelectedOption(null)  // Uncommented this line to clear selection when value is empty
       }
-    }, [value, options])
+    }, [value, options, selectedOption])
 
     return (
       <div className={className}>
         <Select
-          {...selectProps}
+          id="select"
+          name="select"
+          options={options}
+          value={selectedOption}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          className="react-select-container"
+          classNamePrefix="react-select"
+          menuPortalTarget={document.body}
+          blurInputOnSelect={true}
+          menuIsOpen={menuIsOpen}
+          onMenuOpen={() => setMenuIsOpen(true)}
+          onMenuClose={() => setMenuIsOpen(false)}
+          openMenuOnFocus={true}
           ref={ref}
           styles={customStyles}
           placeholder={placeholder}
           menuPlacement="auto"
-          blurInputOnSelect
           components={{
             IndicatorSeparator: null,
           }}
@@ -199,4 +189,3 @@ const ItemDescriptionCombobox = forwardRef<any, ItemDescriptionComboboxProps>(
 ItemDescriptionCombobox.displayName = "ItemDescriptionCombobox"
 
 export default ItemDescriptionCombobox
-

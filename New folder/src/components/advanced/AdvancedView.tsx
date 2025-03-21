@@ -1,4 +1,3 @@
-import React from 'react';
 import { DefaultSettingsSection } from './sections/DefaultSettingsSection';
 import { AdvancedOptionsSection } from './sections/AdvancedOptionsSection';
 import { MileageSection } from './sections/MileageSection';
@@ -32,12 +31,12 @@ const DEFAULT_SETTINGS: AdvancedSettings = {
 
 export function AdvancedView() {
   const accountId = '123'; // TODO: Get from context/props
-  const { 
-    settings, 
-    setSettings, 
-    saveSettings, 
-    loading, 
-    error 
+  const {
+    settings,
+    setSettings,
+    saveSettings,
+    loading,
+    error
   } = useAccountSettings<AdvancedSettings>(
     accountId,
     'advanced_settings',

@@ -1,11 +1,17 @@
-import React from 'react';
+import { useState } from 'react';
 import { Copy } from 'lucide-react';
 
 const OverviewPage = () => {
   const referralLink = 'towbook.com/signup/TB5344X2';
-  
+  const [copy, setCopy] = useState<boolean>(false)
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(referralLink);
+    void navigator.clipboard.writeText(referralLink);
+    setCopy(true);
+
+    setTimeout(() => {
+      setCopy(false);
+    }, 3000);
   };
 
   return (
@@ -50,7 +56,7 @@ const OverviewPage = () => {
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               <Copy className="w-4 h-4 mr-2" />
-              Copy
+              { copy ? "Copied": "Copy" }
             </button>
           </div>
         </div>

@@ -608,13 +608,14 @@ const InvoiceForm = () => {
 
   const handleVinDetails = (details: any) => {
     try {
-      updateDispatch((prev: any) => ({
-        ...prev,
-        yearcar: details.year,
-        makecar: details.make,
-        modelcar: details.model,
-        bodytype: details.bodyType,
-      }));
+      
+      updateDispatch({
+        // ...prev,
+        // yearcar: details.year,
+        // makecar: details.make,
+        // modelcar: details.model,
+        // bodytype: details?.bodytype,
+      })
     } catch (e) {
       console.log(e);
     }
@@ -665,7 +666,7 @@ const InvoiceForm = () => {
         onInvoiceFound={handleInvoiceFound}
         className="flex-1 min-w-[200px]"
       />
-      <NewButton onNew={handleNew} />
+      {/* <NewButton onNew={handleNew} /> */}
       <SaveButton onSave={handleSave} />
       <PrintButton onPrint={handlePrint} />
     </div>,
@@ -1047,6 +1048,7 @@ const InvoiceForm = () => {
 
               {/* VIN Lookup Field */}
               <VinLookupField
+              updateDispatch={updateDispatch}
                 ref={inputRefs.vin}
                 value={formState.dispatch.vin || ""}
                 onChange={(value) => updateDispatch({ vin: value })}
