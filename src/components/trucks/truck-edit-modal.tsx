@@ -477,13 +477,15 @@ else {
 
                 <div className="mb-4">
                   <div className="flex space-x-2 mb-4">
-                    {subfolders.map((folder) => (
+                    {subfolders?.map((folder) => (
                       <button
                         key={folder}
                         onClick={() => setSelectedFolder(folder)}
-                        className={`px-3 py-1 rounded ${selectedFolder === folder ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                        className={`px-3 py-1 text-xs rounded ${selectedFolder === folder ? "bg-blue-600 text-white" : "bg-gray-200"}`}
                       >
-                        {folder.charAt(0).toUpperCase() + folder.slice(1)}
+                        {folder?.replace(/_/g, " ").charAt(0).toUpperCase() + folder.replace(/_/g, " ").slice(1)}
+
+                        {/* {folder.charAt(0).toUpperCase() + folder.slice(1)} */}
                       </button>
                     ))}
                   </div>
