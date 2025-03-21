@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState, useEffect, type KeyboardEvent } from "react"
-import { Truck, FileDown, Printer, Search, ChevronLeft, ChevronRight, CarFront } from "lucide-react"
+import { useState, useEffect, type KeyboardEvent, useRef } from "react"
+import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import DriverModal from "../components/dispatch/DriverModal"
@@ -74,6 +74,39 @@ function Dispatch() {
   const [isLoading, setIsLoading] = useState(false)
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false)
   const [selectedRow, setSelectedRow] = useState<string | null>(null)
+
+  const [selectedFields, setSelectedFields] = useState<Set<string>>(
+    new Set([
+      "P",
+      "Disp #",
+      "Trk #",
+      "Driver",
+      "Rec",
+      "Inrt",
+      "Arvd",
+      "ITow",
+      "Company",
+      "Lic #",
+      "Year",
+      "Make",
+      "Color",
+      "Phone",
+      "Reason",
+      "Location",
+      "Destination",
+      "E",
+      "Z",
+    ]),
+  )
+  const [orderedFields, setOrderedFields] = useState<string[]>(Array.from(selectedFields))
+  const [draggedColumn, setDraggedColumn] = useState<string | null>(null)
+  const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({})
+  const [isResizing, setIsResizing] = useState(false)
+  const resizingRef = useRef<{
+    column: string
+    startX: number
+    startWidth: number
+  } | null>(null)
 
   const recordsPerPage = 25
   const foxtow_id = localStorage.getItem("foxtow_id")
@@ -175,7 +208,8 @@ function Dispatch() {
       }
       const { data, error } = await supabase
         .from("towdrive")
-        .select(`
+        .select(
+          `
           id,
           trucknum,
           timerec,
@@ -197,6 +231,7 @@ function Dispatch() {
             dispatched,
             equipment,
             zone,
+            destination,
             updated_at,
             colors(
               min1,
@@ -212,7 +247,8 @@ function Dispatch() {
               forecolor4
             )
           )
-        `)
+        `,
+        )
         .order("updated_at", { ascending: false })
         .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1)
 
@@ -322,9 +358,11 @@ function Dispatch() {
       // Handle nested towmast fields
       if (field.startsWith("towmast.")) {
         const nestedField = field.split(".")[1]
+        // console.log(nestedField,value,"value" "nextedFiedl")
         const { error } = await supabase
           .from("towmast")
           .update({ [nestedField]: value })
+          // .eq("id",recordId)
           .eq("dispnum", towRecords.find((r) => r.id === recordId)?.towmast.dispnum)
 
         if (error) {
@@ -387,56 +425,96 @@ function Dispatch() {
       setIsLoading(false)
     }
   }
+  const handleResizeStart = (e: React.MouseEvent, field: string) => {
+    e.preventDefault()
+    e.stopPropagation()
 
+    const startWidth = columnWidths[field] || 200
 
+    setIsResizing(true)
+    resizingRef.current = {
+      column: field,
+      startX: e.clientX,
+      startWidth,
+    }
+
+    document.addEventListener("mousemove", handleResizeMove)
+    document.addEventListener("mouseup", handleResizeEnd)
+  }
+
+  const handleResizeMove = (e: MouseEvent) => {
+    if (!resizingRef.current) return
+
+    const { column, startX, startWidth } = resizingRef.current
+    const width = Math.max(100, startWidth + (e.clientX - startX))
+
+    setColumnWidths((prev) => ({
+      ...prev,
+      [column]: width,
+    }))
+  }
+
+  const handleResizeEnd = () => {
+    setIsResizing(false)
+    resizingRef.current = null
+    document.removeEventListener("mousemove", handleResizeMove)
+    document.removeEventListener("mouseup", handleResizeEnd)
+  }
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, field: string) => {
+    setDraggedColumn(field)
+    e.currentTarget.classList.add("opacity-50")
+    e.dataTransfer.setData("text/plain", field)
+  }
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.classList.remove("opacity-50")
+    setDraggedColumn(null)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.currentTarget.classList.add("border-blue-400")
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.classList.remove("border-blue-400")
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetField: string) => {
+    e.preventDefault()
+    e.currentTarget.classList.remove("border-blue-400")
+
+    if (!draggedColumn || draggedColumn === targetField) return
+
+    setOrderedFields((prev) => {
+      const newOrder = [...prev]
+      const draggedIdx = newOrder.indexOf(draggedColumn)
+      const targetIdx = newOrder.indexOf(targetField)
+
+      newOrder.splice(draggedIdx, 1)
+      newOrder.splice(targetIdx, 0, draggedColumn)
+
+      return newOrder
+    })
+  }
   return (
     <div className=" mx-auto p-0">
       <Toaster position="top-right" />
       <DispatchHeader activeDrivers={activeDrivers} />
-      {/* 
-      <div className="grid grid-cols-12 gap-1 mb-6">
-        {drivers.map((driver) => (
-          <div
-            key={driver.id}
-            className={`${driver.color} p-2 rounded shadow-sm flex flex-col items-center justify-center relative border border-gray-200`}
-          >
-            <button
-              onClick={() => handleDriverAssignment(driver.id, driver.driver_num, driver.def_truckn)}
-              className="w-full h-full flex flex-col items-center justify-center hover:opacity-80 transition-opacity"
-            >
-              <Truck size={24} className="text-gray-700" />
-              <div className="text-center mt-1">
-                <div className="text-sm font-medium">{driver.driver_fir}</div>
-
-                <div className="text-xs text-gray-600">{driver.def_truckn}</div>
-              </div>
-            </button>
-          </div>
-        ))}
-      </div> */}
 
       <div className="flex justify-end items-center mb-4 mt-4">
-        {/* <div className="relative w-96">
-          <input
-            type="text"
-            placeholder="Search records..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-        </div> */}
         <div className="flex flex-wrap items-center space-x-2">
-<Link to="/truks">
-          <button className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50" >
-<Truck size={16} className="text-gray-700" /> {" "} Trucks
-          </button>
-</Link>
+          <Link to="/truks">
+            <button className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50">
+              <Truck size={16} className="text-gray-700" /> Trucks
+            </button>
+          </Link>
           <button
             onClick={handleDriverButtonClick}
             className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50"
           >
-            <CarFront  size={16} className="text-gray-700" />
+            <CarFront size={16} className="text-gray-700" />
 
             <span>Drivers</span>
           </button>
@@ -455,45 +533,32 @@ function Dispatch() {
         <table className="w-full  border-collapse">
           <thead>
             <tr className="bg-gray-50">
-            <th className="px-1 py-2  text-center text-[13px] border border-gray-300">P</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Disp #</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Trk #</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Driver</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Rec</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Inrt</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Arvd</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">ITow</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Company</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap">Lic #</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Year</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Make</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Color</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Phone</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Reason</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Location</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Destination</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">E</th>
-              <th className="px-1 py-2 text-center text-[13px] border border-gray-300">Z</th>
-              {/* <th className="px-0 py-2 text-left border border-gray-300 w-8">Pri</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Disp#</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Trk#</th>
-              <th className="px-2 py-2 text-left border border-gray-300">Driver</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Rec:</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Inrt:</th>
-              <th className="px-2 py-2 text-left border border-gray-300">Arvd:</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Intow:</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Company Name</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Lic#</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Year</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Make</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Color</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Phone</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Reason</th>
-              <th className="px-2 py-2 text-left border border-gray-300 min-w-[150px]">Location</th>
-              <th className="px-2 py-2 text-left border border-gray-300 min-w-[150px]">Destination</th>
-              <th className="px-0 py-2 text-center border border-gray-300 w-6">E</th>
-              <th className="px-1 py-2 text-left border border-gray-300">Z</th>
-               */}
+              {orderedFields.map((field) => (
+                <th
+                  key={field}
+                  className="px-1 py-2  text-center text-[13px] border border-gray-300 whitespace-nowrap"
+                  style={{ width: columnWidths[field] || 200 }}
+                >
+                  <div
+                    draggable={!isResizing}
+                    onDragStart={(e) => handleDragStart(e, field)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, field)}
+                    className="flex items-center justify-center gap-2  cursor-move px-2"
+                  >
+                    {/* <GripVertical size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" /> */}
+                    {field}
+                  </div>
+                  <div
+                    className={`absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 ${
+                      isResizing ? "bg-blue-500" : ""
+                    }`}
+                    onMouseDown={(e) => handleResizeStart(e, field)}
+                  />
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="text-[12px]">
@@ -509,143 +574,240 @@ function Dispatch() {
                 .map((record) => (
                   <tr
                     key={record.towmast.dispnum}
-                    className={`hover:bg-gray-50 text-center align-middle cursor-pointer ${selectedRow === record.id ? "bg-blue-50" : ""}`}
+                    className={`hover:bg-gray-50 text-center align-middle cursor-pointer ${
+                      selectedRow === record.id ? "bg-blue-50" : ""
+                    }`}
                     style={getRowStyle(record)}
                     onClick={() => setSelectedRow(record.id)}
                     onDoubleClick={() => handleRowDoubleClick(record)}
                   >
-                    <td className="px-1 text-center align-middle  py-2 border border-gray-300 w-4">
-                      <input
-                        value={record.towmast.priority || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)}
-                        className="bg-transparent  w-4 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded "
-                      />
-                    </td>
-                    <td className="px-0 py-2 border border-gray-300">{record.towmast.dispnum}</td>
-                    <td className="px-1 py-2 border border-gray-300">{record.trucknum}</td>
-                    <td className="px-2 py-2 border border-gray-300">
-                      {record.driver ? record.driver.substring(0, 10) : ""}
-                    </td>
-                    <td className="px-1 py-2 w-10 border border-gray-300">
-                      <input
-                        value={record.timerec || ""}
-                        onChange={(e) => handleInputChange(record.id, "timerec", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "timerec", e.currentTarget.value)}
-                        onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timerec")}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border w-10 border-gray-300">
-                      <input
-                        value={record.timeinrt || ""}
-                        onChange={(e) => handleInputChange(record.id, "timeinrt", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeinrt", e.currentTarget.value)}
-                        onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeinrt")}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2  w-8 border border-gray-300">
-                      <input
-                        value={record.timearrive || ""}
-                        onChange={(e) => handleInputChange(record.id, "timearrive", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "timearrive", e.currentTarget.value)}
-                        onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timearrive")}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 w-8 border border-gray-300">
-                      <input
-                        value={record.timeintow || ""}
-                        onChange={(e) => handleInputChange(record.id, "timeintow", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeintow", e.currentTarget.value)}
-                        onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeintow")}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={(record.towmast.callname || "").substring(0, 15)}
-                        onChange={(e) => handleInputChange(record.id, "towmast.callname", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)}
-                        className="bg-transparent w-28 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 w-16 border border-gray-300">
-                      <input
-                        value={record.towmast.licensenum ? record.towmast.licensenum.slice(-7) : ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.licensenum", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.licensenum", e.currentTarget.value)}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 w-10 border border-gray-300">
-                      <input
-                        value={record.towmast.yearcar || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.yearcar", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.yearcar", e.currentTarget.value)}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={record.towmast.makecar || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.makecar", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.makecar", e.currentTarget.value)}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={record.towmast.colorcar || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.colorcar", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.colorcar", e.currentTarget.value)}
-                        className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={record.towmast.callphone || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.callphone", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)}
-                        className="bg-transparent text-center w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={record.towmast.reason || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.reason", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)}
-                        className="bg-transparent w-24 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300 min-w-[200px]">{record.towmast.location}</td>
-                    <td className="px-1 py-2 border border-gray-300 min-w-[200px]">
-                      <input
-                        value={record.towmast.destination || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.destination", e.target.value)}
-                        onKeyDown={(e) =>
-                          handleInputKeyDown(e, record.id, "towmast.destination", e.currentTarget.value)
-                        }
-                        className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                      />
-                    </td>
-                    <td className="px-0 py-2 border border-gray-300 w-5 text-center">
-                      <input
-                        value={record.towmast.equipment ? "E" : ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.equipment", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.equipment", e.currentTarget.value)}
-                        className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0 text-center"
-                      />
-                    </td>
-                    <td className="px-1 py-2 border border-gray-300">
-                      <input
-                        value={record.towmast.zone || ""}
-                        onChange={(e) => handleInputChange(record.id, "towmast.zone", e.target.value)}
-                        onKeyDown={(e) => handleInputKeyDown(e, record.id, "towmast.zone", e.currentTarget.value)}
-                        className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                      />
-                    </td>
+                    {orderedFields.map((field) => {
+                      // Render different cell content based on field name
+                      switch (field) {
+                        case "P":
+                          return (
+                            <td key={field} className="px-1 text-center align-middle py-2 border border-gray-300 w-4">
+                              <input
+                                value={record.towmast.priority || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-4 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                              />
+                            </td>
+                          )
+                        case "Disp #":
+                          return (
+                            <td key={field} className="px-0 py-2 border border-gray-300">
+                              {record.towmast.dispnum}
+                            </td>
+                          )
+                        case "Trk #":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              {record.trucknum}
+                            </td>
+                          )
+                        case "Driver":
+                          return (
+                            <td key={field} className="px-2 py-2 border border-gray-300">
+                              {record.driver ? record.driver.substring(0, 10) : ""}
+                            </td>
+                          )
+                        case "Rec":
+                          return (
+                            <td key={field} className="px-1 py-2 w-10 border border-gray-300">
+                              <input
+                                value={record.timerec || ""}
+                                onChange={(e) => handleInputChange(record.id, "timerec", e.target.value)}
+                                onKeyDown={(e) => handleInputKeyDown(e, record.id, "timerec", e.currentTarget.value)}
+                                onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timerec")}
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Inrt":
+                          return (
+                            <td key={field} className="px-1 py-2 border w-10 border-gray-300">
+                              <input
+                                value={record.timeinrt || ""}
+                                onChange={(e) => handleInputChange(record.id, "timeinrt", e.target.value)}
+                                onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeinrt", e.currentTarget.value)}
+                                onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeinrt")}
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Arvd":
+                          return (
+                            <td key={field} className="px-1 py-2 w-8 border border-gray-300">
+                              <input
+                                value={record.timearrive || ""}
+                                onChange={(e) => handleInputChange(record.id, "timearrive", e.target.value)}
+                                onKeyDown={(e) => handleInputKeyDown(e, record.id, "timearrive", e.currentTarget.value)}
+                                onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timearrive")}
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "ITow":
+                          return (
+                            <td key={field} className="px-1 py-2 w-8 border border-gray-300">
+                              <input
+                                value={record.timeintow || ""}
+                                onChange={(e) => handleInputChange(record.id, "timeintow", e.target.value)}
+                                onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeintow", e.currentTarget.value)}
+                                onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeintow")}
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Company":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={(record.towmast.callname || "").substring(0, 15)}
+                                onChange={(e) => handleInputChange(record.id, "towmast.callname", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-28 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Lic #":
+                          return (
+                            <td key={field} className="px-1 py-2 w-16 border border-gray-300">
+                              <input
+                                value={record.towmast.licensenum ? record.towmast.licensenum.slice(-7) : ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.licensenum", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.licensenum", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Year":
+                          return (
+                            <td key={field} className="px-1 py-2 w-10 border border-gray-300">
+                              <input
+                                value={record.towmast.yearcar || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.yearcar", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.yearcar", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Make":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={record.towmast.makecar || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.makecar", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.makecar", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Color":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={record.towmast.colorcar || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.colorcar", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.colorcar", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Phone":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={record.towmast.callphone || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.callphone", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)
+                                }
+                                className="bg-transparent text-center w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Reason":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={record.towmast.reason || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.reason", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-24 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                              />
+                            </td>
+                          )
+                        case "Location":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
+                              {record.towmast.location}
+                            </td>
+                          )
+                        case "Destination":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
+                              <input
+                              // value={"asdfasdf"}
+                                value={record.towmast.destination || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.destination", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.destination", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                              />
+                            </td>
+                          )
+                        case "E":
+                          return (
+                            <td key={field} className="px-0 py-2 border border-gray-300 w-5 text-center">
+                              <input
+                                value={record.towmast.equipment ? "E" : ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.equipment", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.equipment", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0 text-center"
+                              />
+                            </td>
+                          )
+                        case "Z":
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              <input
+                                value={record.towmast.zone || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.zone", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.zone", e.currentTarget.value)
+                                }
+                                className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                              />
+                            </td>
+                          )
+                        default:
+                          return (
+                            <td key={field} className="px-1 py-2 border border-gray-300">
+                              -
+                            </td>
+                          )
+                      }
+                    })}
                   </tr>
                 ))
             )}
