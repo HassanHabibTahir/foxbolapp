@@ -1,7 +1,5 @@
-"use client"
 
 import type React from "react"
-
 import { useState, useEffect, type KeyboardEvent, useRef } from "react"
 import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
@@ -505,7 +503,7 @@ function Dispatch() {
 
       <div className="flex justify-end items-center mb-4 mt-4">
         <div className="flex flex-wrap items-center space-x-2">
-          <Link to="/truks">
+          <Link to="/trucks">
             <button className="flex items-center space-x-1 px-4 py-1 border rounded hover:bg-gray-50">
               <Truck size={16} className="text-gray-700" /> Trucks
             </button>
