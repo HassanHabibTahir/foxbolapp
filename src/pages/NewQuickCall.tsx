@@ -36,7 +36,6 @@ function NewQuickPage() {
   const recordData = location.state?.record;
   const drivers = location.state?.drivers;
   const mapRef = useRef<HTMLDivElement>(null);
-  const pickupInputRef = useRef<HTMLInputElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [pickupMarker, setPickupMarker] = useState<google.maps.Marker | null>(
     null
@@ -87,6 +86,7 @@ function NewQuickPage() {
     }
   }, [recordData]);
 
+  // Initialize loader once
   useEffect(() => {
     const newLoader = new Loader({
       apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -96,20 +96,13 @@ function NewQuickPage() {
     setLoader(newLoader);
   }, []);
 
-  // Initialize map and autocomplete
+  // Initialize map after loader is set
   useEffect(() => {
     if (!loader || !mapRef.current) return;
-
-    let isMounted = true;
-    let pickupAutocomplete: google.maps.places.Autocomplete | null = null;
-    let destinationAutocomplete: google.maps.places.Autocomplete | null = null;
 
     const initMap = async () => {
       try {
         const google = await loader.load();
-        if (!isMounted) return;
-
-        // Initialize map
         const newMap = new google.maps.Map(mapRef.current!, {
           center: { lat: 34.0522, lng: -118.2437 },
           zoom: 14,
@@ -117,38 +110,41 @@ function NewQuickPage() {
         setMap(newMap);
         setGeocoder(new google.maps.Geocoder());
 
-        // Initialize autocomplete
-        if (pickupInputRef.current && destinationInputRef.current) {
-          pickupAutocomplete = new google.maps.places.Autocomplete(
-            pickupInputRef.current,
-            { types: ["geocode"] }
+        // Initialize autocomplete for pickup and destination
+        const pickupInput = document.getElementById(
+          "pickupFrom"
+        ) as HTMLInputElement;
+        const destinationInput = document.getElementById(
+          "destination"
+        ) as HTMLInputElement;
+
+        if (pickupInput && destinationInput) {
+          const pickupAutocomplete = new google.maps.places.Autocomplete(
+            pickupInput
+          );
+          const destinationAutocomplete = new google.maps.places.Autocomplete(
+            destinationInput
           );
 
-          destinationAutocomplete = new google.maps.places.Autocomplete(
-            destinationInputRef.current,
-            { types: ["geocode"] }
-          );
-
-          // Add place change listeners
           pickupAutocomplete.addListener("place_changed", () => {
-            const place = pickupAutocomplete!.getPlace();
+            const place = pickupAutocomplete.getPlace();
             if (place.geometry?.location) {
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
-                pickupFrom: place.formatted_address || ""
+                pickupFrom: place.formatted_address || "",
               }));
-              newMap.panTo(place.geometry.location);
+              updatePickupMarker(place.geometry.location);
             }
           });
 
           destinationAutocomplete.addListener("place_changed", () => {
-            const place = destinationAutocomplete!.getPlace();
+            const place = destinationAutocomplete.getPlace();
             if (place.geometry?.location) {
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
-                destination: place.formatted_address || ""
+                destination: place.formatted_address || "",
               }));
-              newMap.panTo(place.geometry.location);
+              updateDestinationMarker(place.geometry.location);
             }
           });
         }
@@ -158,16 +154,7 @@ function NewQuickPage() {
     };
 
     initMap();
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      if (map) {
-        google.maps.event.clearInstanceListeners(map);
-      }
-    };
   }, [loader]);
-
 
   const updatePickupMarker = (location: google.maps.LatLng) => {
     if (!map) return;
@@ -440,7 +427,7 @@ function NewQuickPage() {
         {recordData ? "Edit Call" : "Quick New Call"}
       </h1>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-sm shadow-md p-6">
         <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
@@ -490,7 +477,7 @@ function NewQuickPage() {
                     name="account"
                     value={formData.callname}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                     required
                   />
                   <button
@@ -516,7 +503,7 @@ function NewQuickPage() {
                     name="pickupFrom"
                     value={formData.pickupFrom}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                     required
                   />
                   <button
@@ -542,7 +529,7 @@ function NewQuickPage() {
                     name="destination"
                     value={formData.destination}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
                   <button
                     type="button"
@@ -558,8 +545,8 @@ function NewQuickPage() {
             </div>
 
             <div>
-              <h2 className="text-lg font-medium mb-4">Vehicle Information</h2>
-              <div className="grid grid-cols-2 gap-4">
+              <h2 className="text-lg font-medium mb-2">Vehicle Information</h2>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     License Plate
@@ -569,7 +556,7 @@ function NewQuickPage() {
                     name="licensePlate"
                     value={formData.licensePlate}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
                 </div>
                 <div>
@@ -625,7 +612,7 @@ function NewQuickPage() {
                     name="make"
                     value={formData.make}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
                 </div>
                 <div>
@@ -637,7 +624,7 @@ function NewQuickPage() {
                     name="model"
                     value={formData.model}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
                 </div>
                 <div>
@@ -649,13 +636,13 @@ function NewQuickPage() {
                     name="color"
                     value={formData.color}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Driver
@@ -706,10 +693,21 @@ function NewQuickPage() {
 
           <div
             ref={mapRef}
-            className="w-full h-[400px] rounded-lg overflow-hidden"
+            className="w-full h-[400px] rounded-sm overflow-hidden"
           />
 
           <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              //   onClick={() => navigate("/dispatch")}
+              className="bg-[#002B7F] text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition"
+              disabled={isSubmitting}
+            >
+              Create Call
+            </button>
+            <button className="bg-[#002B7F] text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition">
+              Save and Dispatch Call
+            </button>
             <button
               type="button"
               onClick={() => navigate("/dispatch")}
@@ -718,14 +716,14 @@ function NewQuickPage() {
             >
               Cancel
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={(e) => handleSubmit(e, true)}
               className="px-6 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
               disabled={isSubmitting}
             >
               {recordData ? "Save" : "Save and Dispatch"}
-            </button>
+            </button> */}
           </div>
         </form>
       </div>
