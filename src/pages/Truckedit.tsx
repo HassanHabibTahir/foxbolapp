@@ -80,7 +80,7 @@ export default function TruckEditPage() {
         // Set form fields
         setTruckName(data.truck_name || "");
         setTruckNumber(data.def_truckn || "");
-        setDriverName(`${data.driver_fir || ""} ${data.driver_las || ""}`);
+        setDriverName(data?.driver_nam?data?.driver_nam:`  ${data.driver_fir || ""} ${data.driver_las || ""}`);
         setVin(data.vin || "");
         setLicenseNumber(data.driver_lic || "");
         setTruckType(data.truck_type || "");
@@ -307,7 +307,6 @@ export default function TruckEditPage() {
       const nameParts = driverName.trim().split(" ");
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
-
       const { error } = await supabase
         .from("drivers")
         .update({
@@ -315,6 +314,7 @@ export default function TruckEditPage() {
           def_truckn: truckNumber,
           driver_fir: firstName,
           driver_las: lastName,
+          driver_nam:firstName+"_"+lastName,
           vin: vin,
           driver_lic: licenseNumber,
           truck_type: truckType,
@@ -322,16 +322,16 @@ export default function TruckEditPage() {
           t_model: model,
           m_year: year,
           t_make: manufacturer,
-          expiration_date: expiration,
+          expiration_date: expiration||null,
           driver_ond: isActive,
           svg_urls: finalUrls,
         })
         .eq("id", truck.id)
         .eq("foxtow_id", foxtow_id);
 
+        toast.dismiss(loadingToast);
       if (error) throw error;
-
-      toast.dismiss(loadingToast);
+// console.log(error,"error");
       toast.success("Truck information saved successfully");
       navigate("/trucks");
     } catch (error: any) {
