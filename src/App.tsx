@@ -18,6 +18,7 @@ import { Toaster } from 'react-hot-toast';
 import TrucksPage from './pages/Trucks';
 import EditTrucks from './pages/Truckedit';
 import AddNewTrucks from './pages/createTruck';
+import NewQuickPage from './pages/NewQuickCall';
 
 function App() {
     const { i18n } = useTranslation();
@@ -52,7 +53,8 @@ function App() {
              <Route path="/trucks" element={<TrucksPage/>}/>
              <Route path="/setting-trucks/:id" element={<EditTrucks />} />
              <Route path="/add-new-trucks" element={<AddNewTrucks />}/>
-            <Route path="/quick-call" element={<QuickPage />} />
+             <Route path="/quick-call" element={<QuickPage />} />
+             <Route path="/quickcall" element={<NewQuickPage/>}  />
           </Routes>
         </main>
       </div>
