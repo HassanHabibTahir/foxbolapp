@@ -1,3 +1,4 @@
+"use client"
 
 import React, { useEffect, useState } from "react"
 import Select, { components } from "react-select"
@@ -15,8 +16,8 @@ interface AccountNameProps {
 }
 
 // this is account Name
-const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
-  ({ label, title, size = "md", value = "", onChange, onEnterPress, onKeyDown,className }, ref) => {
+const SelectAccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
+  ({ label, title, size = "full", value = "", onChange, onEnterPress, onKeyDown, className }, ref) => {
     const [companies, setCompanies] = useState<any[]>([])
     const [selectedOption, setSelectedOption] = useState<any | null>(null)
     const [menuIsOpen, setMenuIsOpen] = useState(false)
@@ -68,37 +69,19 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       setSelectedOption(option)
       if (option) {
         onChange?.(option.value)
-        // if (actionMeta.action === "select-option" && onEnterPress) {
-        //   setTimeout(onEnterPress, 0);
-        // }
       } else {
         onChange?.("")
       }
     }
 
-    // const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    //   if (e.key === "Enter" && !menuIsOpen && onEnterPress) {
-    //     e.preventDefault();
-    //     onEnterPress();
-    //   }
-    // };
     const handleKeyDown = (e: any) => {
-      if (e.key === "Enter" || e.key === " ") {
-        const focusedOption = document.querySelector(".react-select__option--is-focused")
-        if (focusedOption) {
-          e.preventDefault()
-          const selectedOptionText = focusedOption.textContent
-          const _selectedOption = companies?.find((opt: { label: string | null }) => opt.label === selectedOptionText)
-          console.log(_selectedOption, "selectedOptions-->", selectedOptionText)
-
-          if (_selectedOption) {
-            handleChange(_selectedOption)
-            setMenuIsOpen(false)
-          }
-        }
+      if (e.key === "Enter" && onEnterPress) {
+        e.preventDefault()
+        onEnterPress()
       }
       onKeyDown?.(e)
     }
+
     const handleInputChange = (inputValue: string) => {
       setSearchTerm(inputValue)
     }
@@ -106,19 +89,18 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     const customStyles = {
       control: (provided: any, state: { isFocused: boolean }) => ({
         ...provided,
-        fontSize: '14px',
+        fontSize: "14px",
         borderColor: state.isFocused ? "#3B82F6" : "#D1D5DB",
         "&:hover": {
           borderColor: state.isFocused ? "#3B82F6" : "#9CA3AF",
         },
         boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
-        minHeight: "34px",
-        height: "35px",
-        minWidth: "165%",
+        minHeight: "43px",
+        height: "43px",
       }),
       option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
         ...provided,
-        fontSize: '14px',
+        fontSize: "14px",
         backgroundColor: state.isSelected ? "#3B82F6" : state.isFocused ? "#F3F4F6" : "white",
         color: state.isSelected ? "white" : "#111827",
         cursor: "pointer",
@@ -132,6 +114,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
         boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
         borderRadius: "0.375rem",
         zIndex: 1000,
+        width: "90%", // Ensure menu is full width
       }),
       menuList: (provided: any) => ({
         ...provided,
@@ -143,8 +126,7 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       }),
       container: (provided: any) => ({
         ...provided,
-        width: "100%", // Takes full width of parent container
-        minWidth: sizeClasses[size], // Ensures minimum width based on size prop
+        width: sizeClasses[size], // Apply the width from sizeClasses
       }),
     }
 
@@ -162,47 +144,35 @@ const AccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
       menuIsOpen: menuIsOpen,
       onMenuOpen: () => setMenuIsOpen(true),
       onMenuClose: () => setMenuIsOpen(false),
-      onInputChange:handleInputChange,
+      onInputChange: handleInputChange,
       openMenuOnFocus: true,
     }
+
     return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <div className={`w-full ${className}`} style={{ minWidth: sizeClasses[size] }}>
+      <div className={`w-[95%] ${className || ""}`}>
+        {/* {label && (
+          <label htmlFor="select" className="block text-sm font-medium text-gray-700 mb-1">
+            {label}
+          </label>
+        )} */}
+        <div style={{ width: sizeClasses[size] }}>
           <Select
             {...selectProps}
             ref={ref as any}
             styles={customStyles}
-            placeholder="Select a truck"
+            placeholder="Select a account"
             isClearable
             isSearchable
             components={{
               Option: ({ children, ...props }) => <components.Option {...props}>{children}</components.Option>,
             }}
-            // ref={ref as any}
-            // value={selectedOption}
-            // onChange={handleChange}
-            // options={companies}
-            // styles={customStyles}
-            // placeholder="Select a company"
-            // isClearable
-            // isSearchable
-            // onKeyDown={handleKeyDown}
-            // menuIsOpen={menuIsOpen}
-            // onInputChange={handleInputChange}
-            // onMenuOpen={() => setMenuIsOpen(true)}
-            // onMenuClose={() => setMenuIsOpen(false)}
-            // backspaceRemovesValue={true}
-            // blurInputOnSelect={true}
-            // captureMenuScroll={true}
-            // closeMenuOnSelect={true}
-            // filterOption={null}
-            // noOptionsMessage={() => "No companies found"}
           />
         </div>
       </div>
     )
   },
 )
-export default AccountName
+
+SelectAccountName.displayName = "SelectAccountName"
+export default SelectAccountName
 
