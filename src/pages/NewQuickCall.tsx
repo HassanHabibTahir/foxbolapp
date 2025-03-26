@@ -5,6 +5,11 @@ import { Loader } from "@googlemaps/js-api-loader";
 import Select from "react-select";
 import toast from "react-hot-toast";
 import { supabase } from "../lib/supabase";
+import AccountName from "../components/common/AccountName";
+import SelectAccountName from "../components/common/accountNameSelect";
+import ColorSelect from "../components/common/ColorSelect";
+import CarMake from "../components/common/CarMake";
+import CarMakeModels from "../components/common/CarModels";
 
 interface FormData {
   truck: string;
@@ -21,6 +26,7 @@ interface FormData {
   color: string;
   driver: string;
   truckAssigned: string;
+  makecar:any
 }
 
 interface Driver {
@@ -34,7 +40,7 @@ function NewQuickPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const recordData = location.state?.record;
-  const drivers = location.state?.drivers;
+  //   const drivers = location.state?.drivers;
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [pickupMarker, setPickupMarker] = useState<google.maps.Marker | null>(
@@ -45,7 +51,8 @@ function NewQuickPage() {
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [loader, setLoader] = useState<Loader | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [trucks , setTrucks] = useState<any>([]);
+  const [carMakeId, setCarMakeId] = useState<any>('');
   const [formData, setFormData] = useState<FormData>({
     truck: "",
     callType: "",
@@ -61,6 +68,7 @@ function NewQuickPage() {
     color: "",
     driver: "",
     truckAssigned: "",
+    makecar:{}
   });
 
   // Load record data if editing
@@ -371,12 +379,55 @@ function NewQuickPage() {
     </div>
   );
 
+  const [drivers, setDrivers] = useState<any[]>([]);
+  useEffect(() => {
+    const foxtow_id = localStorage.getItem("foxtow_id");
+    const fetchDrivers = async () => {
+      const { data, error } = await supabase
+        .from("drivers")
+        .select()
+        .eq("foxtow_id", foxtow_id);
+      if (!error && data) {
+    
+        const drivers = data?.map((driver: any) => ({
+          value: driver.driver_num,
+          label: driver.driver_fir,
+          truck: driver.def_truckn,
+        }));
+        console.log(drivers, "driver");
+        setDrivers(drivers);
+      }
+    };
+
+    fetchDrivers();
+  }, []);
+
+  useEffect(() => {
+    const foxtow_id = localStorage.getItem("foxtow_id");
+    const fetchTrucks = async () => {
+      const { data, error } = await supabase
+        .from("trucks")
+        .select()
+        .eq("foxtow_id", foxtow_id);
+
+      if (!error && data) {
+        const trucks = data.map((truck: any) => ({
+          value: truck.trucknum,
+          label: truck.trucknum
+        }));
+        setTrucks(trucks);
+      }
+    };
+
+    fetchTrucks();
+  }, []);
+
   const getDriverOptions = () => {
-    return drivers.map((driver: Driver) => ({
-      value: driver.driver_num,
-      label: driver.driver_fir,
-      truck: driver.def_truckn,
-    }));
+    // return drivers.map((driver: Driver) => ({
+    //   value: driver.driver_num,
+    //   label: driver.driver_fir,
+    //   truck: driver.def_truckn,
+    // }));
   };
 
   const getStateOptions = () => {
@@ -393,16 +444,16 @@ function NewQuickPage() {
     const uniqueTrucks = new Set(
       drivers.map((driver: Driver) => driver.def_truckn).filter(Boolean)
     );
-    return Array.from(uniqueTrucks).map((truck) => ({
+    return trucks.from(uniqueTrucks).map((truck:any) => ({
       value: truck as string,
       label: truck as string,
     }));
   };
-
+// console.log(trucks,"trucks",getTruckOptions())
   const handleDriverSelectChange = (selectedOption: any) => {
     setFormData((prev) => ({
       ...prev,
-      driver: selectedOption?.value || "",
+      driver: selectedOption || "",
       truckAssigned: selectedOption?.truck || prev.truckAssigned,
     }));
   };
@@ -421,6 +472,31 @@ function NewQuickPage() {
     }));
   };
 
+  const colorChangeHandler = (color: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      color: color,
+    }));
+  };
+
+
+  const carMakeHandler = (make: any) => {
+    console.log(make ,"make==>");
+    setFormData((prev) => ({
+     ...prev,
+     makecar: make,
+    }));
+  }
+  const carMakeModel = (model: any) => {
+    console.log(model, "model==>");
+    setFormData((prev) => ({
+     ...prev,
+      model: model
+    }));
+  }
+
+
+  console.log(formData,carMakeId, "formData===>");
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
@@ -471,25 +547,34 @@ function NewQuickPage() {
                 <label className="w-24 text-sm font-medium text-gray-700">
                   Account *
                 </label>
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
+                <SelectAccountName
+                  className="w-[100%]  "
+                  label="Account Name"
+                  title="master.account"
+                  size="full"
+                  // value={formState.dispatch.callname || ""}
+                  // onChange={(value) => updateDispatch({ callname: value })}
+                  // onKeyDown={(e) => handleKeyDown(e, "callname")}
+                  // ref={inputRefs.callname}
+                />
+                {/* <div className="flex-1 relative">
+                  <Select
+                    // type="text"
                     name="account"
                     value={formData.callname}
-                    onChange={handleInputChange}
-                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                    required
+                    // onChange={handleInputChange}
+                    // className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
+                    // required
                   />
                   <button
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2"
                     onClick={() => {
-                      /* Add account lookup */
                     }}
                   >
                     <Book className="h-5 w-5 text-gray-400" />
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex items-center">
@@ -604,7 +689,22 @@ function NewQuickPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+
+                              <CarMake
+                                className="h-15 w-full min-w-[170px] text-[14px]"
+                                label="Make"
+                                placeholder="Select ..."
+                                title="master.makecar"
+                                value={formData.makecar||""}
+                                onChange={(value) => carMakeHandler( value)}
+                                // onChange={(value) => carMakeHandler( value )}
+                                size="full"
+                                // onKeyDown={(e: any) => handleKeyDown(e, "makecar")}
+                                // ref={inputRefs.makecar}
+                                setCarMakeId={setCarMakeId}
+                              />
+                  
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     Make
                   </label>
                   <input
@@ -613,9 +713,20 @@ function NewQuickPage() {
                     value={formData.make}
                     onChange={handleInputChange}
                     className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  />
+                  /> */}
                 </div>
-                <div>
+                <CarMakeModels
+                              className="h-15 w-full min-w-[170px]  text-[14px]"
+                              label="Model"
+                              title="master.modelcar"
+                              carMakeId={carMakeId}
+                              value={formData.model}
+                              onChange={(value) => carMakeModel(value)}
+                              size="full"
+                              // onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
+                              // ref={inputRefs.modelcar}
+                            />
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Model
                   </label>
@@ -626,18 +737,23 @@ function NewQuickPage() {
                     onChange={handleInputChange}
                     className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Color
                   </label>
-                  <input
+                  <ColorSelect
+                    value={formData.color || ""}
+                    onChange={(value) => colorChangeHandler(value)}
+                    size="full"
+                  />
+                  {/* <input
                     type="text"
                     name="color"
                     value={formData.color}
                     onChange={handleInputChange}
                     className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
@@ -648,19 +764,19 @@ function NewQuickPage() {
                   Driver
                 </label>
                 <Select
-                  value={
-                    formData.driver
-                      ? {
-                          value: formData.driver,
-                          label:
-                            drivers.find(
-                              (d: any) => d.driver_num === formData.driver
-                            )?.driver_fir || formData.driver,
-                        }
-                      : null
-                  }
+                  // value={
+                  //   formData.driver
+                  //     ? {
+                  //         value: formData.driver,
+                  //         label:
+                  //           drivers.find(
+                  //             (d: any) => d.driver_num === formData.driver
+                  //           )?.driver_fir || formData.driver,
+                  //       }
+                  //     : null
+                  // }
                   onChange={handleDriverSelectChange}
-                  //   options={getDriverOptions()}
+                  options={drivers}
                   isClearable
                   className="mt-1"
                   classNamePrefix="react-select"
@@ -681,7 +797,7 @@ function NewQuickPage() {
                       : null
                   }
                   onChange={handleTruckSelectChange}
-                  //   options={getTruckOptions()}
+                    options={trucks}
                   isClearable
                   className="mt-1"
                   classNamePrefix="react-select"
