@@ -220,7 +220,8 @@ function Dispatch() {
       if (page === 0) {
         const { count } = await supabase
           .from("towdrive")
-          .select("*", { count: "exact", head: true });
+          
+          .select("*", { count: "exact", head: true }).eq("foxtow_id", foxtow_id);
 
         if (count !== null) {
           setTotalRecords(count);
@@ -268,7 +269,7 @@ function Dispatch() {
             )
           )
         `
-        )
+        ).eq("foxtow_id", foxtow_id)
         .order("updated_at", { ascending: false })
         .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1);
 
