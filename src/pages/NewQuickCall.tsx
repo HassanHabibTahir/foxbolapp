@@ -24,9 +24,9 @@ interface FormData {
   make: string;
   model: string;
   color: string;
-  driver: string;
+  driver: any;
   truckAssigned: string;
-  makecar:any
+  makecar: any;
 }
 
 interface Driver {
@@ -37,10 +37,12 @@ interface Driver {
 }
 
 function NewQuickPage() {
+  const foxtow_id = localStorage.getItem("foxtow_id");
   const location = useLocation();
   const navigate = useNavigate();
   const recordData = location.state?.record;
-  //   const drivers = location.state?.drivers;
+  const states = location.state?.drivers;
+  console.log(recordData, "states,recordData");
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [pickupMarker, setPickupMarker] = useState<google.maps.Marker | null>(
@@ -51,8 +53,8 @@ function NewQuickPage() {
   const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
   const [loader, setLoader] = useState<Loader | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [trucks , setTrucks] = useState<any>([]);
-  const [carMakeId, setCarMakeId] = useState<any>('');
+  const [trucks, setTrucks] = useState<any>([]);
+  const [carMakeId, setCarMakeId] = useState<any>("");
   const [formData, setFormData] = useState<FormData>({
     truck: "",
     callType: "",
@@ -68,7 +70,7 @@ function NewQuickPage() {
     color: "",
     driver: "",
     truckAssigned: "",
-    makecar:{}
+    makecar: {},
   });
 
   // Load record data if editing
@@ -87,9 +89,9 @@ function NewQuickPage() {
         color: recordData.towmast.colorcar || "",
         driver: recordData.driver || "",
         truckAssigned: recordData.trucknum || "",
-        truck: recordData.towmast.truck_type || "Flatbed",
-        callType: recordData.towmast.calltype || "Private Property",
-        size: recordData.towmast.size || "Medium Duty",
+        truck: recordData.towmast.truck_type || "",
+        callType: recordData.towmast.calltype || "",
+        size: recordData.towmast.size || "",
       }));
     }
   }, [recordData]);
@@ -278,70 +280,59 @@ function NewQuickPage() {
     setIsSubmitting(true);
 
     try {
-      const towmastData = {
-        callname: formData.callname,
-        location: formData.pickupFrom,
-        destination: formData.destination,
-        licensenum: formData.licensePlate,
-        state: formData.state,
-        yearcar: formData.year,
-        makecar: formData.make,
-        model: formData.model,
-        colorcar: formData.color,
-        truck_type: formData.truck,
-        calltype: formData.callType,
-        size: formData.size,
-        dispatched: dispatch,
-      };
-
-      let dispnum: number;
-
-      if (recordData) {
-        // Update existing record
-        const { error: towmastError } = await supabase
-          .from("towmast")
-          .update(towmastData)
-          .eq("dispnum", recordData.towmast.dispnum);
-
-        if (towmastError) throw towmastError;
-        dispnum = recordData.towmast.dispnum;
+      const { data, error } = await supabase
+        .from("towmast")
+        .select("dispnum")
+        .order("dispnum", { ascending: false }) // Sabse bara dispnum milega
+        .limit(1); // Sirf ek record chahiye
+      if (error) {
+        console.error("Error fetching last dispnum:", error);
       } else {
-        // Create new record
-        const { data: newTowmast, error: towmastError } = await supabase
+        const lastDispnum =
+          data.length > 0 ? parseInt(data[0].dispnum) : 100000; // Agar empty ho to default
+        const newDispnum = lastDispnum + 1; // Next number generate karo
+        const dispatchNumber = recordData?.towmast?.dispnum;
+
+        console.log("Last Dispnum:", lastDispnum);
+        console.log("Next Dispnum:", newDispnum);
+        const { data: towMastData, error: towMastError } = await supabase
           .from("towmast")
-          .insert([towmastData])
-          .select()
+          .insert([
+            {
+              foxtow_id: foxtow_id ?? "",
+              dispnum: dispatchNumber ? dispatchNumber : newDispnum ?? "",
+              callname: formData?.callname ?? "",
+              makecar: formData?.makecar ?? "",
+              yearcar: formData?.year ?? "",
+              modelcar: formData?.model ?? "",
+              colorcar: formData?.color ?? "",
+              licensenum: formData?.licensePlate ?? "",
+              updated_at: new Date(),
+            },
+          ])
+          .select("dispnum")
           .single();
 
-        if (towmastError) throw towmastError;
-        dispnum = newTowmast.dispnum;
-      }
-
-      // Handle towdrive record
-      const towdriveData = {
-        dispnum,
-        trucknum: formData.truckAssigned,
-        driver_no: formData.driver,
-      };
-
-      if (recordData) {
-        const { error: towdriveError } = await supabase
+        const { data: towDriveData, error: towDriveError } = await supabase
           .from("towdrive")
-          .update(towdriveData)
-          .eq("dispnum", dispnum);
+          .insert([
+            {
+              trucknum: formData?.truckAssigned,
+              driver: formData?.driver?.value,
+              foxtow_id: foxtow_id,
+              dispnumdrv: dispatchNumber
+                ? dispatchNumber
+                : towMastData?.dispnum,
+            },
+          ]);
 
-        if (towdriveError) throw towdriveError;
-      } else {
-        const { error: towdriveError } = await supabase
-          .from("towdrive")
-          .insert([towdriveData]);
-
-        if (towdriveError) throw towdriveError;
+        if (towDriveError) throw towDriveError;
+        console.log("Data inserted successfully!");
       }
 
       toast.dismiss(loadingToast);
       toast.success("Call saved successfully");
-      navigate("/");
+      navigate("/dispatch");
     } catch (error) {
       console.error("Error saving record:", error);
       toast.dismiss(loadingToast);
@@ -388,7 +379,6 @@ function NewQuickPage() {
         .select()
         .eq("foxtow_id", foxtow_id);
       if (!error && data) {
-    
         const drivers = data?.map((driver: any) => ({
           value: driver.driver_num,
           label: driver.driver_fir,
@@ -413,7 +403,7 @@ function NewQuickPage() {
       if (!error && data) {
         const trucks = data.map((truck: any) => ({
           value: truck.trucknum,
-          label: truck.trucknum
+          label: truck.trucknum,
         }));
         setTrucks(trucks);
       }
@@ -421,14 +411,6 @@ function NewQuickPage() {
 
     fetchTrucks();
   }, []);
-
-  const getDriverOptions = () => {
-    // return drivers.map((driver: Driver) => ({
-    //   value: driver.driver_num,
-    //   label: driver.driver_fir,
-    //   truck: driver.def_truckn,
-    // }));
-  };
 
   const getStateOptions = () => {
     return [
@@ -440,16 +422,6 @@ function NewQuickPage() {
     ];
   };
 
-  const getTruckOptions = (): { value: string; label: string }[] => {
-    const uniqueTrucks = new Set(
-      drivers.map((driver: Driver) => driver.def_truckn).filter(Boolean)
-    );
-    return trucks.from(uniqueTrucks).map((truck:any) => ({
-      value: truck as string,
-      label: truck as string,
-    }));
-  };
-// console.log(trucks,"trucks",getTruckOptions())
   const handleDriverSelectChange = (selectedOption: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -479,24 +451,20 @@ function NewQuickPage() {
     }));
   };
 
-
   const carMakeHandler = (make: any) => {
-    console.log(make ,"make==>");
+    console.log(make, "make==>");
     setFormData((prev) => ({
-     ...prev,
-     makecar: make,
+      ...prev,
+      makecar: make,
     }));
-  }
+  };
   const carMakeModel = (model: any) => {
-    console.log(model, "model==>");
     setFormData((prev) => ({
-     ...prev,
-      model: model
+      ...prev,
+      model: model,
     }));
-  }
+  };
 
-
-  console.log(formData,carMakeId, "formData===>");
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
@@ -552,29 +520,7 @@ function NewQuickPage() {
                   label="Account Name"
                   title="master.account"
                   size="full"
-                  // value={formState.dispatch.callname || ""}
-                  // onChange={(value) => updateDispatch({ callname: value })}
-                  // onKeyDown={(e) => handleKeyDown(e, "callname")}
-                  // ref={inputRefs.callname}
                 />
-                {/* <div className="flex-1 relative">
-                  <Select
-                    // type="text"
-                    name="account"
-                    value={formData.callname}
-                    // onChange={handleInputChange}
-                    // className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                    // required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    onClick={() => {
-                    }}
-                  >
-                    <Book className="h-5 w-5 text-gray-400" />
-                  </button>
-                </div> */}
               </div>
 
               <div className="flex items-center">
@@ -589,7 +535,7 @@ function NewQuickPage() {
                     value={formData.pickupFrom}
                     onChange={handleInputChange}
                     className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                    required
+                    // required
                   />
                   <button
                     type="button"
@@ -689,55 +635,30 @@ function NewQuickPage() {
                   />
                 </div>
                 <div>
-
-                              <CarMake
-                                className="h-15 w-full min-w-[170px] text-[14px]"
-                                label="Make"
-                                placeholder="Select ..."
-                                title="master.makecar"
-                                value={formData.makecar||""}
-                                onChange={(value) => carMakeHandler( value)}
-                                // onChange={(value) => carMakeHandler( value )}
-                                size="full"
-                                // onKeyDown={(e: any) => handleKeyDown(e, "makecar")}
-                                // ref={inputRefs.makecar}
-                                setCarMakeId={setCarMakeId}
-                              />
-                  
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    Make
-                  </label>
-                  <input
-                    type="text"
-                    name="make"
-                    value={formData.make}
-                    onChange={handleInputChange}
-                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  /> */}
+                  <CarMake
+                    className="h-15 w-full min-w-[170px] text-[14px]"
+                    label="Make"
+                    placeholder="Select ..."
+                    title="master.makecar"
+                    value={formData.makecar || ""}
+                    onChange={(value) => carMakeHandler(value)}
+                    // onChange={(value) => carMakeHandler( value )}
+                    size="full"
+                    // onKeyDown={(e: any) => handleKeyDown(e, "makecar")}
+                    // ref={inputRefs.makecar}
+                    setCarMakeId={setCarMakeId}
+                  />
                 </div>
                 <CarMakeModels
-                              className="h-15 w-full min-w-[170px]  text-[14px]"
-                              label="Model"
-                              title="master.modelcar"
-                              carMakeId={carMakeId}
-                              value={formData.model}
-                              onChange={(value) => carMakeModel(value)}
-                              size="full"
-                              // onKeyDown={(e: any) => handleKeyDown(e, "modelcar")}
-                              // ref={inputRefs.modelcar}
-                            />
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Model
-                  </label>
-                  <input
-                    type="text"
-                    name="model"
-                    value={formData.model}
-                    onChange={handleInputChange}
-                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  />
-                </div> */}
+                  className="h-15 w-full min-w-[170px]  text-[14px]"
+                  label="Model"
+                  title="master.modelcar"
+                  carMakeId={carMakeId}
+                  value={formData.model}
+                  onChange={(value) => carMakeModel(value)}
+                  size="full"
+                />
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Color
@@ -747,13 +668,6 @@ function NewQuickPage() {
                     onChange={(value) => colorChangeHandler(value)}
                     size="full"
                   />
-                  {/* <input
-                    type="text"
-                    name="color"
-                    value={formData.color}
-                    onChange={handleInputChange}
-                    className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  /> */}
                 </div>
               </div>
             </div>
@@ -764,17 +678,6 @@ function NewQuickPage() {
                   Driver
                 </label>
                 <Select
-                  // value={
-                  //   formData.driver
-                  //     ? {
-                  //         value: formData.driver,
-                  //         label:
-                  //           drivers.find(
-                  //             (d: any) => d.driver_num === formData.driver
-                  //           )?.driver_fir || formData.driver,
-                  //       }
-                  //     : null
-                  // }
                   onChange={handleDriverSelectChange}
                   options={drivers}
                   isClearable
@@ -797,7 +700,7 @@ function NewQuickPage() {
                       : null
                   }
                   onChange={handleTruckSelectChange}
-                    options={trucks}
+                  options={trucks}
                   isClearable
                   className="mt-1"
                   classNamePrefix="react-select"
@@ -814,12 +717,12 @@ function NewQuickPage() {
 
           <div className="flex justify-end space-x-4">
             <button
-              type="button"
+              type="submit"
               //   onClick={() => navigate("/dispatch")}
               className="bg-[#002B7F] text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition"
               disabled={isSubmitting}
             >
-              Create Call
+              {recordData ? "Update Call" : "Create Call"}
             </button>
             <button className="bg-[#002B7F] text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition">
               Save and Dispatch Call
@@ -832,14 +735,6 @@ function NewQuickPage() {
             >
               Cancel
             </button>
-            {/* <button
-              type="button"
-              onClick={(e) => handleSubmit(e, true)}
-              className="px-6 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {recordData ? "Save" : "Save and Dispatch"}
-            </button> */}
           </div>
         </form>
       </div>
