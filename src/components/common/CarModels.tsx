@@ -185,8 +185,6 @@ const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
     init();
   }, [init]);
 
-  console.log(carMakeId,"carMakeId")
-
   return (
     <div className={className}>
      

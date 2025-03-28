@@ -11,6 +11,7 @@ import ColorSelect from "../components/common/ColorSelect";
 import CarMake from "../components/common/CarMake";
 import CarMakeModels from "../components/common/CarModels";
 import DriverCombobox from "../components/common/DriverCombobox";
+import StateSelect from "../components/common/StateSelect";
 
 interface FormData {
   truck: string;
@@ -43,8 +44,6 @@ function NewQuickPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const recordData = location.state?.record;
-
-  console.log(recordData, "states,recordData");
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [pickupMarker, setPickupMarker] = useState<google.maps.Marker | null>(
@@ -85,7 +84,7 @@ function NewQuickPage() {
         pickupFrom: recordData.towmast.location || "",
         destination: recordData.towmast.destination || "",
         licensePlate: recordData.towmast.licensenum || "",
-        state: recordData.towmast.state || "",
+        state: recordData.towmast.regstate || "",
         year: recordData.towmast.yearcar || "",
         makecar: recordData.towmast.makecar || "",
         model: recordData.towmast.modelcar || "",
@@ -94,11 +93,11 @@ function NewQuickPage() {
         truckAssigned: recordData.trucknum || "",
         truck: recordData.towmast.truck_type || "",
         callType: recordData.towmast.calltype || "",
-        size: recordData.towmast.size || "",
+    
+        // size: recordData.towmast.size || "",
       }));
     }
   }, [recordData]);
-  console.log(recordData, "recordData");
   // Initialize loader once
   useEffect(() => {
     const newLoader = new Loader({
@@ -310,6 +309,13 @@ function NewQuickPage() {
         modelcar: formData?.model ?? "",
         colorcar: formData?.color ?? "",
         licensenum: formData?.licensePlate ?? "",
+        regstate: formData?.state?? "",
+        calltype: formData?.callType ?? "",
+        dispatched: false,
+        priority: 1,
+        zone:0,
+        
+        // truck_type:formData?.truck??"",
         updated_at: new Date(),
       };
 
@@ -325,7 +331,8 @@ function NewQuickPage() {
             ...commonTowMastData,
             dispnum: dispatchNumber,
           })
-          .eq("dispnum", dispatchNumber);
+          .eq("dispnum", dispatchNumber)
+          .eq("foxtow_id",foxtow_id)
 
         if (updateError) throw updateError;
       } else {
@@ -337,6 +344,7 @@ function NewQuickPage() {
             dispnum: newDispnum.toString(),
           })
           .select("dispnum")
+          
           .single();
 
         if (insertError) throw insertError;
@@ -471,7 +479,6 @@ function NewQuickPage() {
   };
 
   const handleDriverSelectChange = (selectedOption: any) => {
-    console.log(selectedOption, "selectedOption");
     setFormData((prev) => ({
       ...prev,
       driver: selectedOption || "",
@@ -519,15 +526,12 @@ function NewQuickPage() {
     }));
   };
 
-
-  React.useEffect(()=>{
-    if(formData?.makecar){
-      console.log("MARKER")
-    }
-  },[formData?.makecar])
-
-  console.log(carMakeId, "carMakeId<==formData",formData?.makecar);
-
+  const updateStateHandler = (value: string) => {
+    setFormData((prev) => ({
+     ...prev,
+      state: value,
+    }));
+  };
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
@@ -656,10 +660,10 @@ function NewQuickPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     State
-                  </label>
-                  <Select
+                  </label> */}
+                  {/* <Select
                     value={
                       formData.state
                         ? {
@@ -676,7 +680,18 @@ function NewQuickPage() {
                     className="mt-0 h-6"
                     classNamePrefix="react-select"
                     placeholder="Select State..."
-                  />
+                  /> */}
+                         <StateSelect
+                className={`w-full text-[14px]`}
+                label="State"
+                title="master.licensest"
+                size="md"
+                value={formData.state|| ""}
+                onChange={(value) => updateStateHandler(value)}
+                // ref={inputRefs.licensest}
+                // onKeyDown={(e: any) => handleKeyDown(e, "licensest")}
+              />
+
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">

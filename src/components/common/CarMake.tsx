@@ -88,11 +88,10 @@ const CarMake = forwardRef<any, CarMakeProps>(
         const focusedOption = document.querySelector(
           ".react-select__option--is-focused"
         );
-        console.log(focusedOption, "focused option");
+       
         if (focusedOption) {
           e.preventDefault();
           const selectedOptionText = focusedOption.textContent;
-          console.log(selectedOptionText, "selectedOptionText");
           const _selectedOption = options?.find(
             (opt: { label: string | null }) => opt.label === selectedOptionText
           );
@@ -157,7 +156,7 @@ const CarMake = forwardRef<any, CarMakeProps>(
         display: "none",
       }),
     };
-    console.log(selectedOption,"selectedOption")
+  
     const selectProps = {
       id: "select",
       name: "select",
@@ -240,7 +239,7 @@ const CarMake = forwardRef<any, CarMakeProps>(
       init();
       init2();
     }, [init, init2]);
-    console.log(value,options,"value===============>")
+
     return (
       <div className={className}>
         <label className="block text-sm font-medium text-gray-700 mb-1">

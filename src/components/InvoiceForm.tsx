@@ -519,7 +519,7 @@ const InvoiceForm = () => {
     if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       const nextField = fieldOrder[currentIndex + 1];
-      console.log(nextField, "nextField");
+ 
       if (nextField) {
         inputRefs[nextField].current?.focus();
       }
@@ -527,14 +527,14 @@ const InvoiceForm = () => {
       if (currentIndex === 83) {
         e.preventDefault();
         const prevField = fieldOrder[currentIndex - 3];
-        console.log(prevField, "prevField");
+    
         if (prevField) {
           inputRefs[prevField].current?.focus();
         }
       }
       e.preventDefault();
       const prevField = fieldOrder[currentIndex - 1];
-      console.log(prevField, "prevField");
+     
       if (prevField) {
         inputRefs[prevField].current?.focus();
       }
