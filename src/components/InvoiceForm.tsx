@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DesktopLayout from "./layouts/DesktopLayout";
 import SaveButton from "./SaveButton";
-import NewButton from "./NewButton";
 import InvoiceSearch from "./search/InvoiceSearch";
 import Header from "./invoice/Header";
 import FormSection from "./common/FormSection";
@@ -25,7 +24,6 @@ import VinLookupField from "./VinLookupField";
 import AddressAutocomplete from "./common/AddressAutocomplete";
 import NotesSection from "./NotesSection";
 import ZipInput from "./common/ZipInput";
-// import LienSection from "./LienSection";
 import AccountName from "./common/AccountName";
 import BooleanSelect from "./common/BooleanSelector";
 import LienTypeInput from "./common/LienTypeInput";
@@ -42,8 +40,6 @@ import YearSlects from "./common/YearSelect";
 import StateSelect from "./common/StateSelect";
 import AddressSection from "./addressSection";
 import { useMediaQuery } from "react-responsive";
-// import VehicleDetailsSection from "./VehicleDetailsSection";
-
 const FIELD_INDEXES: any = {
   driver: 0,
   driver2: 1,
@@ -176,14 +172,6 @@ const FIELD_INDEXES: any = {
   description128: 128,
   description129: 129,
   description130: 130,
-  // commit both
-  // description84: 84,
-  // description85: 85,
-  //commit both
-  // description81: 81,
-  // description82: 82,
-  //
-  // description83: 83,
 };
 
 const fieldOrder = Object.keys(FIELD_INDEXES);
@@ -332,14 +320,6 @@ const InvoiceForm = () => {
   const description129Ref=useRef(null);
   const  description130Ref= useRef(null);
 
-
-
-
-
-  // const description81Ref = useRef(null);
-  // const description82Ref = useRef(null);
-  // const description83Ref = useRef(null);
-
   const inputRefs: any = {
     driver: driverRef,
     driver2: driver2Ref,
@@ -472,9 +452,6 @@ const InvoiceForm = () => {
     description128: description128Ref,
     description129: description129Ref,
     description130: description130Ref,
-    // description81: description81Ref,
-    // description82: description82Ref,
-    // description83: description83Ref,
   };
 
   useEffect(() => {
@@ -502,11 +479,7 @@ const InvoiceForm = () => {
     };
   };
 
-  const handleNew = (invoiceNumber: any) => {
-    resetForm();
-    console.log(invoiceNumber, "invoiceNumber");
-    updateDispatch({ dispnum: invoiceNumber });
-  };
+
 
   const handleInvoiceFound = async (dispatchNumber: any, foxtow_id: any) => {
     resetForm();
@@ -570,7 +543,6 @@ const InvoiceForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const expiresRef = useRef<HTMLInputElement>(null);
   const handleLookup = async () => {
     if (!formState.dispatch.licensenum || !formState.dispatch.licensest) {
       setError("Please enter both license plate and state");
@@ -606,21 +578,6 @@ const InvoiceForm = () => {
     }
   };
 
-  const handleVinDetails = (details: any) => {
-    try {
-      
-      updateDispatch({
-        // ...prev,
-        // yearcar: details.year,
-        // makecar: details.make,
-        // modelcar: details.model,
-        // bodytype: details?.bodytype,
-      })
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       setError(null);
@@ -630,22 +587,6 @@ const InvoiceForm = () => {
   }, [error]);
 
   const [carMakeId, setCarMakeId] = useState<string | null>(null);
-  // const [isDesktopOrLaptop, setIsDesktop] = useState(false);
-  // const [isDesktopOrLaptop2, setIsDesktop2] = useState(false);
-
-  // useEffect(() => {
-  //   const checkScreenSize = () => {
-  //     setIsDesktop(window.matchMedia("(min-width: 1400px)").matches);
-  //     setIsDesktop2(window.matchMedia("(min-width: 1100px)").matches);
-  //   };
-
-  //   checkScreenSize(); // Initial check
-  //   window.addEventListener("resize", checkScreenSize); // Listen for screen changes
-
-  //   return () => window.removeEventListener("resize", checkScreenSize); // Cleanup
-  // }, []);
-
-
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -658,8 +599,6 @@ const InvoiceForm = () => {
   const isDesktopOrLaptop = isClient && showDesktop;
   const isDesktopOrLaptop2 = isClient && showDesktop2;
 
-
-  console.log(formState,"fromState the")
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -1053,7 +992,7 @@ const InvoiceForm = () => {
                 value={formState.dispatch.vin || ""}
                 onChange={(value) => updateDispatch({ vin: value })}
                 onKeyDown={(e: any) => handleKeyDown(e, "vin")}
-                onVinDetails={handleVinDetails}
+
                 className={` ${isDesktopOrLaptop2?"w-[35ch]":"w-[40ch]"} text-[14px]`}
               />
             </div>

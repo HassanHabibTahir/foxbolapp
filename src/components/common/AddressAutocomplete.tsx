@@ -22,33 +22,33 @@ const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProp
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  useEffect(() => {
-    if (!ref || !('current' in ref) || !ref.current || !window.google) return;
+  // useEffect(() => {
+  //   if (!ref || !('current' in ref) || !ref.current || !window.google) return;
 
-    setIsLoading(true);
-    try {
-      autocompleteRef.current = new google.maps.places.Autocomplete(ref.current, {
-        componentRestrictions: { country: 'us' },
-        fields: ['address_components', 'formatted_address', 'geometry'],
-        types: ['address']
-      });
+  //   setIsLoading(true);
+  //   try {
+  //     autocompleteRef.current = new google.maps.places.Autocomplete(ref.current, {
+  //       componentRestrictions: { country: 'us' },
+  //       fields: ['address_components', 'formatted_address', 'geometry'],
+  //       types: ['address']
+  //     });
 
-      autocompleteRef.current.addListener('place_changed', () => {
-        const place = autocompleteRef.current?.getPlace();
-        onChange(place?.formatted_address || value, place) ;
-      });
-    } catch (error) {
-      console.error('Error initializing Google Places Autocomplete:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  //     autocompleteRef.current.addListener('place_changed', () => {
+  //       const place = autocompleteRef.current?.getPlace();
+  //       onChange(place?.formatted_address || value, place) ;
+  //     });
+  //   } catch (error) {
+  //     console.error('Error initializing Google Places Autocomplete:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
 
-    return () => {
-      if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current);
-      }
-    };
-  }, [ref]);
+  //   return () => {
+  //     if (autocompleteRef.current) {
+  //       google.maps.event.clearInstanceListeners(autocompleteRef.current);
+  //     }
+  //   };
+  // }, [ref]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown(e)
@@ -75,6 +75,7 @@ const AddressAutocomplete = forwardRef<HTMLInputElement, AddressAutocompleteProp
       <div className="relative">
         <input
           ref={ref}
+          autoComplete='off'
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
