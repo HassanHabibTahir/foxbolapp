@@ -28,11 +28,12 @@ interface DriverComboboxProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   inputRefs?: any
   className?:string
+  setFormData?:any
   
 }
 
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
-  ({ label, size = "xs", value = "", onChange, onDriverSelect,className, tabIndex,inputRefs, onKeyDown }, ref) => {
+  ({ label, size = "xs", value = "", onChange, onDriverSelect,className, tabIndex,inputRefs, onKeyDown,setFormData }, ref) => {
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [selectedOption, setSelectedOption] = useState<DriverOption | null>(null)
 
@@ -61,8 +62,11 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       if (value) {
         const fetchDriver = async () => {
           const { data, error } = await supabase.from("drivers").select().eq("driver_num", value).single()
-
           if (!error && data) {
+            setFormData((prev:any) => ({
+              ...prev,
+              truckAssigned: data?.def_truckn ,
+            }));
             setSelectedOption({
               value: data.driver_num,
               label: `${data.driver_fir} ${data.driver_las}`,

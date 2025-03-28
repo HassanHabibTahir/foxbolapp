@@ -195,7 +195,7 @@ export default function AddNewTrucks() {
 
     try {
       const { urls: uploadedUrls } = await uploadImages()
-     
+          console.log(uploadedUrls,"uploadUrls ")
       const { error } = await supabase.from("drivers").insert({
         driver_num:driverNum,
         def_truckn: truckNumber,
@@ -214,14 +214,9 @@ export default function AddNewTrucks() {
         driver_ond: isActive, 
         creationda: new Date().toISOString(),
       })
-      const { error:trucksError } = await supabase.from("trucks").insert({
-        trucknum:truckNumber,
-        created_at: new Date().toISOString(),
-        foxtow_id: foxtow_id,
-      })
- 
+
+      console.log(error,"error")
       if (error) throw error
-      if (trucksError) throw trucksError
 
       toast.dismiss(loadingToast)
       toast.success("Truck created successfully")
@@ -229,7 +224,7 @@ export default function AddNewTrucks() {
     } catch (error:any) {
       console.error("Error creating truck:", error)
       toast.dismiss(loadingToast)
-      toast.error(error?.data?.message||error?.details ||error ?.message||"Failed to save truck information");
+      toast.error(error?.data?.message|| "Failed to create truck")
     } finally {
       setIsLoading(false)
     }

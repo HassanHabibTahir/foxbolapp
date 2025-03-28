@@ -10,7 +10,6 @@ import SelectAccountName from "../components/common/accountNameSelect";
 import ColorSelect from "../components/common/ColorSelect";
 import CarMake from "../components/common/CarMake";
 import CarMakeModels from "../components/common/CarModels";
-import DriverCombobox from "../components/common/DriverCombobox";
 
 interface FormData {
   truck: string;
@@ -28,7 +27,6 @@ interface FormData {
   driver: any;
   truckAssigned: string;
   makecar: any;
-  account?: any;
 }
 
 interface Driver {
@@ -43,7 +41,7 @@ function NewQuickPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const recordData = location.state?.record;
-
+  const states = location.state?.drivers;
   console.log(recordData, "states,recordData");
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -57,7 +55,6 @@ function NewQuickPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [trucks, setTrucks] = useState<any>([]);
   const [carMakeId, setCarMakeId] = useState<any>("");
-  const [drivers, setDrivers] = useState<any[]>([]);
   const [formData, setFormData] = useState<FormData>({
     truck: "",
     callType: "",
@@ -87,7 +84,7 @@ function NewQuickPage() {
         licensePlate: recordData.towmast.licensenum || "",
         state: recordData.towmast.state || "",
         year: recordData.towmast.yearcar || "",
-        makecar: recordData.towmast.makecar || "",
+        make: recordData.towmast.makecar || "",
         model: recordData.towmast.modelcar || "",
         color: recordData.towmast.colorcar || "",
         driver: recordData.driver || "",
@@ -98,7 +95,7 @@ function NewQuickPage() {
       }));
     }
   }, [recordData]);
-  console.log(recordData, "recordData");
+
   // Initialize loader once
   useEffect(() => {
     const newLoader = new Loader({
@@ -283,101 +280,54 @@ function NewQuickPage() {
     setIsSubmitting(true);
 
     try {
-      // Fetch the last dispatch number
-      const { data: lastDispNumData, error: lastDispNumError } = await supabase
+      const { data, error } = await supabase
         .from("towmast")
         .select("dispnum")
-        .order("dispnum", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (lastDispNumError && lastDispNumError.code !== "PGRST116") {
-        throw lastDispNumError;
-      }
-
-      // Determine the next dispatch number
-      const lastDispnum = lastDispNumData
-        ? parseInt(lastDispNumData.dispnum)
-        : 100000;
-      const newDispnum = lastDispnum + 1;
-
-      // Prepare common data for insertion/update
-      const commonTowMastData = {
-        foxtow_id: foxtow_id ?? "",
-        callname: formData?.callname ?? "",
-        makecar: formData?.makecar ?? "",
-        yearcar: formData?.year ?? "",
-        modelcar: formData?.model ?? "",
-        colorcar: formData?.color ?? "",
-        licensenum: formData?.licensePlate ?? "",
-        updated_at: new Date(),
-      };
-
-      let dispatchNumber: string;
-
-      if (recordData?.towmast?.dispnum) {
-        // Update existing record
-        dispatchNumber = recordData.towmast.dispnum;
-
-        const { error: updateError } = await supabase
-          .from("towmast")
-          .update({
-            ...commonTowMastData,
-            dispnum: dispatchNumber,
-          })
-          .eq("dispnum", dispatchNumber);
-
-        if (updateError) throw updateError;
+        .order("dispnum", { ascending: false }) // Sabse bara dispnum milega
+        .limit(1); // Sirf ek record chahiye
+      if (error) {
+        console.error("Error fetching last dispnum:", error);
       } else {
-        // Insert new record
-        const { data: towMastData, error: insertError } = await supabase
+        const lastDispnum =
+          data.length > 0 ? parseInt(data[0].dispnum) : 100000; // Agar empty ho to default
+        const newDispnum = lastDispnum + 1; // Next number generate karo
+        const dispatchNumber = recordData?.towmast?.dispnum;
+
+        console.log("Last Dispnum:", lastDispnum);
+        console.log("Next Dispnum:", newDispnum);
+        const { data: towMastData, error: towMastError } = await supabase
           .from("towmast")
-          .insert({
-            ...commonTowMastData,
-            dispnum: newDispnum.toString(),
-          })
+          .insert([
+            {
+              foxtow_id: foxtow_id ?? "",
+              dispnum: dispatchNumber ? dispatchNumber : newDispnum ?? "",
+              callname: formData?.callname ?? "",
+              makecar: formData?.makecar ?? "",
+              yearcar: formData?.year ?? "",
+              modelcar: formData?.model ?? "",
+              colorcar: formData?.color ?? "",
+              licensenum: formData?.licensePlate ?? "",
+              updated_at: new Date(),
+            },
+          ])
           .select("dispnum")
           .single();
 
-        if (insertError) throw insertError;
-
-        dispatchNumber = towMastData.dispnum;
-      }
-
-      // Check if a record with this dispnumdrv already exists
-      const { data: existingTowDrive, error: checkError } = await supabase
-        .from("towdrive")
-        .select("*")
-        .eq("dispnumdrv", dispatchNumber)
-        .single();
-
-      if (checkError && checkError.code !== "PGRST116") {
-        throw checkError;
-      }
-
-      // Insert or update towdrive record
-      if (existingTowDrive) {
-        // Update existing record
-        const { error: updateError } = await supabase
+        const { data: towDriveData, error: towDriveError } = await supabase
           .from("towdrive")
-          .update({
-            trucknum: formData?.truckAssigned,
-            driver: formData?.driver,
-            foxtow_id: foxtow_id,
-          })
-          .eq("dispnumdrv", dispatchNumber);
+          .insert([
+            {
+              trucknum: formData?.truckAssigned,
+              driver: formData?.driver?.value,
+              foxtow_id: foxtow_id,
+              dispnumdrv: dispatchNumber
+                ? dispatchNumber
+                : towMastData?.dispnum,
+            },
+          ]);
 
-        if (updateError) throw updateError;
-      } else {
-        // Insert new record
-        const { error: insertError } = await supabase.from("towdrive").insert({
-          trucknum: formData?.truckAssigned,
-          driver: formData?.driver,
-          foxtow_id: foxtow_id,
-          dispnumdrv: dispatchNumber,
-        });
-
-        if (insertError) throw insertError;
+        if (towDriveError) throw towDriveError;
+        console.log("Data inserted successfully!");
       }
 
       toast.dismiss(loadingToast);
@@ -420,6 +370,7 @@ function NewQuickPage() {
     </div>
   );
 
+  const [drivers, setDrivers] = useState<any[]>([]);
   useEffect(() => {
     const foxtow_id = localStorage.getItem("foxtow_id");
     const fetchDrivers = async () => {
@@ -433,6 +384,7 @@ function NewQuickPage() {
           label: driver.driver_fir,
           truck: driver.def_truckn,
         }));
+        console.log(drivers, "driver");
         setDrivers(drivers);
       }
     };
@@ -471,11 +423,10 @@ function NewQuickPage() {
   };
 
   const handleDriverSelectChange = (selectedOption: any) => {
-    console.log(selectedOption, "selectedOption");
     setFormData((prev) => ({
       ...prev,
       driver: selectedOption || "",
-      // truckAssigned: selectedOption?.truck || prev.truckAssigned,
+      truckAssigned: selectedOption?.truck || prev.truckAssigned,
     }));
   };
 
@@ -501,6 +452,7 @@ function NewQuickPage() {
   };
 
   const carMakeHandler = (make: any) => {
+    console.log(make, "make==>");
     setFormData((prev) => ({
       ...prev,
       makecar: make,
@@ -512,21 +464,6 @@ function NewQuickPage() {
       model: model,
     }));
   };
-  const handleCallName = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      callname: value,
-    }));
-  };
-
-
-  React.useEffect(()=>{
-    if(formData?.makecar){
-      console.log("MARKER")
-    }
-  },[formData?.makecar])
-
-  console.log(carMakeId, "carMakeId<==formData",formData?.makecar);
 
   return (
     <div className="container mx-auto p-6">
@@ -581,10 +518,8 @@ function NewQuickPage() {
                 <SelectAccountName
                   className="w-[100%]  "
                   label="Account Name"
-                  title="master.callname"
-                  onChange={(value) => handleCallName(value)}
+                  title="master.account"
                   size="full"
-                  value={formData?.callname}
                 />
               </div>
 
@@ -707,20 +642,20 @@ function NewQuickPage() {
                     title="master.makecar"
                     value={formData.makecar || ""}
                     onChange={(value) => carMakeHandler(value)}
-                   
+                    // onChange={(value) => carMakeHandler( value )}
                     size="full"
-                    onKeyDown={(e: any) => ""}                
+                    // onKeyDown={(e: any) => handleKeyDown(e, "makecar")}
+                    // ref={inputRefs.makecar}
                     setCarMakeId={setCarMakeId}
                   />
                 </div>
                 <CarMakeModels
                   className="h-15 w-full min-w-[170px]  text-[14px]"
                   label="Model"
-                  title="master.model"
+                  title="master.modelcar"
                   carMakeId={carMakeId}
                   value={formData.model}
                   onChange={(value) => carMakeModel(value)}
-                  onKeyDown={(e: any) => ""}
                   size="full"
                 />
 
@@ -739,26 +674,17 @@ function NewQuickPage() {
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <DriverCombobox
-                  label="Driver"
-                  title="master.driver"
-                  size="full"
-                  className="h-8 w-full"
-                  value={formData.driver || ""}
-                  setFormData={setFormData}
-                  onChange={(value) => handleDriverSelectChange(value)}
-                  onKeyDown={(e: any) => ""}
-                  // ref={inputRefs.driver}
-                  // inputRefs={inputRefs.driver}
-                />
-                {/* <Select
+                <label className="block text-sm font-medium text-gray-700">
+                  Driver
+                </label>
+                <Select
                   onChange={handleDriverSelectChange}
                   options={drivers}
                   isClearable
                   className="mt-1"
                   classNamePrefix="react-select"
                   placeholder="Select Driver..."
-                /> */}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">

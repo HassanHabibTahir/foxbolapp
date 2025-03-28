@@ -332,7 +332,7 @@ function Dispatch() {
   };
 
   const handleRowDoubleClick = (record: TowRecord) => {
-    navigate("/quick-call", { state: { record, drivers } });
+    navigate("/quickcall", { state: { record, drivers } });
   };
 
   const handleDriverButtonClick = () => {

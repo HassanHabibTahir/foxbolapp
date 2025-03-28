@@ -16,6 +16,9 @@ import { useEffect } from 'react';
 import Newimpound from './pages/Newimpound';
 import { Toaster } from 'react-hot-toast';
 import TrucksPage from './pages/Trucks';
+import EditTrucks from './pages/Truckedit';
+import AddNewTrucks from './pages/createTruck';
+import NewQuickPage from './pages/NewQuickCall';
 
 function App() {
     const { i18n } = useTranslation();
@@ -33,7 +36,7 @@ function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100">
         <TopNav />
-        <main className="w-full max-w-[1800px] mx-auto mt-6 px-4">
+        <main className="w-full max-w-[1800px] mx-auto mt-2 px-4">
 
           <Routes>
             <Route path="/" element={<Navigate to="/impound" replace />} />
@@ -47,8 +50,11 @@ function App() {
             <Route path="/report" element={<Report />} />
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/setting" element={<Setting />} />
-             <Route path="/truks" element={<TrucksPage/>}/>
-            <Route path="/quick-call" element={<QuickPage />} />
+             <Route path="/trucks" element={<TrucksPage/>}/>
+             <Route path="/setting-trucks/:id" element={<EditTrucks />} />
+             <Route path="/add-new-trucks" element={<AddNewTrucks />}/>
+             <Route path="/quick-call" element={<QuickPage />} />
+             <Route path="/quickcall" element={<NewQuickPage/>}  />
           </Routes>
         </main>
       </div>
