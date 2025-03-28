@@ -240,6 +240,7 @@ function Dispatch() {
           driver,
           towmast!inner (
             priority,
+            regstate,
             callname,
             dispnum,
             licensenum,
@@ -252,6 +253,7 @@ function Dispatch() {
             dispatched,
             equipment,
             zone,
+            
             destination,
             updated_at,
             colors(
@@ -276,7 +278,26 @@ function Dispatch() {
       if (error) {
         console.error("Error fetching tow records:", error);
       } else {
-        setTowRecords(data || []);
+           // Sort the data to put dispatched=false at the top
+           const sortedData = (data || []).sort((a:any, b:any) => {
+            // Check if record A is not dispatched
+            const aIsNotDispatched = a.towmast.dispatched === false
+  
+            // Check if record B is not dispatched
+            const bIsNotDispatched = b.towmast.dispatched === false
+  
+            // If A is not dispatched but B is, A should come before B
+            if (aIsNotDispatched && !bIsNotDispatched) return -1
+  
+            // If B is not dispatched but A is, B should come before A
+            if (!aIsNotDispatched && bIsNotDispatched) return 1
+  
+            // Otherwise maintain the original order
+            return 0
+          })
+  
+          setTowRecords(sortedData)
+        // setTowRecords(data || []);
       }
     } finally {
       setIsLoading(false);
@@ -381,15 +402,11 @@ function Dispatch() {
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();
-
-      // Handle nested towmast fields
       if (field.startsWith("towmast.")) {
         const nestedField = field.split(".")[1];
-        // console.log(nestedField,value,"value" "nextedFiedl")
         const { error } = await supabase
           .from("towmast")
           .update({ [nestedField]: value })
-          // .eq("id",recordId)
           .eq(
             "dispnum",
             towRecords.find((r) => r.id === recordId)?.towmast.dispnum
