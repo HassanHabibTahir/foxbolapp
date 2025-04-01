@@ -33,7 +33,7 @@ function getBackgroundColor(type: string) {
     return "bg-gray-100"
 }
 
-export const DispatchHeader = ({activeDrivers}:any) => {
+export const DispatchHeader = ({activeDrivers,handleDriverAssignment}:any) => {
     const scrollRef = useRef<HTMLDivElement>(null)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
     const [canScrollRight, setCanScrollRight] = useState(false)
@@ -95,7 +95,8 @@ export const DispatchHeader = ({activeDrivers}:any) => {
                 {activeDrivers&& +activeDrivers?.length>0&& activeDrivers.map((driver:any, index:any) => (
                     <div
                         key={index}
-                        className={`flex-shrink-0 w-[120px] h-[100px] border border-gray-300 flex flex-col items-center justify-between ${getBackgroundColor(driver.truckNumber)}`}
+                        onClick={() => handleDriverAssignment(driver.driverId, driver.driverNumber, driver.truckNumber)}
+                        className={`cursor-pointer  flex-shrink-0 w-[120px] h-[100px] border border-gray-300 flex flex-col items-center justify-between ${getBackgroundColor(driver.truckNumber)}`}
                     >
                         <div className="font-semibold text-[11px] pt-1">{driver.driverName}</div>
                         <div className="flex-1 flex items-center justify-center w-full">
