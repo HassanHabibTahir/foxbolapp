@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect, type KeyboardEvent, useRef } from "react";
+import { useState, useEffect, type KeyboardEvent, useRef, useCallback } from "react";
 import {
   Truck,
   FileDown,
@@ -7,7 +7,9 @@ import {
   ChevronLeft,
   ChevronRight,
   CarFront,
+  RefreshCcw
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DriverModal from "../components/dispatch/DriverModal";
@@ -110,6 +112,7 @@ function Dispatch() {
     {}
   );
   const [isResizing, setIsResizing] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
   const resizingRef = useRef<{
     column: string;
     startX: number;
@@ -150,51 +153,49 @@ function Dispatch() {
     }
   };
 
-  // const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
-  //   if (!selectedRow) {
-  //     toast.error('Please select a dispatch row first');
-  //     return;
-  //   }
+  const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
+    if (!selectedRow) {
+      toast.error('Please select a dispatch row first');
+      return;
+    }
+    const loadingToast = toast.loading('Assigning driver...');
+    try {
+      const now = new Date().toISOString();
+      const nowDate = new Date(now);
+      const timeInRoute = `${nowDate.getHours().toString().padStart(2, '0')}:${nowDate.getMinutes().toString().padStart(2, '0')}`;
 
-  //   const loadingToast = toast.loading('Assigning driver...');
+      // Update the towdrive record
+      const { error: updateError } = await supabase
+        .from('towdrive')
+        .update({
+          driver: driverNum,
+          trucknum: truckNum,
+          timeinrt: timeInRoute
+        })
+        .eq('id', selectedRow);
 
-  //   try {
-  //     const now = new Date().toISOString();
-  //     const nowDate = new Date(now);
-  //     const timeInRoute = `${nowDate.getHours().toString().padStart(2, '0')}:${nowDate.getMinutes().toString().padStart(2, '0')}`;
+      if (updateError) throw updateError;
 
-  //     // Update the towdrive record
-  //     const { error: updateError } = await supabase
-  //       .from('towdrive')
-  //       .update({
-  //         driver: driverNum,
-  //         trucknum: truckNum,
-  //         timeinrt: timeInRoute
-  //       })
-  //       .eq('id', selectedRow);
+      // Update the towmast record to mark it as dispatched
+      const { error: towmastError } = await supabase
+        .from('towmast')
+        .update({ dispatched: true })
+        .eq('dispnum', towRecords.find(r => r.id === selectedRow)?.towmast.dispnum);
 
-  //     if (updateError) throw updateError;
+      if (towmastError) throw towmastError;
 
-  //     // Update the towmast record to mark it as dispatched
-  //     const { error: towmastError } = await supabase
-  //       .from('towmast')
-  //       .update({ dispatched: true })
-  //       .eq('dispnum', towRecords.find(r => r.id === selectedRow)?.towmast.dispnum);
+      // Refresh the records
+      await fetchTowRecords(currentPage);
+      setSelectedRow(null);
 
-  //     if (towmastError) throw towmastError;
-
-  //     // Refresh the records
-  //     await fetchTowRecords(currentPage);
-  //     setSelectedRow(null);
-
-  //     toast.dismiss(loadingToast);
-  //     toast.success(`Driver ${driverNum} assigned successfully`);
-  //   } catch (error) {
-  //     console.error('Error assigning driver:', error);
-  //     toast.dismiss(loadingToast);
-  //     toast.error('Failed to assign driver. Please try again.');
-  //   }
-  // };
+      toast.dismiss(loadingToast);
+      toast.success(`Driver ${driverNum} assigned successfully`);
+    } catch (error) {
+      console.error('Error assigning driver:', error);
+      toast.dismiss(loadingToast);
+      toast.error('Failed to assign driver. Please try again.');
+    }
+  };
 
   const fetchDrivers = async () => {
     const { data, error } = await supabase
@@ -211,10 +212,10 @@ function Dispatch() {
   };
 
   useEffect(() => {
-    void fetchDrivers();
+     fetchDrivers();
   }, []);
 
-  const fetchTowRecords = async (page: number) => {
+  const fetchTowRecords = useCallback(async (page: number) => {
     setIsLoading(true);
     try {
       if (page === 0) {
@@ -302,7 +303,7 @@ function Dispatch() {
     } finally {
       setIsLoading(false);
     }
-  };
+  },[foxtow_id]);
 
   const handlePageChange = async (newPage: number) => {
     setCurrentPage(newPage);
@@ -311,7 +312,7 @@ function Dispatch() {
 
   useEffect(() => {
     fetchTowRecords(0);
-  }, []);
+  }, [fetchTowRecords]);
 
   const getRowStyle = (record: TowRecord) => {
     if (!record.towmast.colors) {
@@ -553,10 +554,21 @@ function Dispatch() {
       return newOrder;
     });
   };
+
+
+  const handleClick = async() => {
+    setIsRotating(true);
+    await fetchTowRecords(0)
+    setTimeout(() => setIsRotating(false), 500); 
+  };
+
+
+
+  
   return (
     <div className=" mx-auto p-0">
       <Toaster position="top-right" />
-      <DispatchHeader activeDrivers={activeDrivers} />
+      <DispatchHeader activeDrivers={activeDrivers}  handleDriverAssignment={handleDriverAssignment}/>
       <div>
         <div className="flex justify-between flex-wrap items-center mb-4 mt-4">
           <div>
@@ -565,6 +577,22 @@ function Dispatch() {
               New Call
               </Link>
             </button>
+            {/* <button className=" bg-[#002B7F] ml-1 text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition">
+              <p className="flex items-center"><span>Refresh</span> <RefreshCcw className="w-4 h-4 ml-1"/></p>
+            </button> */}
+                <button
+      onClick={handleClick}
+      className="relative bg-[#002B7F] ml-1 text-white px-4 py-2 rounded-md hover:bg-[#002B7F] transition"
+    >
+      <p className="flex items-center">
+        <span>Refresh</span>
+        <RefreshCcw
+          className={`w-4 h-4 ml-1 transition-transform ${
+            isRotating ? "animate-spin-once" : ""
+          }`}
+        />
+      </p>
+    </button>
           </div>
           <div className="flex flex-wrap items-center space-x-2">
             <Link to="/trucks">
