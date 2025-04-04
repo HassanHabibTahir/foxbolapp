@@ -196,7 +196,7 @@ function Dispatch() {
   useEffect(() => {
     fetchDrivers()
   }, [])
-
+  // .eq("dispcleared",false)
   const fetchTowRecords = useCallback(
     async (page: number) => {
       setIsLoading(true)
@@ -256,10 +256,7 @@ function Dispatch() {
           )
         `,
           )
-          .eq("foxtow_id", foxtow_id)
-          .eq("dispcleared",false)
-          // .order("towmast.dispnum", { ascending: true })
-
+          .eq("foxtow_id", foxtow_id).filter("towmast.dispcleared", "neq", true)
           .order("updated_at", { ascending: false })
           .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1)
 
@@ -268,15 +265,24 @@ function Dispatch() {
         } else {
           // Sort the data to put dispatched=false at the top
           const sortedData = (data || []).sort((a: any, b: any) => {
+            // Check if record A is not dispatched
             const aIsNotDispatched = a.towmast.dispatched === false
+
+            // Check if record B is not dispatched
             const bIsNotDispatched = b.towmast.dispatched === false
+
+            // If A is not dispatched but B is, A should come before B
             if (aIsNotDispatched && !bIsNotDispatched) return -1
+
+            // If B is not dispatched but A is, B should come before A
             if (!aIsNotDispatched && bIsNotDispatched) return 1
+
+            // Otherwise maintain the original order
             return 0
           })
 
           setTowRecords(sortedData)
-          // setTowRecords(data || []);
+          // setTowRecords(data ||  []);
         }
       } finally {
         setIsLoading(false)
