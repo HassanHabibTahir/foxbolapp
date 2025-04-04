@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { forwardRef, useState, useEffect, useRef, useCallback } from "react"
 import { CalendarIcon } from "lucide-react"

@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useNavigate } from "react-router-dom"
@@ -214,14 +212,14 @@ export default function AddNewTrucks() {
         driver_ond: isActive, 
         creationda: new Date().toISOString(),
       })
-      const { error:trucksError } = await supabase.from("trucks").insert({
-        trucknum:truckNumber,
-        created_at: new Date().toISOString(),
-        foxtow_id: foxtow_id,
-      })
+      // const { error:trucksError } = await supabase.from("trucks").insert({
+      //   trucknum:truckNumber,
+      //   created_at: new Date().toISOString(),
+      //   foxtow_id: foxtow_id,
+      // })
  
       if (error) throw error
-      if (trucksError) throw trucksError
+      // if (trucksError) throw trucksError
 
       toast.dismiss(loadingToast)
       toast.success("Truck created successfully")
