@@ -268,12 +268,8 @@ function Dispatch() {
         } else {
           // Sort the data to put dispatched=false at the top
           const sortedData = (data || []).sort((a: any, b: any) => {
-
             const aIsNotDispatched = a.towmast.dispatched === false
-
-
             const bIsNotDispatched = b.towmast.dispatched === false
-
             if (aIsNotDispatched && !bIsNotDispatched) return -1
             if (!aIsNotDispatched && bIsNotDispatched) return 1
             return 0

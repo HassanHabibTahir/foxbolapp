@@ -79,7 +79,7 @@ function App() {
             } else {
               shouldClear = false;
             }
-            console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
+            // console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
             if (shouldClear) {
               await supabase
                 .from('towdrive')
