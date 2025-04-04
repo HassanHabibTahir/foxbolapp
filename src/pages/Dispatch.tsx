@@ -45,6 +45,7 @@ interface TowRecord {
     dispatched: boolean
     updated_at: string
     equipment: string
+    
     zone: string
     colors: {
       min1: number
@@ -256,13 +257,18 @@ function Dispatch() {
           )
         `,
           )
-          .eq("foxtow_id", foxtow_id).filter("towmast.dispcleared", "neq", true)
+          .eq("foxtow_id", foxtow_id)
+          .filter("towmast.dispcleared", "neq", true)
           .order("updated_at", { ascending: false })
           .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1)
 
         if (error) {
           console.error("Error fetching tow records:", error)
         } else {
+          // const filteredData = (data || []).filter(
+          //   (record:any) => !record.towmast.dispcleared
+          // );
+  
           // Sort the data to put dispatched=false at the top
           const sortedData = (data || []).sort((a: any, b: any) => {
             // Check if record A is not dispatched

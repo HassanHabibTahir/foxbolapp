@@ -32,76 +32,76 @@ function App() {
 
   
     // dispatcher Clear.
-    useEffect(() => {
-      const checkAutoClear = async () => {
-        try {
-          const foxtow_id = localStorage.getItem("foxtow_id");
-          const now = new Date();
+    // useEffect(() => {
+    //   const checkAutoClear = async () => {
+    //     try {
+    //       const foxtow_id = localStorage.getItem("foxtow_id");
+    //       const now = new Date();
           
-          // Get all pending clear records
-          const { data: pendingRecords } = await supabase
-            .from('towdrive')
-            .select('*, towmast!inner(dispnum, dispcleared)')
-            .eq('dispcleared', false)
-            .eq('towmast.dispatched', true)
-            .eq('foxtow_id', foxtow_id);
+    //       // Get all pending clear records
+    //       const { data: pendingRecords } = await supabase
+    //         .from('towdrive')
+    //         .select('*, towmast!inner(dispnum, dispcleared)')
+    //         .eq('dispcleared', false)
+    //         .eq('towmast.dispatched', true)
+    //         .eq('foxtow_id', foxtow_id);
     
-          if (!pendingRecords) return;
+    //       if (!pendingRecords) return;
     
-          for (const record of pendingRecords) {
-            const timeclear = record.timeclear?.replace(":", "");
-            if (!timeclear) continue;
-            if (!timeclear || timeclear.length !== 4 || isNaN(Number(timeclear))) {
-              console.error('Invalid timeclear format:', timeclear);
-              continue;
-            }
+    //       for (const record of pendingRecords) {
+    //         const timeclear = record.timeclear?.replace(":", "");
+    //         if (!timeclear) continue;
+    //         if (!timeclear || timeclear.length !== 4 || isNaN(Number(timeclear))) {
+    //           console.error('Invalid timeclear format:', timeclear);
+    //           continue;
+    //         }
            
-            // // if (!timeclear) continue;
+    //         // // if (!timeclear) continue;
             
-            // console.log(timeclear,"pendingRecords")
-          //   // Parse stored military time (HHMM)
-            const hours = parseInt(timeclear.slice(0, 2), 10);
-            const minutes = parseInt(timeclear.slice(2, 4), 10);
+    //         console.log(timeclear,"pendingRecords")
+    //       //   // Parse stored military time (HHMM)
+    //         const hours = parseInt(timeclear.slice(0, 2), 10);
+    //         const minutes = parseInt(timeclear.slice(2, 4), 10);
    
-            const enteredDate = new Date(now);
-            enteredDate.setHours(hours, minutes, 0, 0);
+    //         const enteredDate = new Date(now);
+    //         enteredDate.setHours(hours, minutes, 0, 0);
            
-            // // console.log(enteredDate,"pendingRecords")
-            const timeDiff = enteredDate.getTime() - now.getTime();
-            let shouldClear = false;
+    //         console.log(enteredDate,"pendingRecords")
+    //         const timeDiff = enteredDate.getTime() - now.getTime();
+    //         let shouldClear = false;
     
-            if (timeDiff <= 0) {  
-              shouldClear = true;
-            } else if (timeDiff > 3600000) { 
-              const enteredDatePrevDay = new Date(enteredDate);
-              enteredDatePrevDay.setDate(enteredDatePrevDay.getDate() - 1);
-              shouldClear = enteredDatePrevDay <= now;
-            } else {
-              shouldClear = false;
-            }
-            console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
-            // if (shouldClear) {
-            //   await supabase
-            //     .from('towdrive')
-            //     .update({ dispcleared: true })
-            //     .eq('id', record.id);
+    //         if (timeDiff <= 0) {  
+    //           shouldClear = true;
+    //         } else if (timeDiff > 3600000) { 
+    //           const enteredDatePrevDay = new Date(enteredDate);
+    //           enteredDatePrevDay.setDate(enteredDatePrevDay.getDate() - 1);
+    //           shouldClear = enteredDatePrevDay <= now;
+    //         } else {
+    //           shouldClear = false;
+    //         }
+    //         console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
+    //         // if (shouldClear) {
+    //         //   await supabase
+    //         //     .from('towdrive')
+    //         //     .update({ dispcleared: true })
+    //         //     .eq('id', record.id);
     
-            //   await supabase
-            //     .from('towmast')
-            //     .update({ dispcleared: true })
-            //     .eq('dispnum', record.towmast.dispnum);
-            // }
-           }
-        } catch (error) {
-          console.error('Auto-clear error:', error);
-        }
-      };
+    //         //   await supabase
+    //         //     .from('towmast')
+    //         //     .update({ dispcleared: true })
+    //         //     .eq('dispnum', record.towmast.dispnum);
+    //         // }
+    //        }
+    //     } catch (error) {
+    //       console.error('Auto-clear error:', error);
+    //     }
+    //   };
     
-      // Check every minute and on mount
-      checkAutoClear();
-      const interval = setInterval(checkAutoClear, 10000);
-      return () => clearInterval(interval);
-    }, []);
+    //   // Check every minute and on mount
+    //   checkAutoClear();
+    //   const interval = setInterval(checkAutoClear, 1000);
+    //   return () => clearInterval(interval);
+    // }, []);
     
   
 
