@@ -77,52 +77,46 @@ export const DispatchHeader = ({activeDrivers,handleDriverAssignment}:any) => {
 
     return (
         <div className="relative w-full">
-            {canScrollLeft && (
-                <button
-                    onClick={scrollLeft}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-1 shadow-md hover:bg-white transition-colors"
-                    aria-label="Scroll left"
+        <div
+            ref={scrollRef}
+            className="flex  flex-wrap scrollbar-hide pb-2 gap-1 overflow-x-auto"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+            {activeDrivers && activeDrivers.length > 0 && activeDrivers.map((driver:any, index:any) => (
+                <div
+                    key={index}
+                    onClick={() => handleDriverAssignment(driver.driverId, driver.driverNumber, driver.truckNumber)}
+                    className={`cursor-pointer  flex-shrink-0 w-[90px] h-[70px] border border-gray-300 flex flex-col items-center justify-between ${getBackgroundColor(driver.truckNumber)}`}
                 >
-                    <ChevronLeft className="h-6 w-6" />
-                </button>
-            )}
-
-            <div
-                ref={scrollRef}
-                className="flex scrollbar-hide pb-2 overflow-x-auto"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-                {activeDrivers&& +activeDrivers?.length>0&& activeDrivers.map((driver:any, index:any) => (
-                    <div
-                        key={index}
-                        onClick={() => handleDriverAssignment(driver.driverId, driver.driverNumber, driver.truckNumber)}
-                        className={`cursor-pointer  flex-shrink-0 w-[120px] h-[100px] border border-gray-300 flex flex-col items-center justify-between ${getBackgroundColor(driver.truckNumber)}`}
-                    >
-                        <div className="font-semibold text-[11px] pt-1">{driver.driverName}</div>
-                        <div className="flex-1 flex items-center justify-center w-full">
-                            {driver?.images?.length>0?<img
-                                src={driver.images[0] || "/placeholder.svg"}
-                                alt={`${driver.driverName}'s vehicle`}
-                                width={80}
-                                height={40}
-                                className="object-contain w-auto h-12"
-                            />:""}
-                                                                  </div>
-                        <div className="font-bold text-sm pb-1">{driver.truckNumber}</div>
+                    <div className="font-semibold text-[10px] w-full text-center px-1 h-[15px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {driver.driverName}
                     </div>
-                ))}
-            </div>
+                         <div className="w-10 h-10 flex items-center justify-center">
+                        {driver?.images?.length > 0 ? (
+                            <img
+                                src={driver.images[0] || "/placeholder.png"}
+                                alt={`${driver.driverName}'s vehicle`}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <img
+                                    src="/placeholder.png"
+                                    alt="No image"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )}
+                    </div>
+                        <div className="font-bold text-xs w-full text-center h-[20px] flex items-center justify-center">
+                        {driver.truckNumber}
+                    </div>
+                </div>
+            ))}
+            
 
-            {canScrollRight && (
-                <button
-                    onClick={scrollRight}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-1 shadow-md hover:bg-white transition-colors"
-                    aria-label="Scroll right"
-                >
-                    <ChevronRight className="h-6 w-6" />
-                </button>
-            )}
         </div>
+    </div>
     )
 }
 

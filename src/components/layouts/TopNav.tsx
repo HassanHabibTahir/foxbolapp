@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, Fragment } from "react";
 import { NavLink } from "react-router-dom"
 import {
@@ -77,8 +75,9 @@ const TopNav = () => {
               </button>
 
               <div className="flex items-center">
-                <Truck className="w-8 h-8 mr-2"/>
-                <span className="text-xl font-bold">{t("brand.name")}</span>
+                {/* <Truck className="w-8 h-8 mr-2"/> */}
+                <img src="/logo.jpeg" className="w-12 h-12"/> {" "}
+                {" "}<span className="text-xl font-bold ml-1">{t("brand.name")}</span>
               </div>
             </div>
 
