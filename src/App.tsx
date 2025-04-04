@@ -72,25 +72,25 @@ function App() {
     
             if (timeDiff <= 0) {  
               shouldClear = true;
-            } else if (timeDiff > 3600000) { // More than 1 hour ahead
+            } else if (timeDiff > 3600000) { 
               const enteredDatePrevDay = new Date(enteredDate);
               enteredDatePrevDay.setDate(enteredDatePrevDay.getDate() - 1);
               shouldClear = enteredDatePrevDay <= now;
             } else {
               shouldClear = false;
             }
-            // console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
-            if (shouldClear) {
-              await supabase
-                .from('towdrive')
-                .update({ dispcleared: true })
-                .eq('id', record.id);
+            console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
+            // if (shouldClear) {
+            //   await supabase
+            //     .from('towdrive')
+            //     .update({ dispcleared: true })
+            //     .eq('id', record.id);
     
-              await supabase
-                .from('towmast')
-                .update({ dispcleared: true })
-                .eq('dispnum', record.towmast.dispnum);
-            }
+            //   await supabase
+            //     .from('towmast')
+            //     .update({ dispcleared: true })
+            //     .eq('dispnum', record.towmast.dispnum);
+            // }
            }
         } catch (error) {
           console.error('Auto-clear error:', error);

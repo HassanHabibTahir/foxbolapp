@@ -299,7 +299,7 @@ function NewQuickPage() {
         ? parseInt(lastDispNumData.dispnum)
         : 100000;
       const newDispnum = lastDispnum + 1;
-console.log(lastDispnum,newDispnum,"lastDispnum");
+
       // Prepare common data for insertion/update
       const commonTowMastData = {
         foxtow_id: foxtow_id ?? "",
