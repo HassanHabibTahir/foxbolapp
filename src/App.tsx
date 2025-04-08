@@ -31,7 +31,7 @@ function App() {
 
 
   
-    // dispatcher Clear.
+    // // dispatcher Clear.
     // useEffect(() => {
     //   const checkAutoClear = async () => {
     //     try {
@@ -66,7 +66,7 @@ function App() {
     //         const enteredDate = new Date(now);
     //         enteredDate.setHours(hours, minutes, 0, 0);
            
-    //         console.log(enteredDate,"pendingRecords")
+    //         // console.log(enteredDate,"pendingRecords")
     //         const timeDiff = enteredDate.getTime() - now.getTime();
     //         let shouldClear = false;
     
@@ -80,17 +80,17 @@ function App() {
     //           shouldClear = false;
     //         }
     //         console.log(enteredDate,shouldClear,record.id,"shouldClear",record.towmast.dispnum)
-    //         // if (shouldClear) {
-    //         //   await supabase
-    //         //     .from('towdrive')
-    //         //     .update({ dispcleared: true })
-    //         //     .eq('id', record.id);
+    //         if (shouldClear) {
+    //           await supabase
+    //             .from('towdrive')
+    //             .update({ dispcleared: true })
+    //             .eq('id', record.id);
     
-    //         //   await supabase
-    //         //     .from('towmast')
-    //         //     .update({ dispcleared: true })
-    //         //     .eq('dispnum', record.towmast.dispnum);
-    //         // }
+    //           await supabase
+    //             .from('towmast')
+    //             .update({ dispcleared: true })
+    //             .eq('dispnum', record.towmast.dispnum);
+    //         }
     //        }
     //     } catch (error) {
     //       console.error('Auto-clear error:', error);
@@ -99,7 +99,7 @@ function App() {
     
     //   // Check every minute and on mount
     //   checkAutoClear();
-    //   const interval = setInterval(checkAutoClear, 1000);
+    //   const interval = setInterval(checkAutoClear, 10000);
     //   return () => clearInterval(interval);
     // }, []);
     
