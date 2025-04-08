@@ -111,7 +111,7 @@ function NewQuickPage() {
         vin:recordData?.towmast?.vin||"",
         whocalled:recordData?.towmast?.whocalled||"",
         towedto:recordData?.towmast?.towedto||"",
-        towedfrom:recordData?.towmast?.towedto||""
+        towedfrom:recordData?.towmast?.towedfrom||""
       
         // callType: recordData.towmast.calltype || "",
         // size: recordData.towmast.size || "",
@@ -290,7 +290,13 @@ function NewQuickPage() {
     setIsSubmitting(true)
 
     try {
-      console.log(formData,"formData==>")
+      const now = new Date().toISOString()
+      const nowDate = new Date(now)
+      const timeInRoute = `${nowDate
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${nowDate.getMinutes().toString().padStart(2, "0")}`
+        console.log(timeInRoute,"timeInRoute")
       // // Fetch the last dispatch number
       const { data: lastDispNumData, error: lastDispNumError } = await supabase
         .from("towmast")
@@ -387,12 +393,14 @@ function NewQuickPage() {
 
         if (updateError) throw updateError
       } else {
+        console.log(timeInRoute,"timeInRoute")
         // Insert new record
         const { error: insertError } = await supabase.from("towdrive").insert({
           trucknum: formData?.truckAssigned,
           driver: formData?.driver,
           foxtow_id: foxtow_id,
           dispnumdrv: dispatchNumber,
+          timerec:timeInRoute
         })
 
         if (insertError) throw insertError
