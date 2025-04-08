@@ -69,7 +69,7 @@ export const saveDispatch = async (payload: SavePayload) => {
 
       if (invoiceError) throw invoiceError;
       if (payload.items && payload.items.length > 0) {
-        console.log(payload?.items,"items==>")
+        // console.log(payload?.items,"items==>")
         // const itemsData = payload?.items
         // ?.filter(item => item.description !== "DISCOUNT" && item.description !== "")
         // .map((item, index) => ({
@@ -124,7 +124,7 @@ export const saveDispatch = async (payload: SavePayload) => {
 
             upsertError = error;
           } else {
-            console.log("his is for new")
+   
             const { error } = await supabase.from("towtrans").insert(itemData);
             upsertError = error;
           }

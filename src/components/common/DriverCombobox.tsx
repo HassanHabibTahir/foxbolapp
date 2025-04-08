@@ -3,7 +3,7 @@ import type React from "react"
 import { useState, useEffect, forwardRef } from "react"
 import Select, { components } from "react-select"
 import { supabase } from "../../lib/supabase"
-import { ClassNames } from "@emotion/react"
+
 
 interface Driver {
   driver_num: string
@@ -18,9 +18,9 @@ interface DriverOption {
 }
 
 interface DriverComboboxProps {
-  label: string
+  label?: string
   title: string
-  size?: "xs" | "sm" | "md" | "lg" | "xl" | "full"
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "full"|"xlg"
   value?: string
   onChange?: (value: string) => void
   onDriverSelect?: (driver: Driver) => void
@@ -43,7 +43,9 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       md: "12rem",
       lg: "30ch",
       xl: "24rem",
+      xlg:"97%",
       full: "100%",
+      
     }
 
     useEffect(() => {
@@ -183,7 +185,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <div style={{ width: sizeClasses[size] }}>
+        <div style={{ width: sizeClasses[size] }} className={className}>
           <Select
       
             {...selectProps}

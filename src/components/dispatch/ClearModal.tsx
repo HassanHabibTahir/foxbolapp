@@ -129,24 +129,25 @@ const ClearModal: React.FC<ClearModalProps> = ({
             type="text"
             id="clearTime"
             value={currentTime}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Remove non-digit characters
-              const digits = value.replace(/\D/g, "");
+            disabled={true}
+            // onChange={(e) => {
+            //   const value = e.target.value;
+            //   // Remove non-digit characters
+            //   const digits = value.replace(/\D/g, "");
 
-              // Format with colon insertion
-              let formatted = digits;
-              if (digits.length > 2) {
-                formatted = `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
-              } else if (digits.length === 2 && value.length === 3) {
-                // Handle backspace case after colon
-                formatted = digits;
-              }
+            //   // Format with colon insertion
+            //   let formatted = digits;
+            //   if (digits.length > 2) {
+            //     formatted = `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
+            //   } else if (digits.length === 2 && value.length === 3) {
+            //     // Handle backspace case after colon
+            //     formatted = digits;
+            //   }
 
-              // Limit to 4 digits (HHMM)
-              formatted = formatted.slice(0, 5);
-              setCurrentTime(formatted);
-            }}
+            //   // Limit to 4 digits (HHMM)
+            //   formatted = formatted.slice(0, 5);
+            //   setCurrentTime(formatted);
+            // }}
             placeholder="HH:MM"
             className="w-32 p-3 border border-gray-300 rounded text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

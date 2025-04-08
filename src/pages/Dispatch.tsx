@@ -7,7 +7,6 @@ import DriverModal from "../components/dispatch/DriverModal"
 import toast, { Toaster } from "react-hot-toast"
 import { DispatchHeader } from "../components/DispatchHeader/DispatchHeader"
 import ClearModal from "../components/dispatch/ClearModal"
-// import {DispatchHeader} from "../components/DispatchHeader";
 
 interface Driver {
   id: string
@@ -109,7 +108,7 @@ function Dispatch() {
     startWidth: number
   } | null>(null)
 
-  const recordsPerPage = 25
+  const recordsPerPage = 20
   const foxtow_id = localStorage.getItem("foxtow_id")
 
   const handleTimeFieldRightClick = async (e: React.MouseEvent<HTMLInputElement>, recordId: string, field: string) => {
@@ -166,7 +165,7 @@ function Dispatch() {
       // Update the towmast record to mark it as dispatched
       const { error: towmastError } = await supabase
         .from("towmast")
-        .update({ dispatched: true ,  })
+        .update({ dispatched: true , priority:null  })
         .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
 
       if (towmastError) throw towmastError
@@ -238,7 +237,11 @@ function Dispatch() {
             dispatched,
             equipment,
             zone,
-            
+            callremark,
+            towedto,
+            towedfrom,
+            vin,
+            whocalled,
             destination,
             updated_at,
             colors(
@@ -268,23 +271,25 @@ function Dispatch() {
           // const filteredData = (data || []).filter(
           //   (record:any) => !record.towmast.dispcleared
           // );
-  
-          // Sort the data to put dispatched=false at the top
+
           const sortedData = (data || []).sort((a: any, b: any) => {
-            // Check if record A is not dispatched
-            const aIsNotDispatched = a.towmast.dispatched === false
-
-            // Check if record B is not dispatched
-            const bIsNotDispatched = b.towmast.dispatched === false
-
-            // If A is not dispatched but B is, A should come before B
-            if (aIsNotDispatched && !bIsNotDispatched) return -1
-
-            // If B is not dispatched but A is, B should come before A
-            if (!aIsNotDispatched && bIsNotDispatched) return 1
-
-            // Otherwise maintain the original order
-            return 0
+            const aIsPriority1 = a.towmast.priority === 1;
+            const bIsPriority1 = b.towmast.priority === 1;
+            if (aIsPriority1 && !bIsPriority1) return 1;
+            if (!aIsPriority1 && bIsPriority1) return -1;
+                        const aIsDispatched = a.towmast.dispatched === true;
+            const bIsDispatched = b.towmast.dispatched === true;
+                   if (aIsDispatched && !bIsDispatched) return -1
+                   if (!aIsDispatched && bIsDispatched) return 1
+            if (aIsDispatched && bIsDispatched) {
+              const aDate = new Date(a.towmast.updated_at);
+              const bDate = new Date(b.towmast.updated_at);
+              return bDate.getTime() - aDate.getTime(); 
+            }
+            
+            if (aIsDispatched && !bIsDispatched) return -1;
+            if (!aIsDispatched && bIsDispatched) return 1;
+                        return 0;
           })
 
           setTowRecords(sortedData)
