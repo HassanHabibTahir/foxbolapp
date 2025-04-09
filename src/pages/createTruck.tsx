@@ -202,6 +202,7 @@ export default function AddNewTrucks() {
         truck_type: truckType,
         duty: duty,
         driver_nam:driverName,
+        driver_fir:driverName,
         vin: vin,
         driver_lic: licenseNumber,
         t_make: manufacturer,
