@@ -318,7 +318,7 @@ export default function TruckEditPage() {
           def_truckn: truckNumber,
           driver_fir: firstName,
           driver_las: lastName,
-          driver_nam: firstName + "_" + lastName,
+          driver_nam: firstName + " " + lastName,
           vin: vin,
           driver_lic: licenseNumber,
           truck_type: truckType,
