@@ -797,7 +797,7 @@ function NewQuickPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <label className="w-20 text-sm font-medium text-gray-700">Driver</label>
                 <div className="w-full">
@@ -834,7 +834,7 @@ function NewQuickPage() {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div ref={mapRef} className="w-full h-[300px] md:h-[400px] rounded-sm overflow-hidden mt-6" />

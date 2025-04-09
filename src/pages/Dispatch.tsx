@@ -165,7 +165,7 @@ function Dispatch() {
       // Update the towmast record to mark it as dispatched
       const { error: towmastError } = await supabase
         .from("towmast")
-        .update({ dispatched: true , priority:null  })
+        .update({ dispatched: true   })
         .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
 
       if (towmastError) throw towmastError
@@ -268,30 +268,48 @@ function Dispatch() {
         if (error) {
           console.error("Error fetching tow records:", error)
         } else {
-          // const filteredData = (data || []).filter(
-          //   (record:any) => !record.towmast.dispcleared
-          // );
 
-          const sortedData = (data || []).sort((a: any, b: any) => {
-            const aIsPriority1 = a.towmast.priority === 1;
-            const bIsPriority1 = b.towmast.priority === 1;
-            if (aIsPriority1 && !bIsPriority1) return 1;
-            if (!aIsPriority1 && bIsPriority1) return -1;
-                        const aIsDispatched = a.towmast.dispatched === true;
-            const bIsDispatched = b.towmast.dispatched === true;
-                   if (aIsDispatched && !bIsDispatched) return -1
-                   if (!aIsDispatched && bIsDispatched) return 1
-            if (aIsDispatched && bIsDispatched) {
-              const aDate = new Date(a.towmast.updated_at);
-              const bDate = new Date(b.towmast.updated_at);
-              return bDate.getTime() - aDate.getTime(); 
-            }
+          // const sortedData = (data || []).sort((a: any, b: any) => {
+          //   const aIsPriority1 = a.towmast.priority  === 1;
+          //   const bIsPriority1 = b.towmast.priority === 1;
+          //   if (aIsPriority1 && !bIsPriority1) return 1;
+          //   if (!aIsPriority1 && bIsPriority1) return -1;
+          //               const aIsDispatched = a.towmast.dispatched === true;
+          //   const bIsDispatched = b.towmast.dispatched === true;
+          //          if (aIsDispatched && !bIsDispatched) return -1
+          //          if (!aIsDispatched && bIsDispatched) return 1
+          //   if (aIsDispatched && bIsDispatched) {
+          //     const aDate = new Date(a.towmast.updated_at);
+          //     const bDate = new Date(b.towmast.updated_at);
+          //     return bDate.getTime() - aDate.getTime(); 
+          //   }
             
-            if (aIsDispatched && !bIsDispatched) return -1;
-            if (!aIsDispatched && bIsDispatched) return 1;
-                        return 0;
-          })
-
+          //   if (aIsDispatched && !bIsDispatched) return -1;
+          //   if (!aIsDispatched && bIsDispatched) return 1;
+          //               return 0;
+          // })
+          const sortedData = (data || []).sort((a: any, b: any) => {
+            // Define grouping logic
+            const getGroup = (item: any) => {
+              if (item.towmast.priority === 1 && item.towmast.dispatched) return 1;
+              if (item.towmast.dispatched) return 2;
+              if (item.towmast.priority !== 1) return 3;
+              return 4; // Non-dispatched with priority 1
+            };
+          
+            const aGroup = getGroup(a);
+            const bGroup = getGroup(b);
+          
+            // First sort by group priority
+            if (aGroup !== bGroup) {
+              return aGroup - bGroup; // Lower group numbers come first
+            }
+          
+            // Within same group, sort by latest updated_at
+            const aDate = new Date(a.towmast.updated_at).getTime();
+            const bDate = new Date(b.towmast.updated_at).getTime();
+            return bDate - aDate;
+          });
           setTowRecords(sortedData)
           // setTowRecords(data ||  []);
         }
@@ -859,18 +877,29 @@ function Dispatch() {
                         case "Location":
                           return (
                             <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
-                              {record.towmast.location}
-                            </td>
+                            <input
+                              // value={"asdfasdf"}
+                              value={record.towmast.towedfrom || ""}
+                              onChange={(e) => handleInputChange(record.id, "towmast.towedfrom", e.target.value)}
+                              onKeyDown={(e) =>
+                                handleInputKeyDown(e, record.id, "towmast.towedfrom", e.currentTarget.value)
+                              }
+                              className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                            />
+                          </td>
+                            // <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
+                            //   {record.towmast.location}
+                            // </td>
                           )
                         case "Destination":
                           return (
                             <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
                               <input
                                 // value={"asdfasdf"}
-                                value={record.towmast.destination || ""}
-                                onChange={(e) => handleInputChange(record.id, "towmast.destination", e.target.value)}
+                                value={record.towmast.towedto || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.towedto", e.target.value)}
                                 onKeyDown={(e) =>
-                                  handleInputKeyDown(e, record.id, "towmast.destination", e.currentTarget.value)
+                                  handleInputKeyDown(e, record.id, "towmast.towedto", e.currentTarget.value)
                                 }
                                 className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                               />
