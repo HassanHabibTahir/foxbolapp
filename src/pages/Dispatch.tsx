@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect, type KeyboardEvent, useRef, useCallback } from "react"
-import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront, RefreshCcw, Newspaper } from "lucide-react"
+import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront, RefreshCcw, Newspaper, GripVertical } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import DriverModal from "../components/dispatch/DriverModal"
@@ -479,11 +479,18 @@ function Dispatch() {
       setIsLoading(false)
     }
   }
+
+
+ 
+
+
+
+
   const handleResizeStart = (e: React.MouseEvent, field: string) => {
     e.preventDefault()
     e.stopPropagation()
 
-    const startWidth = columnWidths[field] || 200
+    const startWidth = columnWidths[field] ||   1
 
     setIsResizing(true)
     resizingRef.current = {
@@ -500,7 +507,7 @@ function Dispatch() {
     if (!resizingRef.current) return
 
     const { column, startX, startWidth } = resizingRef.current
-    const width = Math.max(100, startWidth + (e.clientX - startX))
+    const width = Math.max(10, startWidth + (e.clientX - startX))
 
     setColumnWidths((prev) => ({
       ...prev,
@@ -647,7 +654,7 @@ function Dispatch() {
           </div>
         </div>
       </div>
-      <div></div>
+      
 
       <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full  border-collapse">
@@ -656,8 +663,8 @@ function Dispatch() {
               {orderedFields.map((field) => (
                 <th
                   key={field}
-                  className="px-1 py-2  text-center text-[13px] border border-gray-300 whitespace-nowrap"
-                  style={{ width: columnWidths[field] || 200 }}
+                  className=" py-2  text-center text-[13px] border border-gray-300 whitespace-nowrap"
+                  style={{ width: columnWidths[field] || 1 }}
                 >
                   <div
                     draggable={!isResizing}
@@ -666,7 +673,7 @@ function Dispatch() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, field)}
-                    className="flex items-center justify-center gap-2  cursor-move px-2"
+                    className="flex items-left justify-left gap-0s  cursor-move px-2"
                   >
                     {/* <GripVertical size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" /> */}
                     {field}
@@ -694,7 +701,7 @@ function Dispatch() {
                 .map((record) => (
                   <tr
                     key={record.towmast.dispnum}
-                    className={`hover:bg-gray-50 text-center align-middle cursor-pointer ${
+                    className={`hover:bg-gray-50 text-left align-middle cursor-pointer ${
                       selectedRow?.id === record.id ? "bg-blue-50" : ""
                     }`}
                     style={getRowStyle(record)}
@@ -706,14 +713,14 @@ function Dispatch() {
                       switch (field) {
                         case "P":
                           return (
-                            <td key={field} className="px-1 text-center align-middle py-2 border border-gray-300 w-4">
+                            <td key={field} className="px-1 text-left align-middle py-2 border border-gray-300 w-0">
                               <input
                                 value={record.towmast.priority || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-4 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                                className="bg-transparent w-3 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
                               />
                             </td>
                           )
@@ -743,7 +750,7 @@ function Dispatch() {
                                 onChange={(e) => handleInputChange(record.id, "timerec", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timerec", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timerec")}
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -755,7 +762,7 @@ function Dispatch() {
                                 onChange={(e) => handleInputChange(record.id, "timeinrt", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeinrt", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeinrt")}
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -767,7 +774,7 @@ function Dispatch() {
                                 onChange={(e) => handleInputChange(record.id, "timearrive", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timearrive", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timearrive")}
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -779,7 +786,7 @@ function Dispatch() {
                                 onChange={(e) => handleInputChange(record.id, "timeintow", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeintow", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeintow")}
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -792,7 +799,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-28 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-28 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -805,7 +812,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.licensenum", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -818,7 +825,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.yearcar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -831,7 +838,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.makecar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -844,7 +851,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.colorcar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -857,7 +864,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)
                                 }
-                                className="bg-transparent text-center w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent text-left w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -870,7 +877,7 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-24 text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className="bg-transparent w-24 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
                               />
                             </td>
                           )
@@ -884,12 +891,10 @@ function Dispatch() {
                               onKeyDown={(e) =>
                                 handleInputKeyDown(e, record.id, "towmast.towedfrom", e.currentTarget.value)
                               }
-                              className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                              className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                             />
                           </td>
-                            // <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
-                            //   {record.towmast.location}
-                            // </td>
+                    
                           )
                         case "Destination":
                           return (
@@ -901,13 +906,13 @@ function Dispatch() {
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.towedto", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-center focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                               />
                             </td>
                           )
                         case "E":
                           return (
-                            <td key={field} className="px-0 py-2 border border-gray-300 w-5 text-center">
+                            <td key={field} className="px-0 py-2 border border-gray-300 w-5 text-left">
                               <input
                                 value={record.towmast.equipment ? "E" : ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.equipment", e.target.value)}
