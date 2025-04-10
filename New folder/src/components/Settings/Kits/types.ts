@@ -1,73 +1,71 @@
-import { RefObject, KeyboardEvent } from "react";
-import { SelectOptionType } from "../../base/types";
-import { MultiValue } from "react-select";
-
-type KitFormPropsType = {
-  kitVal: string,
-  cusVal: string,
-  classVal: string,
-  descriptionVal: string,
-  itemGroupVal: string,
-  quantityVal: string,
-  priceVal: string,
-  reasonVal: string,
-  fromVal: string,
-  toVal: string,
-  glaccountVal: string,
-  lotSecVal: string,
-  transactionVal: string[],
-  customerVal: string[],
-  transactionOptions: SelectOptionType[],
-  customerOptions: SelectOptionType[],
-
-  kitRef: RefObject<HTMLInputElement>,
-  cusRef: RefObject<HTMLInputElement>,
-  classRef: RefObject<HTMLInputElement>,
-  descriptionRef: RefObject<HTMLInputElement>,
-  itemGroupRef: RefObject<HTMLInputElement>,
-  quantityRef: RefObject<HTMLInputElement>,
-  priceRef: RefObject<HTMLInputElement>,
-  reasonRef: RefObject<HTMLInputElement>,
-  fromRef: RefObject<HTMLInputElement>,
-  toRef: RefObject<HTMLInputElement>,
-  glaccountRef: RefObject<HTMLInputElement>,
-  lotSecRef: RefObject<HTMLInputElement>,
-  transactionRef: RefObject<HTMLInputElement>,
-  customerRef: RefObject<HTMLInputElement>,
-  buttonNewRef: RefObject<HTMLButtonElement>,
-  buttonSaveRef: RefObject<HTMLButtonElement>,
-  buttonPrevRef: RefObject<HTMLButtonElement>,
-  buttonNextRef: RefObject<HTMLButtonElement>,
-
-  handleKitValChange: (e: string) => void,
-  handleCusValChange: (e: string) => void,
-  handleClassValChange: (e: string) => void,
-  handleDescriptionValChange: (e: string) => void,
-  handleItemGroupValChange: (e: string) => void,
-  handleQuantityValChange: (e: string) => void,
-  handlePriceValChange: (e: string) => void,
-  handleReasonValChange: (e: string) => void,
-  handleFromValChange: (e: string) => void,
-  handleToValChange: (e: string) => void,
-  handleGlaccountValChange: (e: string) => void,
-  handleLotSecValChange: (e: string) => void,
-  handleTransactionValChange: (e: MultiValue<SelectOptionType>) => void,
-  handleCustomerValChange: (e: MultiValue<SelectOptionType>) => void,
-
-  handleKeyDown: (e: KeyboardEvent<HTMLDivElement> | KeyboardEvent<HTMLButtonElement>, field: string) => void,
-}
-
-type NavigationType = {
-  [key: string]: {
-    up?: RefObject<HTMLElement> | RefObject<HTMLButtonElement>,
-    down?: RefObject<HTMLElement> | RefObject<HTMLButtonElement>,
-    left?: RefObject<HTMLElement> | RefObject<HTMLButtonElement>,
-    right?: RefObject<HTMLElement> | RefObject<HTMLButtonElement>,
-    enter?: RefObject<HTMLElement | RefObject<HTMLButtonElement>>
-  },
-}
-
-export type {
-  KitFormPropsType,
-  NavigationType,
-}
+export interface Kit {
+    id?: number;
+    kit: string;
+    cus: string;
+    class: string;
+    description: string;
+    itemGroup: string;
+    quantity: number;
+    price: number;
+    reason: string[];
+    from: string;
+    to: string;
+    glaccount: string;
+    lotSec: string;
+    transaction: string[];
+    customer: string;
+    classVal?: string; // Added as alternative field name
+    created_at?: string;
+    updated_at?: string;
+  }
+  
+  export interface KitFormProps {
+    onSubmit: (kit: Kit) => Promise<void>;
+    initialKit?: Kit;
+  }
+  
+  export interface KitsListProps {
+    kits: Kit[];
+    onEdit: (kit: Kit) => void;
+    onDelete: (id: string) => void;
+  }
+  
+  export interface KitsSearchProps {
+    searchTerm: string;
+    onSearchChange: (value: string) => void;
+    onClearSearch: () => void;
+  }
+  
+  // Constants for select options
+  export const ITEM_GROUPS = [
+    'Electrical',
+    'Plumbing',
+    'HVAC',
+    'Structural',
+    'Finishing',
+    'Roofing',
+    'Flooring',
+    'Appliances',
+    'Fixtures',
+    'Hardware'
+  ];
+  
+  export const REASONS = [
+    'Autoinvdate',
+    'Callactnumisbill',
+    'Poisinvnum',
+    'Autoacctmonth',
+    'Autoinvnum',
+    'Other'
+  ];
+  
+  export const TRANSACTION = [
+    'Transport',
+    'Use Reason',
+    'Autorelease',
+    'Taxable',
+    'Autoinsert',
+    'Commision'    
+  ];
+  
+  

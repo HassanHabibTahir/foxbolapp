@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { supabase } from '../../lib/supabase';
 
@@ -8,7 +8,7 @@ interface Option {
 }
 
 interface CarMakeModelsProps {
-  label: string;
+  label?: string;
   title?: string;
   value?: string;
   onChange: (value: string) => void;
@@ -42,9 +42,11 @@ const CarMakeModels = forwardRef<any, CarMakeModelsProps>(({
   };
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const selectedOption = options.find(option => option.value === value) || null;
-const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const selectedOption = useMemo(() => {
+    return options.find(option => option.value === value) || null;
+  }, [options, value]);
   const handleChange = (option: Option | null) => {
     if (option !== null) {
       onChange(option.value);
@@ -177,15 +179,11 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
     } finally {
       setLoading(false);
     }
-  }, [carMakeId]);
-  
+  }, [carMakeId, value, onChange]);
 
   useEffect(() => {
     init();
-  }, [init,carMakeId]);
-
-
-  console.log(carMakeId,"carMakeId")
+  }, [init]);
 
   return (
     <div className={className}>

@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useNavigate } from "react-router-dom"
@@ -195,7 +193,7 @@ export default function AddNewTrucks() {
 
     try {
       const { urls: uploadedUrls } = await uploadImages()
-          console.log(uploadedUrls,"uploadUrls ")
+     
       const { error } = await supabase.from("drivers").insert({
         driver_num:driverNum,
         def_truckn: truckNumber,
@@ -204,6 +202,7 @@ export default function AddNewTrucks() {
         truck_type: truckType,
         duty: duty,
         driver_nam:driverName,
+        driver_fir:driverName,
         vin: vin,
         driver_lic: licenseNumber,
         t_make: manufacturer,
@@ -214,9 +213,14 @@ export default function AddNewTrucks() {
         driver_ond: isActive, 
         creationda: new Date().toISOString(),
       })
-
-      console.log(error,"error")
+      // const { error:trucksError } = await supabase.from("trucks").insert({
+      //   trucknum:truckNumber,
+      //   created_at: new Date().toISOString(),
+      //   foxtow_id: foxtow_id,
+      // })
+ 
       if (error) throw error
+      // if (trucksError) throw trucksError
 
       toast.dismiss(loadingToast)
       toast.success("Truck created successfully")
@@ -224,7 +228,7 @@ export default function AddNewTrucks() {
     } catch (error:any) {
       console.error("Error creating truck:", error)
       toast.dismiss(loadingToast)
-      toast.error(error?.data?.message|| "Failed to create truck")
+      toast.error(error?.data?.message||error?.details ||error ?.message||"Failed to save truck information");
     } finally {
       setIsLoading(false)
     }

@@ -20,7 +20,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ onSave, className = '' }) => {
       if (result.success) {
         toast.success(`aved successfully with foxtow_id:`+ result.foxtow_id);
 
-        console.log('Saved successfully with foxtow_id:', result.foxtow_id);
+      
       } else {
         toast.error(result.error?.message||'');
         // console.error('Save failed:', result.error?.message        );

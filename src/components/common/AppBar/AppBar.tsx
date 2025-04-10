@@ -17,6 +17,7 @@ export function AppBar({
     { label: 'Imbounds', href: '/' },
     { label: 'Reports', href: '/' },
     { label: 'Settings', href: '/' },
+    { label: 'Search', href: '/' },
   ],
   className,
 }: AppBarProps) {

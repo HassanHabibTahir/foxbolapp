@@ -1,6 +1,7 @@
+
 import type React from "react"
 import { useState, useEffect, type KeyboardEvent, useRef, useCallback } from "react"
-import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront, RefreshCcw, Newspaper, GripVertical } from "lucide-react"
+import { Truck, FileDown, Printer, ChevronLeft, ChevronRight, CarFront, RefreshCcw, Newspaper } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import DriverModal from "../components/dispatch/DriverModal"
@@ -44,7 +45,7 @@ interface TowRecord {
     dispatched: boolean
     updated_at: string
     equipment: string
-    
+
     zone: string
     colors: {
       min1: number
@@ -111,6 +112,16 @@ function Dispatch() {
   const recordsPerPage = 20
   const foxtow_id = localStorage.getItem("foxtow_id")
 
+  // First, add this CSS class at the top of the component (right after all the useState declarations)
+  const tableStyles = {
+    table: "w-full border-collapse table-fixed",
+    th: "relative py-2 text-center text-[13px] border border-gray-300 whitespace-nowrap overflow-hidden",
+    td: "border border-gray-300 p-0 overflow-hidden",
+    resizeHandle: "absolute top-0 right-0 w-4 h-full cursor-col-resize hover:bg-blue-500 z-10",
+    input:
+      "bg-transparent px-2 w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded p-0 m-0 box-border",
+  }
+
   const handleTimeFieldRightClick = async (e: React.MouseEvent<HTMLInputElement>, recordId: string, field: string) => {
     e.preventDefault()
 
@@ -165,7 +176,7 @@ function Dispatch() {
       // Update the towmast record to mark it as dispatched
       const { error: towmastError } = await supabase
         .from("towmast")
-        .update({ dispatched: true   })
+        .update({ dispatched: true })
         .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
 
       if (towmastError) throw towmastError
@@ -206,6 +217,7 @@ function Dispatch() {
             .from("towdrive")
             .select("*", { count: "exact", head: true })
             .eq("foxtow_id", foxtow_id)
+            // .eq("shown",true)
 
           if (count !== null) {
             setTotalRecords(count)
@@ -261,6 +273,7 @@ function Dispatch() {
         `,
           )
           .eq("foxtow_id", foxtow_id)
+          // .eq("shown",true)
           .filter("towmast.dispcleared", "neq", true)
           .order("updated_at", { ascending: false })
           .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1)
@@ -268,7 +281,6 @@ function Dispatch() {
         if (error) {
           console.error("Error fetching tow records:", error)
         } else {
-
           // const sortedData = (data || []).sort((a: any, b: any) => {
           //   const aIsPriority1 = a.towmast.priority  === 1;
           //   const bIsPriority1 = b.towmast.priority === 1;
@@ -281,9 +293,9 @@ function Dispatch() {
           //   if (aIsDispatched && bIsDispatched) {
           //     const aDate = new Date(a.towmast.updated_at);
           //     const bDate = new Date(b.towmast.updated_at);
-          //     return bDate.getTime() - aDate.getTime(); 
+          //     return bDate.getTime() - aDate.getTime();
           //   }
-            
+
           //   if (aIsDispatched && !bIsDispatched) return -1;
           //   if (!aIsDispatched && bIsDispatched) return 1;
           //               return 0;
@@ -291,25 +303,25 @@ function Dispatch() {
           const sortedData = (data || []).sort((a: any, b: any) => {
             // Define grouping logic
             const getGroup = (item: any) => {
-              if (item.towmast.priority === 1 && item.towmast.dispatched) return 1;
-              if (item.towmast.dispatched) return 2;
-              if (item.towmast.priority !== 1) return 3;
-              return 4; // Non-dispatched with priority 1
-            };
-          
-            const aGroup = getGroup(a);
-            const bGroup = getGroup(b);
-          
+              if (item.towmast.priority === 1 && item.towmast.dispatched) return 1
+              if (item.towmast.dispatched) return 2
+              if (item.towmast.priority !== 1) return 3
+              return 4 // Non-dispatched with priority 1
+            }
+
+            const aGroup = getGroup(a)
+            const bGroup = getGroup(b)
+
             // First sort by group priority
             if (aGroup !== bGroup) {
-              return aGroup - bGroup; // Lower group numbers come first
+              return aGroup - bGroup // Lower group numbers come first
             }
-          
+
             // Within same group, sort by latest updated_at
-            const aDate = new Date(a.towmast.updated_at).getTime();
-            const bDate = new Date(b.towmast.updated_at).getTime();
-            return bDate - aDate;
-          });
+            const aDate = new Date(a.towmast.updated_at).getTime()
+            const bDate = new Date(b.towmast.updated_at).getTime()
+            return bDate - aDate
+          })
           setTowRecords(sortedData)
           // setTowRecords(data ||  []);
         }
@@ -480,17 +492,13 @@ function Dispatch() {
     }
   }
 
-
- 
-
-
-
-
+  // Then replace the handleResizeStart function with this improved version
   const handleResizeStart = (e: React.MouseEvent, field: string) => {
     e.preventDefault()
     e.stopPropagation()
 
-    const startWidth = columnWidths[field] ||   1
+    const headerCell = e.currentTarget.closest("th")
+    const startWidth = headerCell ? headerCell.getBoundingClientRect().width : 100
 
     setIsResizing(true)
     resizingRef.current = {
@@ -499,15 +507,17 @@ function Dispatch() {
       startWidth,
     }
 
+    // Add these event listeners to the document to handle mouse movements outside the table
     document.addEventListener("mousemove", handleResizeMove)
     document.addEventListener("mouseup", handleResizeEnd)
   }
 
+  // Replace the handleResizeMove function with this improved version
   const handleResizeMove = (e: MouseEvent) => {
     if (!resizingRef.current) return
 
     const { column, startX, startWidth } = resizingRef.current
-    const width = Math.max(10, startWidth + (e.clientX - startX))
+    const width = Math.max(30, startWidth + (e.clientX - startX))
 
     setColumnWidths((prev) => ({
       ...prev,
@@ -566,8 +576,6 @@ function Dispatch() {
     setTimeout(() => setIsRotating(false), 500)
   }
 
-
-
   const handleClearButtonClick = () => {
     if (!selectedRow) {
       toast.error("Please select a dispatch row first")
@@ -576,6 +584,68 @@ function Dispatch() {
     setIsClearModalOpen(true)
   }
 
+  // Also add this useEffect to initialize column widths with better defaults
+  useEffect(() => {
+    // Initialize column widths based on content
+    const initialWidths: { [key: string]: number } = {}
+
+    orderedFields.forEach((field) => {
+      // Set default widths based on field type
+      switch (field) {
+        case "P":
+          initialWidths[field] = 30
+          break
+        case "Disp #":
+          initialWidths[field] = 60
+          break
+        case "Trk #":
+          initialWidths[field] = 60
+          break
+        case "Driver":
+          initialWidths[field] = 50
+          break
+        case "Rec":
+        case "Inrt":
+        case "Arvd":
+        case "ITow":
+          initialWidths[field] = 45
+          break
+        case "Company":
+          initialWidths[field] = 130
+          break
+        case "Lic #":
+          initialWidths[field] = 60
+          break
+        case "Year":
+          initialWidths[field] = 50
+          break
+        case "Make":
+        case "Color":
+          initialWidths[field] = 50
+          break
+        case "Phone":
+          initialWidths[field] = 100
+          break
+        case "Reason":
+          initialWidths[field] = 120
+          break
+        case "Location":
+        case "Destination":
+          initialWidths[field] = 200
+          break
+        case "E":
+          initialWidths[field] = 30
+          break
+        case "Z":
+          initialWidths[field] = 40
+          break
+        default:
+          initialWidths[field] = 100
+      }
+    })
+
+    setColumnWidths(initialWidths)
+  }, [orderedFields])
 
   return (
     <div className=" mx-auto p-0">
@@ -584,7 +654,7 @@ function Dispatch() {
         <div className="w-[80%]  h-auto">
           <DispatchHeader activeDrivers={activeDrivers} handleDriverAssignment={handleDriverAssignment} />
         </div>
-        <div className="w-[20%] flex   h-auto py-2" >
+        <div className="w-[20%] flex   h-auto py-2">
           <div className="flex flex-col w-full gap-2">
             <div className="grid grid-cols-3 gap-2 w-full">
               <button className="text-black px-2 py-1 border rounded-md hover:bg-gray-50 transition flex items-center justify-center w-full">
@@ -593,10 +663,11 @@ function Dispatch() {
                   <Newspaper className="w-3 h-3 ml-1" />
                 </Link>
               </button>
-              <button 
-                      onClick={handleClearButtonClick}
-              className="text-black px-2 py-1 border rounded-md hover:bg-gray-50 transition flex items-center justify-center w-full">
-                  <span className="text-xs">Clear</span>
+              <button
+                onClick={handleClearButtonClick}
+                className="text-black px-2 py-1 border rounded-md hover:bg-gray-50 transition flex items-center justify-center w-full"
+              >
+                <span className="text-xs">Clear</span>
               </button>
               <button
                 onClick={handleClick}
@@ -605,27 +676,15 @@ function Dispatch() {
                 <span className="text-xs">Refresh</span>
                 <RefreshCcw className={`w-4 h-4 ml-1 transition-transform ${isRotating ? "animate-spin-once" : ""}`} />
               </button>
-              <button
-          
-                className="relative flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full"
-              >
+              <button className="relative flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full">
                 <span className="text-xs">Appt</span>
-             
               </button>
-              <button
-
-                className="relative flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full"
-              >
+              <button className="relative flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full">
                 <span className="text-xs">Cancel</span>
-             
               </button>
-              <select
-         
-                className="relative bg-gray-50 text-xs flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full"
-              >
+              <select className="relative bg-gray-50 text-xs flex items-center justify-center space-x-1 px-2 py-1 border rounded hover:bg-gray-50 text-black transition w-full">
                 <option className="All dispatches">All dispatches </option>
                 <option className="Without appointments">Without appointments</option>
-             
               </select>
             </div>
             <div className="grid grid-cols-4 gap-2 w-full">
@@ -654,18 +713,18 @@ function Dispatch() {
           </div>
         </div>
       </div>
-      
 
       <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="w-full  border-collapse">
+        <table className={tableStyles.table} style={{ tableLayout: "fixed" }}>
+          <colgroup>
+            {orderedFields.map((field) => (
+              <col key={field} style={{ width: `${columnWidths[field] || 100}px` }} />
+            ))}
+          </colgroup>
           <thead>
             <tr className="bg-gray-50">
               {orderedFields.map((field) => (
-                <th
-                  key={field}
-                  className=" py-2  text-center text-[13px] border border-gray-300 whitespace-nowrap"
-                  style={{ width: columnWidths[field] || 1 }}
-                >
+                <th key={field} className={tableStyles.th} style={{ width: `${columnWidths[field] || 100}px` }}>
                   <div
                     draggable={!isResizing}
                     onDragStart={(e) => handleDragStart(e, field)}
@@ -673,14 +732,13 @@ function Dispatch() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, field)}
-                    className="flex items-left justify-left gap-0s  cursor-move px-2"
+                    className="flex items-center px-2 cursor-move h-full"
                   >
-                    {/* <GripVertical size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" /> */}
                     {field}
                   </div>
                   <div
-                    className={`absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 ${
-                      isResizing ? "bg-blue-500" : ""
+                    className={`${tableStyles.resizeHandle} ${
+                      isResizing && resizingRef.current?.column === field ? "bg-blue-500" : ""
                     }`}
                     onMouseDown={(e) => handleResizeStart(e, field)}
                   />
@@ -691,7 +749,7 @@ function Dispatch() {
           <tbody className="text-[12px]">
             {isLoading ? (
               <tr>
-                <td colSpan={17} className="text-center py-4 border border-gray-300">
+                <td colSpan={orderedFields.length} className="text-center py-4 border border-gray-300">
                   Loading...
                 </td>
               </tr>
@@ -709,237 +767,257 @@ function Dispatch() {
                     onDoubleClick={() => handleRowDoubleClick(record)}
                   >
                     {orderedFields.map((field) => {
-                      // Render different cell content based on field name
+                      const cellStyle = {
+                        width: `${columnWidths[field] || 100}px`,
+                        maxWidth: `${columnWidths[field] || 100}px`,
+                        overflow: "hidden",
+                      }
+
                       switch (field) {
                         case "P":
                           return (
-                            <td key={field} className="px-1 text-left align-middle py-2 border border-gray-300 w-0">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.priority || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.priority", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.priority", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-3 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "1px" }}
                               />
                             </td>
                           )
                         case "Disp #":
                           return (
-                            <td key={field} className="px-0 py-2 border border-gray-300">
-                              {record.towmast.dispnum}
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
+                              <div className="px-2 py-2 truncate">{record.towmast.dispnum}</div>
                             </td>
                           )
                         case "Trk #":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
-                              {record.trucknum}
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
+                              <div className="px-2 py-2 truncate">{record.trucknum}</div>
                             </td>
                           )
                         case "Driver":
                           return (
-                            <td key={field} className="px-2 py-2 border border-gray-300">
-                              {record.driver ? record.driver.substring(0, 10) : ""}
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
+                              <div className="px-2 py-2 truncate">
+                                {record.driver ? record.driver.substring(0, 10) : ""}
+                              </div>
                             </td>
                           )
                         case "Rec":
                           return (
-                            <td key={field} className="px-1 py-2 w-10 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.timerec || ""}
                                 onChange={(e) => handleInputChange(record.id, "timerec", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timerec", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timerec")}
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Inrt":
                           return (
-                            <td key={field} className="px-1 py-2 border w-10 border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.timeinrt || ""}
                                 onChange={(e) => handleInputChange(record.id, "timeinrt", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeinrt", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeinrt")}
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Arvd":
                           return (
-                            <td key={field} className="px-1 py-2 w-8 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.timearrive || ""}
                                 onChange={(e) => handleInputChange(record.id, "timearrive", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timearrive", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timearrive")}
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "ITow":
                           return (
-                            <td key={field} className="px-1 py-2 w-8 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.timeintow || ""}
                                 onChange={(e) => handleInputChange(record.id, "timeintow", e.target.value)}
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeintow", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeintow")}
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Company":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={(record.towmast.callname || "").substring(0, 15)}
                                 onChange={(e) => handleInputChange(record.id, "towmast.callname", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-28 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Lic #":
                           return (
-                            <td key={field} className="px-1 py-2 w-16 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.licensenum ? record.towmast.licensenum.slice(-7) : ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.licensenum", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.licensenum", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Year":
                           return (
-                            <td key={field} className="px-1 py-2 w-10 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.yearcar || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.yearcar", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.yearcar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Make":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.makecar || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.makecar", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.makecar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Color":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.colorcar || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.colorcar", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.colorcar", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Phone":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.callphone || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.callphone", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)
                                 }
-                                className="bg-transparent text-left w-24 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Reason":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.reason || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.reason", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-24 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "Location":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
-                            <input
-                              // value={"asdfasdf"}
-                              value={record.towmast.towedfrom || ""}
-                              onChange={(e) => handleInputChange(record.id, "towmast.towedfrom", e.target.value)}
-                              onKeyDown={(e) =>
-                                handleInputKeyDown(e, record.id, "towmast.towedfrom", e.currentTarget.value)
-                              }
-                              className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                            />
-                          </td>
-                    
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
+                              <input
+                                value={record.towmast.towedfrom || ""}
+                                onChange={(e) => handleInputChange(record.id, "towmast.towedfrom", e.target.value)}
+                                onKeyDown={(e) =>
+                                  handleInputKeyDown(e, record.id, "towmast.towedfrom", e.currentTarget.value)
+                                }
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
+                              />
+                            </td>
                           )
                         case "Destination":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300 min-w-[200px]">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
-                                // value={"asdfasdf"}
                                 value={record.towmast.towedto || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.towedto", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.towedto", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         case "E":
                           return (
-                            <td key={field} className="px-0 py-2 border border-gray-300 w-5 text-left">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.equipment ? "E" : ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.equipment", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.equipment", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-0 text-center"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px", textAlign: "center" }}
                               />
                             </td>
                           )
                         case "Z":
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
                               <input
                                 value={record.towmast.zone || ""}
                                 onChange={(e) => handleInputChange(record.id, "towmast.zone", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.zone", e.currentTarget.value)
                                 }
-                                className="bg-transparent w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                className={tableStyles.input}
+                                style={{ width: "100%", padding: "2px" }}
                               />
                             </td>
                           )
                         default:
                           return (
-                            <td key={field} className="px-1 py-2 border border-gray-300">
-                              -
+                            <td key={field} className={tableStyles.td} style={cellStyle}>
+                              <div className="px-2 py-2">-</div>
                             </td>
                           )
                       }
@@ -998,7 +1076,7 @@ function Dispatch() {
         onDriverUpdate={handleDriverUpdate}
         fetchActiveDrivers={fetchActiveDrivers}
       />
-         <ClearModal
+      <ClearModal
         isOpen={isClearModalOpen}
         onClose={() => setIsClearModalOpen(false)}
         selectedRow={selectedRow}
@@ -1009,4 +1087,3 @@ function Dispatch() {
 }
 
 export default Dispatch
-

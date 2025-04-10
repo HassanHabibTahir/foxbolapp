@@ -3,7 +3,7 @@ import type React from "react"
 import { useState, useEffect, forwardRef } from "react"
 import Select, { components } from "react-select"
 import { supabase } from "../../lib/supabase"
-import { ClassNames } from "@emotion/react"
+
 
 interface Driver {
   driver_num: string
@@ -18,9 +18,9 @@ interface DriverOption {
 }
 
 interface DriverComboboxProps {
-  label: string
+  label?: string
   title: string
-  size?: "xs" | "sm" | "md" | "lg" | "xl" | "full"
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "full"|"xlg"
   value?: string
   onChange?: (value: string) => void
   onDriverSelect?: (driver: Driver) => void
@@ -28,11 +28,12 @@ interface DriverComboboxProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   inputRefs?: any
   className?:string
+  setFormData?:any
   
 }
 
 const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
-  ({ label, size = "xs", value = "", onChange, onDriverSelect,className, tabIndex,inputRefs, onKeyDown }, ref) => {
+  ({ label, size = "xs", value = "", onChange, onDriverSelect,className, tabIndex,inputRefs, onKeyDown,setFormData }, ref) => {
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [selectedOption, setSelectedOption] = useState<DriverOption | null>(null)
 
@@ -42,7 +43,9 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       md: "12rem",
       lg: "30ch",
       xl: "24rem",
+      xlg:"97%",
       full: "100%",
+      
     }
 
     useEffect(() => {
@@ -61,8 +64,11 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       if (value) {
         const fetchDriver = async () => {
           const { data, error } = await supabase.from("drivers").select().eq("driver_num", value).single()
-
           if (!error && data) {
+            setFormData((prev:any) => ({
+              ...prev,
+              truckAssigned: data?.def_truckn ,
+            }));
             setSelectedOption({
               value: data.driver_num,
               label: `${data.driver_fir} ${data.driver_las}`,
@@ -179,7 +185,7 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <div style={{ width: sizeClasses[size] }}>
+        <div style={{ width: sizeClasses[size] }} className={className}>
           <Select
       
             {...selectProps}

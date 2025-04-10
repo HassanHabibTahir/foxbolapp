@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState, useEffect, createRef } from "react"
 import FormSection from "./common/FormSection"
 import CurrencyInput from "./common/CurrencyInput"

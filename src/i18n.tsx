@@ -26,7 +26,7 @@ i18n
       caches: ['localStorage'],
     },
     react: {
-      useSuspense: true // Using the new Suspense approach
+      useSuspense: true 
     },
     supportedLngs: ['en', 'es', 'fil']
   });

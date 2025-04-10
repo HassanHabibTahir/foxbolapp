@@ -107,22 +107,9 @@ function Impounds() {
     }
   ];
 
-
-
-
-
-
  const newPageHandler = ()=>{
   navigate("/new-impound");
  }
-
-
-
-
-
-
-
-
 
   // Initialize column widths
   useEffect(() => {
@@ -338,16 +325,18 @@ function Impounds() {
         .from('towmast')
         .select(undefined, { count: 'exact' }) // Only count
         .eq('foxtow_id', foxtow_id);
-  
+        
       setTotalCount(count || 0);
   
       // Fetch `towmast` data
       let query = supabase
         .from('towmast')
-        .select('*') // Fetch all fields from towmast
+        .select('*') 
         .eq('foxtow_id', foxtow_id)
+        .eq("dispcleared",true)
         .range((page - 1) * recordsPerPage, page * recordsPerPage - 1)
-        .order('dispnum', { ascending: false });
+        .order("updated_at", { ascending: false })
+        // .order('dispnum', { ascending: false });
   
       // Apply vinSearch filter if provided
       if (vinSearch) {
@@ -371,8 +360,8 @@ function Impounds() {
       const { data: towtransData, error: towtransError } = await supabase
         .from('towtrans')
         .select('price, quantity, foxtow_id')
-        .eq('foxtow_id', foxtow_id);
-  
+        .eq('foxtow_id', foxtow_id)
+        .order('updated_at', { ascending: false })
       if (towtransError) {
         console.error('Error fetching towtrans:', towtransError);
       }
@@ -382,7 +371,14 @@ function Impounds() {
         ...towmast,
         towtrans: towtransData?.filter((trans) => trans.foxtow_id === towmast.foxtow_id),
       }));
-  
+      // const sortedData = mergedData.sort((a, b) => {
+      //   const aIsDispCleared = a.dispcleared === true;
+      //   const bIsDispCleared = b.dispcleared === true;
+      //     if (aIsDispCleared && !bIsDispCleared) return -1;
+      //     if (!aIsDispCleared && bIsDispCleared) return 1;
+      //     return 0;
+      // });
+      // console.log(sortedData,"sortedData")
       setRecords(mergedData);
     } catch (error) {
       console.error('Unexpected error:', error);
