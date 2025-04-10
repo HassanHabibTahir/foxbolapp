@@ -119,7 +119,7 @@ function Dispatch() {
     td: "border border-gray-300 p-0 overflow-hidden",
     resizeHandle: "absolute top-0 right-0 w-4 h-full cursor-col-resize hover:bg-blue-500 z-10",
     input:
-      "bg-transparent px-2 w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded p-0 m-0 box-border",
+      "bg-transparent px-1 w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-500 rounded p-0 m-0 box-border",
   }
 
   const handleTimeFieldRightClick = async (e: React.MouseEvent<HTMLInputElement>, recordId: string, field: string) => {
@@ -593,51 +593,51 @@ function Dispatch() {
       // Set default widths based on field type
       switch (field) {
         case "P":
-          initialWidths[field] = 20
+          initialWidths[field] = 10
           break
         case "Disp #":
-          initialWidths[field] = 50
+          initialWidths[field] = 25
           break
         case "Trk #":
-          initialWidths[field] = 40
+          initialWidths[field] = 20
           break
         case "Driver":
-          initialWidths[field] = 38
+          initialWidths[field] = 23
           break
         case "Rec":
         case "Inrt":
         case "Arvd":
         case "ITow":
-          initialWidths[field] = 40
+          initialWidths[field] = 20
           break
         case "Company":
-          initialWidths[field] = 100
+          initialWidths[field] = 70
           break
         case "Lic #":
-          initialWidths[field] = 40
+          initialWidths[field] = 32
           break
         case "Year":
-          initialWidths[field] = 40
+          initialWidths[field] = 28
           break
         case "Make":
         case "Color":
-          initialWidths[field] = 40
+          initialWidths[field] = 25
           break
         case "Phone":
-          initialWidths[field] = 90
+          initialWidths[field] = 50
           break
         case "Reason":
-          initialWidths[field] = 120
+          initialWidths[field] = 30
           break
         case "Location":
         case "Destination":
           initialWidths[field] = 200
           break
         case "E":
-          initialWidths[field] = 30
+          initialWidths[field] = 20
           break
         case "Z":
-          initialWidths[field] = 40
+          initialWidths[field] = 20
           break
         default:
           initialWidths[field] = 100
@@ -732,7 +732,7 @@ function Dispatch() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, field)}
-                    className="flex items-center px-2 cursor-move h-full"
+                    className="flex items-center text-[11px]  cursor-move h-full"
                   >
                     {field}
                   </div>
@@ -746,7 +746,7 @@ function Dispatch() {
               ))}
             </tr>
           </thead>
-          <tbody className="text-[12px]">
+          <tbody className="text-[10px]">
             {isLoading ? (
               <tr>
                 <td colSpan={orderedFields.length} className="text-center py-4 border border-gray-300">
@@ -791,19 +791,19 @@ function Dispatch() {
                         case "Disp #":
                           return (
                             <td key={field} className={tableStyles.td} style={cellStyle}>
-                              <div className="px-2 py-2 truncate">{record.towmast.dispnum}</div>
+                              <div className="px-0 py-2 truncate">{record.towmast.dispnum}</div>
                             </td>
                           )
                         case "Trk #":
                           return (
                             <td key={field} className={tableStyles.td} style={cellStyle}>
-                              <div className="px-2 py-2 truncate">{record.trucknum}</div>
+                              <div className="px-0 py-2 truncate">{record.trucknum}</div>
                             </td>
                           )
                         case "Driver":
                           return (
                             <td key={field} className={tableStyles.td} style={cellStyle}>
-                              <div className="px-2 py-2 truncate">
+                              <div className="px-0 py-2 truncate">
                                 {record.driver ? record.driver.substring(0, 10) : ""}
                               </div>
                             </td>
@@ -830,7 +830,7 @@ function Dispatch() {
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeinrt", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeinrt")}
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -843,7 +843,7 @@ function Dispatch() {
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timearrive", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timearrive")}
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -856,7 +856,7 @@ function Dispatch() {
                                 onKeyDown={(e) => handleInputKeyDown(e, record.id, "timeintow", e.currentTarget.value)}
                                 onContextMenu={(e) => handleTimeFieldRightClick(e, record.id, "timeintow")}
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -870,7 +870,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -884,7 +884,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.licensenum", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -898,7 +898,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.yearcar", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -912,7 +912,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.makecar", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -926,7 +926,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.colorcar", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -940,7 +940,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.callphone", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -954,7 +954,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.reason", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -968,7 +968,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.towedfrom", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -982,7 +982,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.towedto", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
@@ -996,7 +996,7 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.equipment", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px", textAlign: "center" }}
+                                style={{ width: "100%", padding: "0px", textAlign: "center" }}
                               />
                             </td>
                           )
@@ -1010,14 +1010,14 @@ function Dispatch() {
                                   handleInputKeyDown(e, record.id, "towmast.zone", e.currentTarget.value)
                                 }
                                 className={tableStyles.input}
-                                style={{ width: "100%", padding: "2px" }}
+                                style={{ width: "100%", padding: "0px" }}
                               />
                             </td>
                           )
                         default:
                           return (
                             <td key={field} className={tableStyles.td} style={cellStyle}>
-                              <div className="px-2 py-2">-</div>
+                              <div className="px-0 py-2">-</div>
                             </td>
                           )
                       }
