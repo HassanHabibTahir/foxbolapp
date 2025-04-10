@@ -596,13 +596,13 @@ function Dispatch() {
           initialWidths[field] = 10
           break
         case "Disp #":
-          initialWidths[field] = 25
-          break
-        case "Trk #":
           initialWidths[field] = 20
           break
+        case "Trk #":
+          initialWidths[field] = 18
+          break
         case "Driver":
-          initialWidths[field] = 23
+          initialWidths[field] = 20
           break
         case "Rec":
         case "Inrt":
