@@ -517,7 +517,7 @@ function Dispatch() {
     if (!resizingRef.current) return
 
     const { column, startX, startWidth } = resizingRef.current
-    const width = Math.max(30, startWidth + (e.clientX - startX))
+    const width = Math.max(10, startWidth + (e.clientX - startX))
 
     setColumnWidths((prev) => ({
       ...prev,
@@ -593,38 +593,38 @@ function Dispatch() {
       // Set default widths based on field type
       switch (field) {
         case "P":
-          initialWidths[field] = 30
+          initialWidths[field] = 20
           break
         case "Disp #":
-          initialWidths[field] = 60
+          initialWidths[field] = 50
           break
         case "Trk #":
-          initialWidths[field] = 60
+          initialWidths[field] = 40
           break
         case "Driver":
-          initialWidths[field] = 50
+          initialWidths[field] = 38
           break
         case "Rec":
         case "Inrt":
         case "Arvd":
         case "ITow":
-          initialWidths[field] = 45
+          initialWidths[field] = 40
           break
         case "Company":
-          initialWidths[field] = 130
+          initialWidths[field] = 100
           break
         case "Lic #":
-          initialWidths[field] = 60
+          initialWidths[field] = 40
           break
         case "Year":
-          initialWidths[field] = 50
+          initialWidths[field] = 40
           break
         case "Make":
         case "Color":
-          initialWidths[field] = 50
+          initialWidths[field] = 40
           break
         case "Phone":
-          initialWidths[field] = 100
+          initialWidths[field] = 90
           break
         case "Reason":
           initialWidths[field] = 120
@@ -768,8 +768,8 @@ function Dispatch() {
                   >
                     {orderedFields.map((field) => {
                       const cellStyle = {
-                        width: `${columnWidths[field] || 100}px`,
-                        maxWidth: `${columnWidths[field] || 100}px`,
+                        width: `${columnWidths[field] || 20}px`,
+                        maxWidth: `${columnWidths[field] || 20}px`,
                         overflow: "hidden",
                       }
 
