@@ -24,7 +24,6 @@ import { supabase } from './lib/supabase';
 function App() {
     const { i18n } = useTranslation();
     useEffect(() => {
-      // Get the stored language from localStorage or default to 'en'
       const storedLanguage = localStorage.getItem('foxtow_language') || 'en';
       i18n.changeLanguage(storedLanguage);
     }, [i18n]);

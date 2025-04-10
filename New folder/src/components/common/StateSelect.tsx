@@ -7,7 +7,7 @@ interface Option {
 }
 
 interface StateSelectProps {
-  label: string;
+  label?: string;
   title?: string;
   value?: string;
   onChange: (value: string) => void;

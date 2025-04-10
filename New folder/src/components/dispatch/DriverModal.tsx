@@ -54,7 +54,6 @@ export default function DriverModal({ isOpen, onClose, onDriverUpdate ,fetchActi
       .from("drivers")
       .select("id, driver_fir, driver_las, def_truckn, driver_num, creationda, driver_ond")
       .eq("foxtow_id", foxtow_id)
-      .order("driver_fir", { ascending: true })
 
     if (error) {
       console.error("Error fetching drivers:", error)

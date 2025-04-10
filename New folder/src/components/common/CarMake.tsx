@@ -9,7 +9,7 @@ interface Option {
 }
 
 interface CarMakeProps {
-  label: string;
+  label?: string;
   title?: string;
   value?: string;
   onChange: (value: string) => void;
@@ -65,30 +65,33 @@ const CarMake = forwardRef<any, CarMakeProps>(
     //     // { value: 'White', label: 'White' },
     //     // { value: 'Yellow', label: 'Yellow' }
     // ];
-
-    const selectedOption =
-      options.find((option) => option.value === value) || null;
-    const [menuIsOpen, setMenuIsOpen] = useState(false);
     const handleChange = (option: Option | null) => {
       if (option !== null) {
-        setCarMakeId(option?.id);
-        onChange(option?.value);
+        // Ensure carMakeId is set
+        setCarMakeId(option.id || null);
+        onChange(option.value);
         if (onEnterPress) {
           setTimeout(onEnterPress, 0);
         }
+      } else {
+        // Reset carMakeId if no option selected
+        setCarMakeId(null);
+        onChange('');
       }
     };
-
+    const selectedOption =
+      options.find((option) => option.value === value) || null;
+    const [menuIsOpen, setMenuIsOpen] = useState(false);
+  
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Enter" || e.key === " ") {
         const focusedOption = document.querySelector(
           ".react-select__option--is-focused"
         );
-        console.log(focusedOption, "focused option");
+       
         if (focusedOption) {
           e.preventDefault();
           const selectedOptionText = focusedOption.textContent;
-          console.log(selectedOptionText, "selectedOptionText");
           const _selectedOption = options?.find(
             (opt: { label: string | null }) => opt.label === selectedOptionText
           );
@@ -153,7 +156,7 @@ const CarMake = forwardRef<any, CarMakeProps>(
         display: "none",
       }),
     };
-    console.log(selectedOption,"selectedOption")
+  
     const selectProps = {
       id: "select",
       name: "select",
@@ -171,6 +174,9 @@ const CarMake = forwardRef<any, CarMakeProps>(
       openMenuOnFocus: true,
     };
 
+  
+ 
+
     const init = useCallback(async () => {
       setLoading(true);
       try {
@@ -180,31 +186,47 @@ const CarMake = forwardRef<any, CarMakeProps>(
           return;
         }
         if (data && data.length > 0) {
-          setOptions(
-            data.map((carmake: { id: string; name: string }) => {
-              const formattedName = carmake.name
-                .split(" ")
-                .map(
-                  (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                )
-                .join(" ");
-              return {
-                id: carmake.id.toString(),
-                value: formattedName,
-                label: formattedName,
-              };
-            })
-          );
+          const formattedOptions = data.map((carmake: { id: string; name: string }) => {
+            const formattedName = carmake.name
+              .split(" ")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              )
+              .join(" ");
+            return {
+              id: carmake.id.toString(),
+              value: formattedName,
+              label: formattedName,
+            };
+          });
+
+          setOptions(formattedOptions);
+
+          // If initial value is provided, find and set corresponding carMakeId
+          if (value) {
+            const matchedOption = formattedOptions.find(
+              (option) => option.value === value
+            );
+            if (matchedOption) {
+              setCarMakeId(matchedOption.id);
+            }
+          }
         }
       } catch (e) {
         console.error("Fetch error:", e);
       } finally {
         setLoading(false);
       }
-    }, [setOptions]);
+    }, [value, setCarMakeId]);
+
+    useEffect(() => {
+      init();
+    }, [init]);
+
 
     const init2 = useCallback(async () => {
+     
       if (value) {
         const selectedOption = options.find((option) => option.value === value);
         if (selectedOption) {
