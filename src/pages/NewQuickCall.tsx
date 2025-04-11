@@ -332,6 +332,7 @@ function NewQuickPage() {
         whocalled:formData?.whocalled??"",
         vin:formData?.vin??"",
         zone: 0,
+        shown:true,
         // truck_type:formData?.truck??"",
         updated_at: new Date(),
       }

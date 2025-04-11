@@ -110,9 +110,15 @@ const ClearModal: React.FC<ClearModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+      <h2 className="text-lg text-center font-bold text-[#F21700]">
+            {selectedRow?.towmast?.dispnum ?? ""}
+          </h2>
         <h2 className="text-xl font-semibold text-[#002B7F] text-center mb-4">
-          I'm Clearing This Call AT:
+          I am clearing this call at:
         </h2>
+        <div>
+      
+        </div>
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-red-600 border border-red-600 rounded-full p-1 hover:bg-red-100 hover:text-red-800"
@@ -120,10 +126,8 @@ const ClearModal: React.FC<ClearModalProps> = ({
           <X size={20} />
         </button>
 
-        <div className="flex items-center justify-center space-x-4 py-4">
-          <span className="text-lg font-bold text-[#F21700]">
-            {selectedRow?.towmast?.dispnum ?? ""}
-          </span>
+        <div className="flex items-center justify-center space-x-4 py-2">
+      
 
           <input
             type="text"
@@ -153,20 +157,25 @@ const ClearModal: React.FC<ClearModalProps> = ({
           />
         </div>
 
-        <div className="flex justify-end items-end space-y-2 gap-6">
+      <div className="text-center">
+      <div className="">
           <button
             onClick={handleConfirm}
-            className="px-8 py-4 text-lg bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-8 py-2  w-[50%] text-lg bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             OK
           </button>
-          <button
+       
+        </div>
+        <div className="pt-2">
+        <button
             onClick={onClose}
             className="px-4 py-2 h-12 border border-gray-300 rounded hover:bg-gray-50 w-auto"
           >
             Cancel
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
