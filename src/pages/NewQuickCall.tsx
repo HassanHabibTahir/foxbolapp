@@ -267,6 +267,14 @@ function NewQuickPage() {
       }
     })
   }
+  const priortyOptions = ()=>{
+    return Array.from({length:15},(_,i)=>{
+      return {
+        value:i,
+        label: i,
+      }
+    })
+  }
 
   const handleYearSelectChange = (selectedOption: any) => {
     setFormData((prev) => ({
@@ -401,7 +409,8 @@ function NewQuickPage() {
           driver: formData?.driver,
           foxtow_id: foxtow_id,
           dispnumdrv: dispatchNumber,
-          timerec:timeInRoute
+          timerec:timeInRoute,
+          shown:true,
         })
 
         if (insertError) throw insertError
@@ -491,34 +500,34 @@ function NewQuickPage() {
   //   ]
   // }
 
-  const handleDriverSelectChange = (selectedOption: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      driver: selectedOption || "",
-      // truckAssigned: selectedOption?.truck || prev.truckAssigned,
-    }))
-  }
+  // const handleDriverSelectChange = (selectedOption: any) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     driver: selectedOption || "",
+  //     // truckAssigned: selectedOption?.truck || prev.truckAssigned,
+  //   }))
+  // }
 
-  const handleTruckSelectChange = (selectedOption: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      truckAssigned: selectedOption?.value || "",
-    }))
-  }
+  // const handleTruckSelectChange = (selectedOption: any) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     truckAssigned: selectedOption?.value || "",
+  //   }))
+  // }
 
-  const handleStateSelectChange = (selectedOption: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      state: selectedOption?.value || "",
-    }))
-  }
+  // const handleStateSelectChange = (selectedOption: any) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     state: selectedOption?.value || "",
+  //   }))
+  // }
 
-  const colorChangeHandler = (color: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      color: color,
-    }))
-  }
+  // const colorChangeHandler = (color: any) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     color: color,
+  //   }))
+  // }
 
   const carMakeHandler = (make: any) => {
     setFormData((prev) => ({
@@ -628,6 +637,7 @@ function NewQuickPage() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                   <label className="w-20 text-sm font-medium text-gray-700">Priority</label>
+                 
                   <input
                     type="text"
                     value={formData?.priority}
