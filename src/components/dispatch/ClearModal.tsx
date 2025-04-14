@@ -134,24 +134,7 @@ const ClearModal: React.FC<ClearModalProps> = ({
             id="clearTime"
             value={currentTime}
             disabled={true}
-            // onChange={(e) => {
-            //   const value = e.target.value;
-            //   // Remove non-digit characters
-            //   const digits = value.replace(/\D/g, "");
-
-            //   // Format with colon insertion
-            //   let formatted = digits;
-            //   if (digits.length > 2) {
-            //     formatted = `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
-            //   } else if (digits.length === 2 && value.length === 3) {
-            //     // Handle backspace case after colon
-            //     formatted = digits;
-            //   }
-
-            //   // Limit to 4 digits (HHMM)
-            //   formatted = formatted.slice(0, 5);
-            //   setCurrentTime(formatted);
-            // }}
+ 
             placeholder="HH:MM"
             className="w-32 p-3 border border-gray-300 rounded text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -170,7 +153,7 @@ const ClearModal: React.FC<ClearModalProps> = ({
         <div className="pt-2">
         <button
             onClick={onClose}
-            className="px-4 py-2 h-12 border border-gray-300 rounded hover:bg-gray-50 w-auto"
+           className="px-4 py-2 h-10 bg-gray-200 text-gray-600 border border-gray-300 rounded hover:bg-gray-300 w-auto shadow-sm"
           >
             Cancel
           </button>

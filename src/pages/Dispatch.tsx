@@ -281,48 +281,23 @@ function Dispatch() {
         if (error) {
           console.error("Error fetching tow records:", error)
         } else {
-          // const sortedData = (data || []).sort((a: any, b: any) => {
-          //   const aIsPriority1 = a.towmast.priority  === 1;
-          //   const bIsPriority1 = b.towmast.priority === 1;
-          //   if (aIsPriority1 && !bIsPriority1) return 1;
-          //   if (!aIsPriority1 && bIsPriority1) return -1;
-          //               const aIsDispatched = a.towmast.dispatched === true;
-          //   const bIsDispatched = b.towmast.dispatched === true;
-          //          if (aIsDispatched && !bIsDispatched) return -1
-          //          if (!aIsDispatched && bIsDispatched) return 1
-          //   if (aIsDispatched && bIsDispatched) {
-          //     const aDate = new Date(a.towmast.updated_at);
-          //     const bDate = new Date(b.towmast.updated_at);
-          //     return bDate.getTime() - aDate.getTime();
-          //   }
 
-          //   if (aIsDispatched && !bIsDispatched) return -1;
-          //   if (!aIsDispatched && bIsDispatched) return 1;
-          //               return 0;
-          // })
           const sortedData = (data || []).sort((a: any, b: any) => {
-            // Define grouping logic
-            const getGroup = (item: any) => {
-              if (item.towmast.priority === 1 && item.towmast.dispatched) return 1
-              if (item.towmast.dispatched) return 2
-              if (item.towmast.priority !== 1) return 3
-              return 4 // Non-dispatched with priority 1
+            // First, sort by dispatched status (dispatched items come first)
+            if (a.towmast.dispatched !== b.towmast.dispatched) {
+              return a.towmast.dispatched ? -1 : 1; // True comes before false
             }
-
-            const aGroup = getGroup(a)
-            const bGroup = getGroup(b)
-
-            // First sort by group priority
-            if (aGroup !== bGroup) {
-              return aGroup - bGroup // Lower group numbers come first
+            
+            // Then sort by priority in ascending order
+            if (a.towmast.priority !== b.towmast.priority) {
+              return a.towmast.priority - b.towmast.priority; // Lower priority number comes first
             }
-
-            // Within same group, sort by latest updated_at
-            const aDate = new Date(a.towmast.updated_at).getTime()
-            const bDate = new Date(b.towmast.updated_at).getTime()
-            return bDate - aDate
-          })
-          setTowRecords(sortedData)
+            
+            // Finally sort by dispatch number in ascending order
+            return a.towmast.dispatchNumber - b.towmast.dispatchNumber;
+          });
+          setTowRecords(sortedData);
+          
           // setTowRecords(data ||  []);
         }
       } finally {
@@ -341,42 +316,81 @@ function Dispatch() {
     fetchTowRecords(0)
   }, [fetchTowRecords])
 
+  // const getRowStyle = (record: TowRecord) => {
+  //   if (!record.towmast.colors) {
+  //     return {}
+  //   }
+
+  //   if (record.towmast.dispatched) {
+  //     return {}
+  //   }
+
+  //   const now = new Date()
+  //   const updatedAt = new Date(record.towmast.updated_at)
+  //   const elapsedMinutes = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60))
+  //   const colors = record.towmast.colors
+
+  //   let backgroundColor = colors.backcolor1
+  //   let color = colors.forecolor1
+    
+  //   console.log(elapsedMinutes,"elapsedMinutes",colors,"it should be back.")
+
+  //   if (elapsedMinutes < colors.min1) {
+  //     backgroundColor = colors.backcolor1
+  //     color = colors.forecolor1
+  //   } else if (elapsedMinutes < colors.min1 + colors.min2) {
+  //     backgroundColor = colors.backcolor2
+  //     color = colors.forecolor2
+  //   } else if (elapsedMinutes < colors.min1 + colors.min2 + colors.min3) {
+  //     backgroundColor = colors.backcolor3
+  //     color = colors.forecolor3
+  //   } else {
+  //     backgroundColor = colors.backcolor4
+  //     color = colors.forecolor4
+  //   }
+
+
+  //   console.log(backgroundColor,color,"backgroundColor-->color")
+  //   return {
+  //     backgroundColor: backgroundColor,
+  //     color: color,
+  //   }
+  // }
+
+
   const getRowStyle = (record: TowRecord) => {
-    if (!record.towmast.colors) {
-      return {}
+    if (!record.towmast.colors || record.towmast.dispatched) {
+      return {};
     }
 
-    if (record.towmast.dispatched) {
-      return {}
-    }
+    const now = new Date();
+    const updatedAt = new Date(record.towmast.updated_at);
+    const elapsedMinutes = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60));
+    const colors = record.towmast.colors;
 
-    const now = new Date()
-    const updatedAt = new Date(record.towmast.updated_at)
-    const elapsedMinutes = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60))
-    const colors = record.towmast.colors
+    let backgroundColor = colors.backcolor1;
+    let color = colors.forecolor1;
 
-    let backgroundColor = colors.backcolor1
-    let color = colors.forecolor1
-
+    // Check elapsed time and update colors accordingly
     if (elapsedMinutes < colors.min1) {
-      backgroundColor = colors.backcolor1
-      color = colors.forecolor1
+      backgroundColor = colors.backcolor1;
+      color = colors.forecolor1;
     } else if (elapsedMinutes < colors.min1 + colors.min2) {
-      backgroundColor = colors.backcolor2
-      color = colors.forecolor2
+      backgroundColor = colors.backcolor2;
+      color = colors.forecolor2;
     } else if (elapsedMinutes < colors.min1 + colors.min2 + colors.min3) {
-      backgroundColor = colors.backcolor3
-      color = colors.forecolor3
+      backgroundColor = colors.backcolor3;
+      color = colors.forecolor3;
     } else {
-      backgroundColor = colors.backcolor4
-      color = colors.forecolor4
+      backgroundColor = colors.backcolor4;
+      color = colors.forecolor4;
     }
 
     return {
-      backgroundColor: backgroundColor,
-      color: color,
-    }
-  }
+      backgroundColor,
+      color,
+    };
+  };
 
   const handleRowDoubleClick = (record: TowRecord) => {
     navigate("/quickcall", { state: { record, drivers } })
