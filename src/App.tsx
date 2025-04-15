@@ -8,7 +8,7 @@ import Account from './pages/Account';
 import Report from './pages/Report';
 import Setting from './pages/Setting';
 import Invoice from './pages/Invoice';
-import QuickPage from './pages/QuickCall';
+// import QuickPage from './pages/QuickCall';
 import ImpoundDeatil from './pages/ImpoundDetail';
 import './i18n'
 import { useTranslation } from 'react-i18next';
@@ -147,7 +147,7 @@ function App() {
              <Route path="/trucks" element={<TrucksPage/>}/>
              <Route path="/setting-trucks/:id" element={<EditTrucks />} />
              <Route path="/add-new-trucks" element={<AddNewTrucks />}/>
-             <Route path="/quick-call" element={<QuickPage />} />
+             {/* <Route path="/quick-call" element={<QuickPage />} /> */}
              <Route path="/quickcall" element={<NewQuickPage/>}  />
           </Routes>
         </main>

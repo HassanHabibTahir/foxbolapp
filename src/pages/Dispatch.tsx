@@ -770,7 +770,7 @@ function Dispatch() {
                   <tr
                     key={record.towmast.dispnum}
                     className={`hover:bg-gray-50 text-left align-middle cursor-pointer ${
-                      selectedRow?.id === record.id ? "bg-blue-50" : ""
+                      selectedRow?.id === record.id ? "bg-blue-200" : ""
                     }`}
                     style={getRowStyle(record)}
                     onClick={() => setSelectedRow(record)}
