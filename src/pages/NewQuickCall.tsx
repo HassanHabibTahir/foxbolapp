@@ -66,7 +66,7 @@ function NewQuickPage() {
     // --
     callphone:"",
     reason:"",
-    priority:"",
+    priority:1,
     truck: "",
     // callType: "",
     vin:"",
@@ -268,13 +268,14 @@ function NewQuickPage() {
     })
   }
   const priortyOptions = ()=>{
-    return Array.from({length:15},(_,i)=>{
+    return Array.from({length:17},(_,i)=>{
       return {
-        value:i,
-        label: i,
+        value: i + 1,
+        label: i + 1,
       }
     })
   }
+  console.log(priortyOptions(),"priortyOptions")
 
   const handleYearSelectChange = (selectedOption: any) => {
     setFormData((prev) => ({
@@ -282,7 +283,13 @@ function NewQuickPage() {
       year: selectedOption?.value || "",
     }))
   }
-
+const handlePrioritySelectChange =(selectedOption: any) =>{
+  console.log(selectedOption,"selected Option");
+  setFormData((prev) => ({
+    ...prev,
+    priority: selectedOption?.value || "",
+  }))
+}
   // const handleButtonGroupChange = (group: "truck" | "callType" | "size", value: string) => {
   //   setFormData((prev) => ({
   //     ...prev,
@@ -292,6 +299,12 @@ function NewQuickPage() {
 
   const handleSubmit = async (e: React.FormEvent, dispatch = false) => {
     e.preventDefault()
+    if(!formData?.priority){
+      return toast.error("Kindly ensure the first priority is set before continuing.");
+
+    }
+  
+
     if (isSubmitting) return
 
     const loadingToast = toast.loading("Saving call details...")
@@ -638,14 +651,30 @@ function NewQuickPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                   <label className="w-20 text-sm font-medium text-gray-700">Priority</label>
                  
-                  <input
+                  {/* <input
                     type="text"
                     value={formData?.priority}
                     name="priority"
                     placeholder="Priority"
                     onChange={handleInputChange}
                     className="w-full rounded-sm border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-400 hover:shadow-xs"
-                  />
+                  /> */}
+                   <Select
+                      value={
+                        formData.priority
+                          ? {
+                              value: formData.priority,
+                              label: formData.priority,
+                            }
+                          : null
+                      }
+                      onChange={handlePrioritySelectChange}
+                      options={priortyOptions()}
+                      isClearable
+                      className="w-full md:w-[300px]"
+                      classNamePrefix="react-select"
+                      placeholder="Select Year..."
+                    />
                 </div>
               </div>
 
