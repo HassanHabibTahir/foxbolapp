@@ -148,42 +148,45 @@ function Dispatch() {
   }
 
   const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
+
+    console.log(_driverId,driverNum,truckNum,"truckNum==>")
+
     if (!selectedRow) {
       toast.error("Please select a dispatch row first")
       return
     }
     const loadingToast = toast.loading("Assigning driver...")
     try {
-      const now = new Date().toISOString()
-      const nowDate = new Date(now)
-      const timeInRoute = `${nowDate
-        .getHours()
-        .toString()
-        .padStart(2, "0")}:${nowDate.getMinutes().toString().padStart(2, "0")}`
+      // const now = new Date().toISOString()
+      // const nowDate = new Date(now)
+      // const timeInRoute = `${nowDate
+      //   .getHours()
+      //   .toString()
+      //   .padStart(2, "0")}:${nowDate.getMinutes().toString().padStart(2, "0")}`
 
-      // Update the towdrive record
-      const { error: updateError } = await supabase
-        .from("towdrive")
-        .update({
-          driver: driverNum,
-          trucknum: truckNum,
-          timeinrt: timeInRoute,
-        })
-        .eq("id", selectedRow?.id)
+      // // Update the towdrive record
+      // const { error: updateError } = await supabase
+      //   .from("towdrive")
+      //   .update({
+      //     driver: driverNum,
+      //     trucknum: truckNum,
+      //     timeinrt: timeInRoute,
+      //   })
+      //   .eq("id", selectedRow?.id)
 
-      if (updateError) throw updateError
+      // if (updateError) throw updateError
 
-      // Update the towmast record to mark it as dispatched
-      const { error: towmastError } = await supabase
-        .from("towmast")
-        .update({ dispatched: true })
-        .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
+      // // Update the towmast record to mark it as dispatched
+      // const { error: towmastError } = await supabase
+      //   .from("towmast")
+      //   .update({ dispatched: true })
+      //   .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
 
-      if (towmastError) throw towmastError
+      // if (towmastError) throw towmastError
 
-      // Refresh the records
-      await fetchTowRecords(currentPage)
-      setSelectedRow(null)
+      // // Refresh the records
+      // await fetchTowRecords(currentPage)
+      // setSelectedRow(null)
 
       toast.dismiss(loadingToast)
       toast.success(`Driver ${driverNum} assigned successfully`)
@@ -217,7 +220,7 @@ function Dispatch() {
             .from("towdrive")
             .select("*", { count: "exact", head: true })
             .eq("foxtow_id", foxtow_id)
-            // .eq("shown",true)
+            .eq("shown",true)
 
           if (count !== null) {
             setTotalRecords(count)
@@ -273,7 +276,7 @@ function Dispatch() {
         `,
           )
           .eq("foxtow_id", foxtow_id)
-          // .eq("shown",true)
+          .eq("shown",true)
           .filter("towmast.dispcleared", "neq", true)
           .order("updated_at", { ascending: false })
           .range(page * recordsPerPage, (page + 1) * recordsPerPage - 1)
@@ -281,23 +284,16 @@ function Dispatch() {
         if (error) {
           console.error("Error fetching tow records:", error)
         } else {
-
           const sortedData = (data || []).sort((a: any, b: any) => {
-            // First, sort by dispatched status (dispatched items come first)
             if (a.towmast.dispatched !== b.towmast.dispatched) {
-              return a.towmast.dispatched ? -1 : 1; // True comes before false
+              return a.towmast.dispatched ? -1 : 1;
             }
-            
-            // Then sort by priority in ascending order
             if (a.towmast.priority !== b.towmast.priority) {
-              return a.towmast.priority - b.towmast.priority; // Lower priority number comes first
+              return a.towmast.priority - b.towmast.priority; 
             }
-            
-            // Finally sort by dispatch number in ascending order
-            return a.towmast.dispatchNumber - b.towmast.dispatchNumber;
+            return a.towmast.dispnum - b.towmast.dispnum;
           });
           setTowRecords(sortedData);
-          
           // setTowRecords(data ||  []);
         }
       } finally {
