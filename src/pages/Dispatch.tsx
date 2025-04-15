@@ -148,45 +148,42 @@ function Dispatch() {
   }
 
   const handleDriverAssignment = async (_driverId: string, driverNum: string, truckNum: string) => {
-
-    console.log(_driverId,driverNum,truckNum,"truckNum==>")
-
     if (!selectedRow) {
       toast.error("Please select a dispatch row first")
       return
     }
     const loadingToast = toast.loading("Assigning driver...")
     try {
-      // const now = new Date().toISOString()
-      // const nowDate = new Date(now)
-      // const timeInRoute = `${nowDate
-      //   .getHours()
-      //   .toString()
-      //   .padStart(2, "0")}:${nowDate.getMinutes().toString().padStart(2, "0")}`
+      const now = new Date().toISOString()
+      const nowDate = new Date(now)
+      const timeInRoute = `${nowDate
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${nowDate.getMinutes().toString().padStart(2, "0")}`
 
-      // // Update the towdrive record
-      // const { error: updateError } = await supabase
-      //   .from("towdrive")
-      //   .update({
-      //     driver: driverNum,
-      //     trucknum: truckNum,
-      //     timeinrt: timeInRoute,
-      //   })
-      //   .eq("id", selectedRow?.id)
+      // Update the towdrive record
+      const { error: updateError } = await supabase
+        .from("towdrive")
+        .update({
+          driver: driverNum,
+          trucknum: truckNum,
+          timeinrt: timeInRoute,
+        })
+        .eq("id", selectedRow?.id)
 
-      // if (updateError) throw updateError
+      if (updateError) throw updateError
 
-      // // Update the towmast record to mark it as dispatched
-      // const { error: towmastError } = await supabase
-      //   .from("towmast")
-      //   .update({ dispatched: true })
-      //   .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
+      // Update the towmast record to mark it as dispatched
+      const { error: towmastError } = await supabase
+        .from("towmast")
+        .update({ dispatched: true })
+        .eq("dispnum", towRecords.find((r) => r.id === selectedRow?.id)?.towmast.dispnum)
 
-      // if (towmastError) throw towmastError
+      if (towmastError) throw towmastError
 
-      // // Refresh the records
-      // await fetchTowRecords(currentPage)
-      // setSelectedRow(null)
+      // Refresh the records
+      await fetchTowRecords(currentPage)
+      setSelectedRow(null)
 
       toast.dismiss(loadingToast)
       toast.success(`Driver ${driverNum} assigned successfully`)
@@ -216,13 +213,16 @@ function Dispatch() {
       setIsLoading(true)
       try {
         if (page === 0) {
+       // For counting records
           const { count } = await supabase
-            .from("towdrive")
-            .select("*", { count: "exact", head: true })
-            .eq("foxtow_id", foxtow_id)
-            .eq("shown",true)
+           .from("towdrive")
+           .select("*, towmast!inner(*)", { count: "exact", head: true })
+           .eq("foxtow_id", foxtow_id)
+           .eq("shown", true)
+           .filter("towmast.dispcleared", "neq", true);
 
           if (count !== null) {
+            console.log(count,"count")
             setTotalRecords(count)
           }
         }

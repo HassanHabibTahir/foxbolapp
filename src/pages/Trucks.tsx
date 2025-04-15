@@ -72,6 +72,10 @@ export default function TrucksPage() {
         .from("drivers")
         .delete()
         .eq("id", id);
+
+
+
+        
       if (error) {
         console.log(error, "error");
         // console.error("Error deleting truck:", error);
