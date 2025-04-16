@@ -2,15 +2,15 @@ import React, { forwardRef, useState } from 'react';
 import Select from 'react-select';
 
 interface Option {
-  value: string;
+  value: number;
   label: string;
 }
 
-interface StateSelectProps {
+interface PrioritySelectProps {
   label?: string;
   title?: string;
   value?: string;
-  onChange: (value: string) => void;
+  onChange: (value: any) => void;
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
   disabled?: boolean;
@@ -18,7 +18,7 @@ interface StateSelectProps {
   onKeyDown?: any;
 }
 
-const StateSelect = forwardRef<any, StateSelectProps>(({
+const PrioritySelect = forwardRef<any, PrioritySelectProps>(({
   label,
   title,
   value,
@@ -38,64 +38,32 @@ const StateSelect = forwardRef<any, StateSelectProps>(({
     full: '100%'
   };
 
-  const options: Option[] = [
-    { label: "AL", value: "AL" },
-  { label: "AK", value: "AK" },
-  { label: "AZ", value: "AZ" },
-  { label: "AR", value: "AR" },
-  { label: "CA", value: "CA" },
-  { label: "CO", value: "CO" },
-  { label: "CT", value: "CT" },
-  { label: "DE", value: "DE" },
-  { label: "DC", value: "DC" },
-  { label: "FL", value: "FL" },
-  { label: "GA", value: "GA" },
-  { label: "HI", value: "HI" },
-  { label: "ID", value: "ID" },
-  { label: "IL", value: "IL" },
-  { label: "IN", value: "IN" },
-  { label: "IA", value: "IA" },
-  { label: "KS", value: "KS" },
-  { label: "KY", value: "KY" },
-  { label: "LA", value: "LA" },
-  { label: "ME", value: "ME" },
-  { label: "MD", value: "MD" },
-  { label: "MA", value: "MA" },
-  { label: "MI", value: "MI" },
-  { label: "MN", value: "MN" },
-  { label: "MS", value: "MS" },
-  { label: "MO", value: "MO" },
-  { label: "MT", value: "MT" },
-  { label: "NE", value: "NE" },
-  { label: "NV", value: "NV" },
-  { label: "NH", value: "NH" },
-  { label: "NJ", value: "NJ" },
-  { label: "NM", value: "NM" },
-  { label: "NY", value: "NY" },
-  { label: "NC", value: "NC" },
-  { label: "ND", value: "ND" },
-  { label: "OH", value: "OH" },
-  { label: "OK", value: "OK" },
-  { label: "OR", value: "OR" },
-  { label: "PA", value: "PA" },
-  { label: "RI", value: "RI" },
-  { label: "SC", value: "SC" },
-  { label: "SD", value: "SD" },
-  { label: "TN", value: "TN" },
-  { label: "TX", value: "TX" },
-  { label: "UT", value: "UT" },
-  { label: "VT", value: "VT" },
-  { label: "VA", value: "VA" },
-  { label: "WA", value: "WA" },
-  { label: "WV", value: "WV" },
-  { label: "WI", value: "WI" },
-  { label: "WY", value: "WY" }];
+  const options: any[] = [
+    { value: 1, label: "1" },
+    { value: 2, label: "2" },
+    { value: 3, label: "3" },
+    { value: 4, label: "4" },
+    { value: 5, label: "5" },
+    { value: 6, label: "6" },
+    { value: 7, label: "7" },
+    { value: 8, label: "8" },
+    { value: 9, label: "9" },
+    { value: 10, label: "10" },
+    { value: 11, label: "11" },
+    { value: 12, label: "12" },
+    { value: 13, label: "13" },
+    { value: 14, label: "14" },
+    { value: 15, label: "15" },
+    { value: 16, label: "16" },
+    { value: 17, label: "17" },
+  ];
+  
 
-  const selectedOption = options.find(option => option.value === value) || null;
+  const selectedOption = options?.find(option => option?.value === value) || null;
 const [menuIsOpen, setMenuIsOpen] = useState(false);
   const handleChange = (option: Option | null) => {
     if (option !== null) {
-      onChange(option.value);
+      onChange(option);
       if (onEnterPress) {
         setTimeout(onEnterPress, 0);
       }
@@ -110,14 +78,15 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
       console.log(focusedOption , "focused option");
       if (focusedOption) {
         e.preventDefault();
-        const selectedOptionText = focusedOption.textContent;
-        console.log(selectedOptionText, "selectedOptionText");
+        const selectedOptionText = focusedOption?.textContent;
+         console.log(selectedOptionText,"selectedOptionsText")
         const _selectedOption = options?.find(
-          (opt: { label: string | null }) => opt.label === selectedOptionText
+          (opt: { label:any }) => opt.label === selectedOptionText
         );
   
 
         if (_selectedOption) {
+            console.log(selectedOption,"selectOPTIONS")
           handleChange(_selectedOption);
           setMenuIsOpen(false);
         }
@@ -214,5 +183,5 @@ const [menuIsOpen, setMenuIsOpen] = useState(false);
   );
 });
 
-StateSelect.displayName = 'StateSelect';
-export default StateSelect;
+PrioritySelect.displayName = 'PrioritySelect';
+export default PrioritySelect;

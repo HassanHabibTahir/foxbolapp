@@ -8,7 +8,7 @@ interface Option {
 }
 
 interface YearSlectsProps {
-  label: string;
+  label?: string;
   title?: string;
   value?: string;
   onChange: (value: string) => void;

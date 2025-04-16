@@ -325,7 +325,7 @@ function Impounds() {
         .from('towmast')
         .select(undefined, { count: 'exact' }) // Only count
         .eq('foxtow_id', foxtow_id)
-        .eq("shown",true);
+        // .eq("shown",true);
         
       setTotalCount(count || 0);
   
@@ -334,7 +334,7 @@ function Impounds() {
         .from('towmast')
         .select('*') 
         .eq('foxtow_id', foxtow_id)
-        .eq("shown",true)
+        // .eq("shown",true)
         .eq("dispcleared",true)
         .range((page - 1) * recordsPerPage, page * recordsPerPage - 1)
         .order("updated_at", { ascending: false })
