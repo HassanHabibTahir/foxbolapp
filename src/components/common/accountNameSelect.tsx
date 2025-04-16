@@ -73,9 +73,19 @@ const SelectAccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
     }
 
     const handleKeyDown = (e: any) => {
-      if (e.key === "Enter" && onEnterPress) {
-        e.preventDefault()
-        onEnterPress()
+      if (e.key === "Enter" || e.key === " ") {
+        const focusedOption = document.querySelector(".react-select__option--is-focused")
+        if (focusedOption) {
+          e.preventDefault()
+          const selectedOptionText = focusedOption.textContent
+          const _selectedOption = companies?.find((opt: { label: string | null }) => opt.label === selectedOptionText)
+          console.log(_selectedOption, "selectedOptions-->", selectedOptionText)
+
+          if (_selectedOption) {
+            handleChange(_selectedOption)
+            setMenuIsOpen(false)
+          }
+        }
       }
       onKeyDown?.(e)
     }
@@ -164,6 +174,7 @@ const SelectAccountName = React.forwardRef<HTMLInputElement, AccountNameProps>(
             components={{
               Option: ({ children, ...props }) => <components.Option {...props}>{children}</components.Option>,
             }}
+            
           />
         </div>
       </div>
