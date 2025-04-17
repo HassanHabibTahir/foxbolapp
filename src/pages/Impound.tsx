@@ -133,10 +133,12 @@ function Impounds() {
   // Get display value for a field
   const getFieldValue = (record: any, field: string) => {
     const columnName = fieldToColumnMap[field];
+
     if (!columnName) return '-';
 
     const value = record[columnName];
     
+      // console.log(columnName,"columnNAME==>",value,"value==>")
     if (field === 'Impound Date' && value) {
       return formatDate(new Date(value));
     }

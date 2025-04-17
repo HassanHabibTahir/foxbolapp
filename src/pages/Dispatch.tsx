@@ -606,10 +606,10 @@ function Dispatch() {
           initialWidths[field] = 10
           break
         case "Disp #":
-          initialWidths[field] = 20
+          initialWidths[field] = 28
           break
         case "Trk #":
-          initialWidths[field] = 18
+          initialWidths[field] = 20
           break
         case "Driver":
           initialWidths[field] = 20
@@ -618,23 +618,23 @@ function Dispatch() {
         case "Inrt":
         case "Arvd":
         case "ITow":
-          initialWidths[field] = 20
+          initialWidths[field] = 26
           break
         case "Company":
-          initialWidths[field] = 70
+          initialWidths[field] = 130
           break
         case "Lic #":
-          initialWidths[field] = 32
+          initialWidths[field] = 40
           break
         case "Year":
-          initialWidths[field] = 28
+          initialWidths[field] = 25
           break
         case "Make":
         case "Color":
-          initialWidths[field] = 25
+          initialWidths[field] = 38
           break
         case "Phone":
-          initialWidths[field] = 50
+          initialWidths[field] = 65
           break
         case "Reason":
           initialWidths[field] = 30
@@ -756,7 +756,7 @@ function Dispatch() {
               ))}
             </tr>
           </thead>
-          <tbody className="text-[10px]">
+          <tbody className="text-[12px]">
             {isLoading ? (
               <tr>
                 <td colSpan={orderedFields.length} className="text-center py-4 border border-gray-300">
@@ -873,8 +873,9 @@ function Dispatch() {
                         case "Company":
                           return (
                             <td key={field} className={tableStyles.td} style={cellStyle}>
+                              {/* .substring(0, 15) */}
                               <input
-                                value={(record.towmast.callname || "").substring(0, 15)}
+                                value={(record.towmast.callname || "")}
                                 onChange={(e) => handleInputChange(record.id, "towmast.callname", e.target.value)}
                                 onKeyDown={(e) =>
                                   handleInputKeyDown(e, record.id, "towmast.callname", e.currentTarget.value)
