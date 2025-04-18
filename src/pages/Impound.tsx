@@ -29,6 +29,7 @@ function Impounds() {
   } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const recordsPerPage = 25;
+  const tableContainerRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate();
 
   // Field mapping for database columns
@@ -369,21 +370,14 @@ function Impounds() {
       if (towtransError) {
         console.error('Error fetching towtrans:', towtransError);
       }
-  
-      // Merge towtrans data into corresponding towmast records
-      const mergedData = towmastData.map((towmast) => ({
+        const mergedData = towmastData.map((towmast) => ({
         ...towmast,
         towtrans: towtransData?.filter((trans) => trans.foxtow_id === towmast.foxtow_id),
       }));
-      // const sortedData = mergedData.sort((a, b) => {
-      //   const aIsDispCleared = a.dispcleared === true;
-      //   const bIsDispCleared = b.dispcleared === true;
-      //     if (aIsDispCleared && !bIsDispCleared) return -1;
-      //     if (!aIsDispCleared && bIsDispCleared) return 1;
-      //     return 0;
-      // });
-      // console.log(sortedData,"sortedData")
-      setRecords(mergedData);
+      const sortedData = mergedData.sort((a, b) => {
+          return (b?.dispnum || 0) - (a?.dispnum || 0) ;
+      });
+      setRecords(sortedData);
     } catch (error) {
       console.error('Unexpected error:', error);
     }
@@ -474,43 +468,74 @@ function Impounds() {
 
   const totalPages = Math.ceil(totalCount / recordsPerPage);
   const isAllSelected = selectedRows.size === records.length;
+  const [activeTab, setActiveTab] = useState('tab1');
+
+  const tabs = [
+    { id: 'tab1', label: 'Current' ,cur:true},
+    { id: 'tab2', label: 'Released' },
+    { id: 'tab3', label: 'Auction' },
+    { id: 'tab4', label: 'All' },
+  ];
+  const calculateTableWidth = () => {
+    let totalWidth = 40 // Checkbox column width
+    orderedFields.forEach((field) => {
+      totalWidth += columnWidths[field] || 200
+    })
+    return totalWidth
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="p-6">
-        {/* Header Actions */}
-        <div className="mb-6 flex gap-4">
-          <button  onClick={()=>newPageHandler()} className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            <FileText size={20} />
-            {t('impounds.actions.newImpound')}
-          </button>
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            <FileText size={20} />
-            {t('impounds.actions.createReport')}
-          </button>
+    <div className="p-6 flex flex-col ">
+      {/* Header Actions */}
+      <div className="mb-6 flex gap-4">
+        <button
+          onClick={() => newPageHandler()}
+          className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          <FileText size={20} />
+          {t("impounds.actions.newImpound")}
+        </button>
+        <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          <FileText size={20} />
+          {t("impounds.actions.createReport")}
+        </button>
+      </div>
+
+      <div className="mb-4 flex flex-col items-end gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-600">{t("impounds.filters.filterBy")}:</span>
+          <select className="border rounded px-3 py-1.5" value={selectedCallType} onChange={handleCallTypeChange}>
+            {callType.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Filter and Search */}
-        <div className="mb-6 flex flex-col items-end gap-4">
-          {/* Filter By Section */}
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600">{t('impounds.filters.filterBy')}:</span>
-            <select 
-              className="border rounded px-3 py-1.5"
-              value={selectedCallType}
-              onChange={handleCallTypeChange}
-            >
-              {callType.map(type => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
+        <div className="flex justify-between items-center w-full">
+          {/* Tabs */}
+          <div className="flex-shrink-0">
+            <ul className="relative flex px-1.5 py-1.5 list-none gap-2 rounded-md bg-slate-100" role="list">
+              {tabs.map((tab) => (
+                <li key={tab.id} className="z-30 w-32 text-center">
+                  <button
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`z-30 flex items-center justify-center w-full px-4 py-2 text-sm mb-0 transition-all ease-in-out border-0 rounded-md cursor-pointer 
+          ${activeTab === tab.id ? "text-slate-900 font-semibold bg-white" : "text-slate-600 bg-inherit"}`}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                  >
+                    <span>{tab?.cur ? `${tab.label} (00)` : tab.label}</span>
+                  </button>
+                </li>
               ))}
-            </select>
+            </ul>
           </div>
 
-          {/* Export, Print, and Search Section */}
           <div className="flex items-center gap-2">
-            {/* Hamburger Menu */}
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -518,8 +543,7 @@ function Impounds() {
               >
                 <Menu size={20} className="text-gray-600" />
               </button>
-              
-              {/* Field Selector Dropdown */}
+
               {isMenuOpen && (
                 <div className="absolute right-0 mt-2 w-[600px] bg-white rounded-md shadow-lg py-2 z-10 grid grid-cols-3 gap-4 p-4">
                   {fieldCategories.map((category, index) => (
@@ -547,7 +571,7 @@ function Impounds() {
             <div className="relative">
               <input
                 type="text"
-                placeholder={t('impounds.search.placeholder')}
+                placeholder={t("impounds.search.placeholder")}
                 value={searchVin}
                 onChange={handleSearchChange}
                 className="pl-8 pr-4 py-1.5 border rounded w-64"
@@ -560,171 +584,189 @@ function Impounds() {
               )}
             </div>
             {searchVin && (
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="px-4 py-1.5 border rounded hover:bg-gray-50"
-              >
-                {t('impounds.actions.clear')}
+              <button type="button" onClick={clearSearch} className="px-4 py-1.5 border rounded hover:bg-gray-50">
+                {t("impounds.actions.clear")}
               </button>
             )}
             <button type="button" className="px-4 py-1.5 border rounded">
-              {t('impounds.actions.export')}
+              {t("impounds.actions.export")}
             </button>
             <button type="button" className="px-4 py-1.5 border rounded">
-              {t('impounds.actions.print')}
+              {t("impounds.actions.print")}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="w-full min-w-full divide-y divide-gray-300 ">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className=" group text-sm    w-40 px-4 py-3 sticky text-left left-0 bg-gray-50 border-t border-b border-gray-300 border-x-0">
-                  <input 
-                    type="checkbox" 
-                    checked={isAllSelected}
-                    onChange={handleSelectAll}
-                    className="cursor-pointer"
-                  />
-                </th>
-                {orderedFields.map((field) => (
-                  <th 
-                    key={field} 
-                    className="py-3 text-left group relative text-xs border-t border-b border-gray-300 border-x-0"
-                    style={{ width: columnWidths[field] || 200 }}
-                  >
-                    <div
-                      draggable={!isResizing}
-                      onDragStart={(e) => handleDragStart(e, field)}
-                      onDragEnd={handleDragEnd}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, field)}
-                      className="flex items-left gap-2 cursor-move px-2"
-                    >
-                      <GripVertical size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      {field}
-                    </div>
-                    <div
-                      className={`absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 ${
-                        isResizing ? 'bg-blue-500' : ''
-                      }`}
-                      onMouseDown={(e) => handleResizeStart(e, field)}
-                    />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((record: any) => (
-                <React.Fragment key={record.id}>
-                  <tr 
-                    onClick={() => handleRowClick(record.id)}
-                    className={`hover:bg-gray-50  text-center cursor-pointer ${selectedRow === record.id ? 'bg-blue-50' : ''}`}
-                  >
-                    <td className="px-4 py-2 sticky left-0 bg-white border-t border-b border-gray-300 border-x-0">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedRows.has(record.id)}
-                        onChange={() => {}}
-                        onClick={(e) => handleCheckboxClick(e, record.id)}
-                        className="cursor-pointer"
-                      />
-                    </td>
-                    {orderedFields.map((field) => (
-                      <td 
-                        key={field} 
-                        className="px-4 py-2 whitespace-wrap overflow-hidden text-xs text-ellipsis border-t border-b border-gray-300 border-x-0"
-                        style={{ width: columnWidths[field] || 200 }}
-                      >
-                        {getFieldValue(record, field)}
-                      </td>
-                    ))}
-                  </tr>
-                  {selectedRow === record.id && (
+      {/* Table Container with Fixed Height and Proper Scrolling */}
+      <div className="flex flex-col flex-grow bg-white rounded-lg shadow overflow-hidden">
+        {/* Table with fixed header */}
+        <div className="flex-grow flex flex-col">
+          <div className="overflow-auto" style={{ height: "calc(100vh - 280px)" }}>
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden">
+                <table
+                  className="min-w-full divide-y divide-gray-300"
+                  style={{ width: `${calculateTableWidth()}px` }}
+                >
+                  <thead className="bg-gray-50 sticky top-0 z-20">
                     <tr>
-                      <td colSpan={orderedFields.length + 1} className="bg-gray-50 px-4 text-xs py-3 border-t border-b border-gray-300 border-x-0">
-                        <div className="flex gap-4">
-                          <button onClick={() => handleDetailView(record.dispnum,record?.foxtow_id)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Eye size={18} /> {t('impounds.actions.viewImpound')}
-                          </button>
-                          <button onClick={() => handleModifyImpound(record.dispnum)} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Edit size={18} /> {t('impounds.actions.modify')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <FileText size={18} /> {t('impounds.actions.impoundNotes')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Mail size={18} /> {t('impounds.actions.email')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Printer size={18} /> {t('impounds.actions.print')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <DollarSign size={18} /> {t('impounds.actions.recordPayment')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Image size={18} /> {t('impounds.actions.photosVideos')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <File size={18} /> {t('impounds.actions.files')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <History size={18} /> {t('impounds.actions.impoundHistory')}
-                          </button>
-                          <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                            <Gavel size={18} /> {t('impounds.actions.auction')}
-                          </button>
-                        </div>
-                      </td>
+                      <th className="group text-sm w-40 px-4 py-3 sticky left-0 z-30 text-center bg-gray-50 border-t border-b border-gray-300 border-x-0">
+                        <input
+                          type="checkbox"
+                          checked={isAllSelected}
+                          onChange={handleSelectAll}
+                          className="cursor-pointer"
+                        />
+                      </th>
+                      {orderedFields.map((field) => (
+                        <th
+                          key={field}
+                          className="py-3 whitespace-nowrap text-left group relative text-xs border-t border-b border-gray-300 border-x-0"
+                          style={{ width: columnWidths[field] || 200 }}
+                        >
+                          <div
+                            draggable={!isResizing}
+                            onDragStart={(e) => handleDragStart(e, field)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, field)}
+                            className="flex items-left gap-2 cursor-move px-2"
+                          >
+                            <GripVertical
+                              size={16}
+                              className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                            />
+                            {field}
+                          </div>
+                          <div
+                            className={`absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 ${
+                              isResizing ? "bg-blue-500" : ""
+                            }`}
+                            onMouseDown={(e) => handleResizeStart(e, field)}
+                          />
+                        </th>
+                      ))}
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t">
-            <div className="text-sm text-gray-700">
-              {t('impounds.table.showing')} {((currentPage - 1) * recordsPerPage) + 1} {t('impounds.table.to')} {Math.min(currentPage * recordsPerPage, totalCount)} {t('impounds.table.of')} {totalCount} {t('impounds.table.records')}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className={`flex items-center gap-1 px-3 py-1 rounded border ${
-                  currentPage === 1 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <ChevronLeft size={16} /> {t('impounds.table.previous')}
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className={`flex items-center gap-1 px-3 py-1 rounded border ${
-                  currentPage === totalPages 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                {t('impounds.table.next')} <ChevronRight size={16} />
-              </button>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {records.map((record: any) => (
+                      <React.Fragment key={record.id}>
+                        <tr
+                          onClick={() => handleRowClick(record.id)}
+                          className={`hover:bg-gray-50 text-sm text-center cursor-pointer ${
+                            selectedRow === record.id ? "bg-blue-50" : ""
+                          }`}
+                        >
+                          <td className="px-4 py-2 sticky left-0 z-10 text-center bg-white border-t border-b border-gray-300 border-x-0">
+                            <input
+                              type="checkbox"
+                              checked={selectedRows.has(record.id)}
+                              onChange={() => {}}
+                              onClick={(e) => handleCheckboxClick(e, record.id)}
+                              className="cursor-pointer"
+                            />
+                          </td>
+                          {orderedFields.map((field) => (
+                            <td
+                              key={field}
+                              className="px-4 py-2 whitespace-nowrap overflow-hidden text-xs text-ellipsis border-t border-b border-gray-300 border-x-0"
+                              style={{ width: columnWidths[field] || 200 }}
+                            >
+                              {getFieldValue(record, field)}
+                            </td>
+                          ))}
+                        </tr>
+                        {selectedRow === record.id && (
+                          <tr>
+                            <td
+                              colSpan={orderedFields.length + 1}
+                              className="bg-gray-50 px-4 text-xs py-3 border-t border-b border-gray-300 border-x-0"
+                            >
+                              <div className="flex flex-wrap gap-4">
+                                <button
+                                  onClick={() => handleDetailView(record.dispnum, record?.foxtow_id)}
+                                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                                >
+                                  <Eye size={18} /> {t("impounds.actions.viewImpound")}
+                                </button>
+                                <button
+                                  onClick={() => handleModifyImpound(record.dispnum)}
+                                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                                >
+                                  <Edit size={18} /> {t("impounds.actions.modify")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <FileText size={18} /> {t("impounds.actions.impoundNotes")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <Mail size={18} /> {t("impounds.actions.email")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <Printer size={18} /> {t("impounds.actions.print")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <DollarSign size={18} /> {t("impounds.actions.recordPayment")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <ImageIcon size={18} /> {t("impounds.actions.photosVideos")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <File size={18} /> {t("impounds.actions.files")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <History size={18} /> {t("impounds.actions.impoundHistory")}
+                                </button>
+                                <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                  <Gavel size={18} /> {t("impounds.actions.auction")}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Overlay to prevent text selection while resizing */}
-        {isResizing && (
-          <div className="fixed inset-0 bg-transparent cursor-col-resize" />
-        )}
+        {/* Pagination - Fixed at bottom */}
+        <div className="flex items-center justify-between px-4 py-3 border-t bg-white">
+          <div className="text-sm text-gray-700">
+            {t("impounds.table.showing")} {(currentPage - 1) * recordsPerPage + 1} {t("impounds.table.to")}{" "}
+            {Math.min(currentPage * recordsPerPage, totalCount)} {t("impounds.table.of")} {totalCount}{" "}
+            {t("impounds.table.records")}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className={`flex items-center gap-1 px-3 py-1 rounded border ${
+                currentPage === 1 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-gray-50"
+              }`}
+            >
+              <ChevronLeft size={16} /> {t("impounds.table.previous")}
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className={`flex items-center gap-1 px-3 py-1 rounded border ${
+                currentPage === totalPages ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-gray-50"
+              }`}
+            >
+              {t("impounds.table.next")} <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {isResizing && <div className="fixed inset-0 bg-transparent cursor-col-resize" />}
     </div>
+  </div>
   );
 }
 
