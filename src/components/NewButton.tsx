@@ -32,7 +32,7 @@ const NewButton: React.FC<NewButtonProps> = ({ onNew, className = '' }) => {
       className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 ${className}`}
     >
       <PlusCircle className="w-4 h-4" />
-      {creating ? 'Creating...' : 'New'}
+      {creating ? 'Creating...' : 'New Call'}
     </button>
   );
 };

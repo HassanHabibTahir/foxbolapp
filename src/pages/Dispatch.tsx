@@ -397,7 +397,6 @@ function Dispatch() {
       (now.getTime() - updatedAt.getTime()) / (1000 * 60)
     );
     const colors = record.towmast.colors;
-
     let backgroundColor = colors.backcolor1;
     let color = colors.forecolor1;
 

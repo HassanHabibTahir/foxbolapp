@@ -64,10 +64,10 @@ const DriverCombobox = forwardRef<HTMLInputElement, DriverComboboxProps>(
       if (value) {
         const fetchDriver = async () => {
           const { data, error } = await supabase.from("drivers").select().eq("driver_num", value).single()
-          if (!error && data) {
+          if (!error && data &&setFormData) {
             setFormData((prev:any) => ({
               ...prev,
-              truckAssigned: data?.def_truckn ,
+              truckAssigned: data?.def_truckn 
             }));
             setSelectedOption({
               value: data.driver_num,

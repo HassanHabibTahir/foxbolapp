@@ -40,6 +40,7 @@ import YearSlects from "./common/YearSelect";
 import StateSelect from "./common/StateSelect";
 import AddressSection from "./addressSection";
 import { useMediaQuery } from "react-responsive";
+import NewButton from "./NewButton";
 const FIELD_INDEXES: any = {
   driver: 0,
   driver2: 1,
@@ -578,6 +579,15 @@ const InvoiceForm = () => {
     }
   };
 
+
+
+  const handleNew = (invoiceNumber: string) => {
+    resetForm();
+    updateDispatch({ dispnum: invoiceNumber,dispcleared:true });
+  };
+
+
+
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       setError(null);
@@ -598,18 +608,21 @@ const InvoiceForm = () => {
 
   const isDesktopOrLaptop = isClient && showDesktop;
   const isDesktopOrLaptop2 = isClient && showDesktop2;
-
+console.log(formState,"fromState")
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
         onInvoiceFound={handleInvoiceFound}
         className="flex-1 min-w-[200px]"
       />
-      {/* <NewButton onNew={handleNew} /> */}
+      <NewButton onNew={handleNew} />
+   
       <SaveButton onSave={handleSave} />
       <PrintButton onPrint={handlePrint} />
     </div>,
     <Header key="header" dispatchNumber={formState.dispatch.dispnum} />,
+ 
+  
     <div key="general-wrapper">
       <FormSection title="Driver Information">
         <div className="flex flex-wrap items-center  gap-x-1">
