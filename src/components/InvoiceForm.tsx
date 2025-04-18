@@ -608,7 +608,7 @@ const InvoiceForm = () => {
 
   const isDesktopOrLaptop = isClient && showDesktop;
   const isDesktopOrLaptop2 = isClient && showDesktop2;
-console.log(formState,"fromState")
+
   const sections = [
     <div key="actions" className="flex flex-wrap gap-2">
       <InvoiceSearch
@@ -714,8 +714,8 @@ console.log(formState,"fromState")
       <div className="w-full max-w-full">
         <FormSection title="A - General Information">
           <div className="space-y-4 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
-              <DateInput
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 w-full">
+          {/* <DateInput
                 className="h-9 text-[14px] w-full"
                 label="Date"
                 title="master.towdate"
@@ -727,7 +727,7 @@ console.log(formState,"fromState")
                 FIELD_INDEXES={FIELD_INDEXES}
                 fieldName="towdate"
                 inputRefs={inputRefs}
-              />
+              /> */}
               <FormInput
                 className="h-9 text-[14px] w-full"
                 label="Tag #"
