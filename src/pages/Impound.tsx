@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Search, FileText, Eye, Edit, Mail, Printer, DollarSign, Image, File, History, Gavel, ChevronLeft, ChevronRight, Menu, GripVertical } from 'lucide-react';
+import { Search, FileText, Eye, Edit, Mail, Printer, DollarSign, Image, File, History, Gavel, ChevronLeft, ChevronRight, Menu, GripVertical, ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
