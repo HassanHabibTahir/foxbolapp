@@ -16,7 +16,7 @@ const NewButton: React.FC<NewButtonProps> = ({ onNew, className = '' }) => {
       const result = await createNewDispatch();
       
       if (result.success && result.dispatch_number) {
-        onNew(result.dispatch_number);
+        onNew(result.dispatch_number  );
       } else {
         console.error('Failed to create new dispatch:', result.error);
       }
