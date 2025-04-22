@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FileText, Camera, Folder, Mail, Printer } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import ReleaseVehicle from "./ReleaseVehicle";
 
 function ImpoundDetail() {
   const [dispatch, setDispatch] = useState<any>(null);
@@ -10,6 +11,10 @@ function ImpoundDetail() {
   const [transaction, setTransaction] = useState<any>([]);
   const location = useLocation();
   const { dispatchNum, foxtow_id } = location.state;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const fetchDispatch = async (dispatchNum: string) => {
     const { data, error } = await supabase
@@ -145,193 +150,218 @@ function ImpoundDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Action Buttons */}
-      <div className="bg-white border-b px-4 py-1 flex gap-4 overflow-x-auto">
-        <ActionButton
-          icon={<FileText size={25} />}
-          label="Modify Impound"
-          dispatchNumber={dispatchNum}
-          link = "/invoice"
-        />
-        <ActionButton icon={<FileText size={25} />} label="Record Payment"   />
-        <ActionButton icon={<FileText size={25} />} label="Release Vehicle" link="/release-vehicle"/>
-        <ActionButton icon={<FileText size={25} />} label="Auction" />
-        <ActionButton icon={<FileText size={25} />} label="Tow from Storage" />
-        <ActionButton icon={<Camera size={25} />} label="Upload Photos" />
-        <ActionButton icon={<Folder size={25} />} label="Upload Files" />
-        <ActionButton icon={<FileText size={25} />} label="Add Note" />
-        <ActionButton icon={<Mail size={25} />} label="Email Invoice/Photos" />
-        <ActionButton icon={<Printer size={25} />} label="Print Invoice" />
-        <ActionButton icon={<Printer size={25} />} label="Print Summary" />
-        <ActionButton
-          icon={<Printer size={25} />}
-          label="Print Property Release"
-        />
-      </div>
+    <>
+      <ReleaseVehicle  isOpen={isModalOpen} onClose={closeModal} />
+      <div className="min-h-screen bg-gray-50">
+        {/* Action Buttons */}
+        <div className="bg-white border-b px-4 py-1 flex gap-4 overflow-x-auto">
+          <ActionButton
+            icon={<FileText size={25} />}
+            label="Modify Impound"
+            dispatchNumber={dispatchNum}
+            link="/invoice"
+          />
+          <ActionButton icon={<FileText size={25} />} label="Record Payment" />
+          <ActionButton
+            icon={<FileText size={25} />}
+            label="Release Vehicle"
+            openModal={openModal}
+            // link="/release-vehicle"
+          />
+          <ActionButton icon={<FileText size={25} />} label="Auction" />
+          <ActionButton
+            icon={<FileText size={25} />}
+            label="Tow from Storage"
+          />
+          <ActionButton icon={<Camera size={25} />} label="Upload Photos" />
+          <ActionButton icon={<Folder size={25} />} label="Upload Files" />
+          <ActionButton icon={<FileText size={25} />} label="Add Note" />
+          <ActionButton
+            icon={<Mail size={25} />}
+            label="Email Invoice/Photos"
+          />
+          <ActionButton icon={<Printer size={25} />} label="Print Invoice" />
+          <ActionButton icon={<Printer size={25} />} label="Print Summary" />
+          <ActionButton
+            icon={<Printer size={25} />}
+            label="Print Property Release"
+          />
+        </div>
 
-      {/* Main Content */}
-      <div className="p-6">
-        <h1 className="text-xl font-semibold mb-6">
-          Impound Details for #{dispatch?.dispnum} (
-          {formatVehicleDescription(dispatch)})
-        </h1>
+        {/* Main Content */}
+        <div className="p-6">
+          <h1 className="text-xl font-semibold mb-6">
+            Impound Details for #{dispatch?.dispnum} (
+            {formatVehicleDescription(dispatch)})
+          </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Call Details */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Call Details</h2>
-            </div>
-            <div className="p-4">
-              <DetailRow
-                label="Impound Total"
-                value={
-                  invoice
-                    ? `$${invoice?.total?.toFixed(2)} as of ${formatDate(
-                        invoice?.invdate
-                      )}`
-                    : "-"
-                }
-              />
-              <DetailRow
-                label="Storage Lot"
-                value={dispatch?.lotsection || "-"}
-              />
-              <DetailRow
-                label="Date Impounded"
-                value={
-                  invoice?.dateStored
-                    ? `    ${formatDate(
-                        invoice.dateStored
-                      )} ${calculateDaysSince(invoice.dateStored)}`
-                    : "-"
-                }
-              />
-              <DetailRow
-                label="Towed From"
-                value={dispatch?.towedfrom || "-"}
-              />
-              <DetailRow label="Driver" value={selectedOption?.label || "-"} />
-              <DetailRow
-                label="Reason for Impound"
-                value={dispatch?.reason || "-"}
-              />
-              <DetailRow label="Account" value={dispatch?.callname || "-"} />
-              <DetailRow
-                label="Call Number"
-                value={dispatch?.callphone || "-"}
-              />
-              <DetailRow
-                label="Stock Number"
-                value={invoice?.invoicenum || "-"}
-              />
-              <DetailRow
-                label="Lien Start"
-                value={dispatch?.liendin ? formatDate(dispatch.liendin) : "-"}
-              />
-              <DetailRow
-                label="Lien Clear"
-                value={dispatch?.liendout ? formatDate(dispatch.liendout) : "-"}
-              />
-              <DetailRow label="Lien Type" value={dispatch?.lientype || "-"} />
-            </div>
-          </div>
-
-          {/* Charges */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Charges</h2>
-            </div>
-            <div className="p-4">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left">
-                    <th className="pb-2">Item</th>
-                    <th className="pb-2">Quantity</th>
-                    <th className="pb-2">Price</th>
-                    <th className="pb-2">Line Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transaction.map((item: any, index: number) => (
-                    <ChargeRow
-                      key={index}
-                      item={item.description}
-                      quantity={item.quantity}
-                      price={item.price}
-                    />
-                  ))}
-                  <tr className="font-semibold">
-                    <td colSpan={3} className="pt-4">
-                      Grand Total
-                    </td>
-                    <td className="pt-4">${calculateTotal().toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Vehicle Details */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Vehicle Details</h2>
-            </div>
-            <div className="p-4">
-              <DetailRow
-                label="Vehicle Description"
-                value={formatVehicleDescription(dispatch)}
-              />
-              <DetailRow label="Plate #" value={dispatch?.licensenum || "-"} />
-              <DetailRow label="VIN" value={dispatch?.vin || "-"} />
-              <DetailRow label="Drive Type" value={dispatch?.type || "-"} />
-              <DetailRow
-                label="Have Keys"
-                value={dispatch?.havekeys ? "Yes" : "No"}
-              />
-              <DetailRow
-                label="Drivable"
-                value={dispatch?.drivable ? "Yes" : "No"}
-              />
-            </div>
-          </div>
-
-          {/* Photographs */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Photographs</h2>
-            </div>
-            <div className="p-4">
-              <p className="text-sm mb-4">
-                Click on the desired photo to view a larger copy of it.
-              </p>
-              <div className="grid grid-cols-5 gap-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="aspect-square bg-gray-200 rounded-lg"
-                  ></div>
-                ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Call Details */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
+                <h2 className="font-semibold">Call Details</h2>
+              </div>
+              <div className="p-4">
+                <DetailRow
+                  label="Impound Total"
+                  value={
+                    invoice
+                      ? `$${invoice?.total?.toFixed(2)} as of ${formatDate(
+                          invoice?.invdate
+                        )}`
+                      : "-"
+                  }
+                />
+                <DetailRow
+                  label="Storage Lot"
+                  value={dispatch?.lotsection || "-"}
+                />
+                <DetailRow
+                  label="Date Impounded"
+                  value={
+                    invoice?.dateStored
+                      ? `    ${formatDate(
+                          invoice.dateStored
+                        )} ${calculateDaysSince(invoice.dateStored)}`
+                      : "-"
+                  }
+                />
+                <DetailRow
+                  label="Towed From"
+                  value={dispatch?.towedfrom || "-"}
+                />
+                <DetailRow
+                  label="Driver"
+                  value={selectedOption?.label || "-"}
+                />
+                <DetailRow
+                  label="Reason for Impound"
+                  value={dispatch?.reason || "-"}
+                />
+                <DetailRow label="Account" value={dispatch?.callname || "-"} />
+                <DetailRow
+                  label="Call Number"
+                  value={dispatch?.callphone || "-"}
+                />
+                <DetailRow
+                  label="Stock Number"
+                  value={invoice?.invoicenum || "-"}
+                />
+                <DetailRow
+                  label="Lien Start"
+                  value={dispatch?.liendin ? formatDate(dispatch.liendin) : "-"}
+                />
+                <DetailRow
+                  label="Lien Clear"
+                  value={
+                    dispatch?.liendout ? formatDate(dispatch.liendout) : "-"
+                  }
+                />
+                <DetailRow
+                  label="Lien Type"
+                  value={dispatch?.lientype || "-"}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Files */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
-              <h2 className="font-semibold">Files</h2>
+            {/* Charges */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
+                <h2 className="font-semibold">Charges</h2>
+              </div>
+              <div className="p-4">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left">
+                      <th className="pb-2">Item</th>
+                      <th className="pb-2">Quantity</th>
+                      <th className="pb-2">Price</th>
+                      <th className="pb-2">Line Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transaction.map((item: any, index: number) => (
+                      <ChargeRow
+                        key={index}
+                        item={item.description}
+                        quantity={item.quantity}
+                        price={item.price}
+                      />
+                    ))}
+                    <tr className="font-semibold">
+                      <td colSpan={3} className="pt-4">
+                        Grand Total
+                      </td>
+                      <td className="pt-4">${calculateTotal().toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="p-4">
-              <p className="text-sm text-gray-600">
-                There are no files to display. To add a file, click Upload Files
-                at the top of this page.
-              </p>
+
+            {/* Vehicle Details */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
+                <h2 className="font-semibold">Vehicle Details</h2>
+              </div>
+              <div className="p-4">
+                <DetailRow
+                  label="Vehicle Description"
+                  value={formatVehicleDescription(dispatch)}
+                />
+                <DetailRow
+                  label="Plate #"
+                  value={dispatch?.licensenum || "-"}
+                />
+                <DetailRow label="VIN" value={dispatch?.vin || "-"} />
+                <DetailRow label="Drive Type" value={dispatch?.type || "-"} />
+                <DetailRow
+                  label="Have Keys"
+                  value={dispatch?.havekeys ? "Yes" : "No"}
+                />
+                <DetailRow
+                  label="Drivable"
+                  value={dispatch?.drivable ? "Yes" : "No"}
+                />
+              </div>
+            </div>
+
+            {/* Photographs */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
+                <h2 className="font-semibold">Photographs</h2>
+              </div>
+              <div className="p-4">
+                <p className="text-sm mb-4">
+                  Click on the desired photo to view a larger copy of it.
+                </p>
+                <div className="grid grid-cols-5 gap-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="aspect-square bg-gray-200 rounded-lg"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Files */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="bg-gray-100 px-4 py-2 rounded-t-lg">
+                <h2 className="font-semibold">Files</h2>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-gray-600">
+                  There are no files to display. To add a file, click Upload
+                  Files at the top of this page.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -339,18 +369,22 @@ function ActionButton({
   icon,
   label,
   dispatchNumber,
-  link
+  link,
+  openModal
 }: {
   icon: React.ReactNode;
   label: string;
   dispatchNumber?: string;
-  link?:string
+  link?: string;
+  openModal?:any
 }) {
   const navigate = useNavigate();
 
   const handleOnClick = (dispatchNum: any) => {
     if (link) {
-      navigate(link, {state: { dispatchNum: dispatchNum } });
+      navigate(link, { state: { dispatchNum: dispatchNum } });
+    }else{
+      openModal(true)
     }
   };
   return (

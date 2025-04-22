@@ -20,7 +20,7 @@ import EditTrucks from './pages/Truckedit';
 import AddNewTrucks from './pages/createTruck';
 import NewQuickPage from './pages/NewQuickCall';
 import { supabase } from './lib/supabase';
-import ReleaseVehicle from './pages/ReleaseVehicle';
+// import ReleaseVehicle from './pages/ReleaseVehicle';
 
 function App() {
     const { i18n } = useTranslation();
@@ -125,7 +125,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/report" element={<Report />} />
             <Route path="/invoice" element={<Invoice />} />
-            <Route path="/release-vehicle" element={<ReleaseVehicle />} />
+            {/* <Route path="/release-vehicle" element={<ReleaseVehicle />} /> */}
             <Route path="/setting" element={<Setting />} />
              <Route path="/trucks" element={<TrucksPage/>}/>
              <Route path="/setting-trucks/:id" element={<EditTrucks />} />
