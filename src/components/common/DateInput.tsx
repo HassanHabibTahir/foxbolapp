@@ -340,6 +340,7 @@ const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
               }
               // inputRef.current = el
             }}
+           
             autoComplete="off"
             type="text"
             className={`mt-0 block ${sizeClasses[size]} rounded-l-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
